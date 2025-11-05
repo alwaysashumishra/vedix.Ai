@@ -21,6 +21,8 @@ const LoginPopUp = ({ setShowLogin }) => {
   };
 
   // const navigate = useNavigate();
+
+
   return (
     <div className="login-popup">
       <form className="login-popup-container">
