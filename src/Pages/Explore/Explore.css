@@ -1,0 +1,175 @@
+.explores{
+  display: flex;
+  flex-direction: column;
+  scroll-behavior: smooth;
+}
+.explore-container {
+  padding: 22px;
+  background: #0f0f0f;
+  color: white;
+  font-family: Poppins, sans-serif;
+}
+
+/* GRID */
+.top-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 22px;
+}
+
+/* AUTO SLIDER LEFT CARD */
+.big-card {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.big-img {
+  width: 100%;
+  height: 420px;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.big-card:hover .big-img {
+  transform: scale(1.06);
+}
+
+.big-overlay {
+  position: absolute;
+  bottom: 0;
+  padding: 20px;
+  width: 100%;
+  background: linear-gradient(to top, rgba(0,0,0,0.83), transparent);
+}
+
+.source {
+  font-size: 14px;
+  color: #ccc;
+}
+
+.big-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-top: 8px;
+}
+
+/* SLIDER DOTS */
+.slider-dots {
+  display: flex;
+  gap: 5px;
+  margin-top: 12px;
+}
+
+.dot {
+  width: 26px;
+  height: 4px;
+  background: #555;
+  border-radius: 10px;
+}
+
+.dot.active {
+  background: #fff;
+}
+
+/* RIGHT CARDS */
+.side-card,
+.score-card {
+  background: #1b1b1b;
+  padding: 16px;
+  border-radius: 14px;
+}
+
+.side-img {
+  width: 100%;
+  height: 170px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.side-title {
+  margin-top: 10px;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.side-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.follow {
+  color: #4da3ff;
+}
+
+/* SCORE CARD */
+.score-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  margin-bottom: 6px;
+}
+
+.green {
+  color: #18ff72;
+}
+
+.see-more {
+  background: none;
+  border: none;
+  color: #4da3ff;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+/* BOTTOM GRID */
+.bottom-grid {
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 22px;
+}
+
+.small-card {
+  background: #1b1b1b;
+  border-radius: 14px;
+  overflow: hidden;
+  transition: 0.3s;
+}
+
+.small-card:hover {
+  transform: scale(1.03);
+}
+
+.small-card img {
+  width: 100%;
+  height: 170px;
+  object-fit: cover;
+}
+
+.small-card h3 {
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* FADE ANIMATION */
+.fade {
+  animation: fadeAnim 1s ease-in-out;
+}
+
+@keyframes fadeAnim {
+  from { opacity: 0.3; }
+  to { opacity: 1; }
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  .top-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .big-img {
+    height: 320px;
+  }
+}

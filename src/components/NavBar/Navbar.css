@@ -1,0 +1,80 @@
+.navbar {
+  width: 100%;
+  height: 65px;
+  background: rgba(10, 10, 10, 0.925);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid #0e0d0d;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 26px;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+}
+.Lexi{
+    font-family: Outfit;
+    color: #afadad;
+    font-weight: 500;
+}
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.logo {
+  height: 32px;
+}
+.Nav-Home-btn{
+    padding: 5px;
+    color: #d8d8d8;
+    text-decoration: none;
+}
+
+.nav-item {
+  color: #d8d8d8;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.nav-item:hover {
+  color: #fff;
+}
+
+.nav-item.active {
+  color: #4da3ff;
+  font-weight: 600;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.feed-btn {
+  padding: 8px 16px;
+  background: #252525;
+  border-radius: 20px;
+  border: 1px solid #444;
+  color: #ddd;
+  cursor: pointer;
+}
+
+.profile-pic {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-image: url(https://d2gwgwt9a7yxle.cloudfront.net/what_is_user_id_in_net_banking_mobile_871b681e52.jpg);
+  background-size: cover;
+  /* background: #888; */
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .nav-item {
+    display: none;
+  }
+}

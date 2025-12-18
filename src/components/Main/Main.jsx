@@ -2,8 +2,9 @@ import React, { useContext, useState } from "react";
 import "./Main.css";
 import { assets } from "../../assets/assets";
 import { Context } from "../../context/context";
-
-const Main = () => {
+import { MdOutlineExplore } from "react-icons/md";
+import { NavLink } from "react-router-dom";
+const Main = ({ showLogin, setShowLogin, profile }) => {
   const {
     onSent,
     recentPrompt,
@@ -31,22 +32,40 @@ const Main = () => {
         <p>Lexi.Ai</p>
 
         {/* Profile picture with upload option */}
-        <div className="profile-container">
-          <label htmlFor="profile-upload">
-            <img
-              src={profilePic}
-              alt="profile"
-              className="profile-picture"
-              title="Click to upload profile picture"
-            />
-          </label>
-          <input
-            id="profile-upload"
-            type="file"
-            accept="image/*"
-            style={{ display: "none" }}
-            onChange={handleImageUpload}
-          />
+
+        <div className="nav-right-box">
+          {profile ? (
+            <>
+              <NavLink className="Nav-explore-btn" to="/explore">
+                <MdOutlineExplore />
+                Explore
+              </NavLink>
+              <button
+                onClick={() => setShowLogin(true)}
+                className="Nav-login-btn"
+              >
+                Sign up/Login
+              </button>
+            </>
+          ) : (
+            <div className="profile-container">
+              <label htmlFor="profile-upload">
+                <img
+                  src={profilePic}
+                  alt="profile"
+                  className="profile-picture"
+                  title="Click to upload profile picture"
+                />
+              </label>
+              <input
+                id="profile-upload"
+                type="file"
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={handleImageUpload}
+              />
+            </div>
+          )}
         </div>
       </div>
 
@@ -115,7 +134,7 @@ const Main = () => {
           </div>
           <p className="bottom-info">
             Lexi.AI may display inaccurate info, including about people, so
-            double-check its response. Your privacy and Gemini Apps
+            double-check its response. Your privacy and lexi Apps
           </p>
         </div>
       </div>

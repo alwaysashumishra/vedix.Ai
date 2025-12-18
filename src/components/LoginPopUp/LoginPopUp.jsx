@@ -4,13 +4,34 @@ import { useNavigate } from "react-router-dom";
 import { assets } from "../../assets/assets";
 import { GiCrossedBones } from "react-icons/gi";
 
-const LoginPopUp = ({ setShowLogin }) => {
+const LoginPopUp = ({ setShowLogin,setProfile }) => {
   const [currstate, setcurrstate] = useState("login");
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
   const [name, setname] = useState("");
   const [surname, setsurname] = useState("");
   const [profilePic, setProfilePic] = useState(assets.user_icon);
+
+  // const navigate = useNavigate();
+  
+  const handleSubmit =(e) =>{
+    e.preventDefault();
+    if(currstate === "signup"){
+      localStorage.setItem(
+        "user",
+         JSON.stringify({name:name,email:email,password:password})
+      );
+      alert("Account created successfully! ");
+      setcurrstate("login");
+    }else{
+      const user = JSON.parse(localStorage.getItem("user"))
+      if(user && user.email === email && user.password=== password){
+        alert(`Welcome Back, ${user.name}`);
+        setShowLogin(false);
+      }
+    }
+  }
+
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
@@ -21,11 +42,9 @@ const LoginPopUp = ({ setShowLogin }) => {
   };
 
   // const navigate = useNavigate();
-
-
   return (
     <div className="login-popup">
-      <form className="login-popup-container">
+      <form className="login-popup-container" onSubmit={handleSubmit}>
         <div className="login-popup-title">
           <h2>{currstate}</h2>
           <div onClick={()=>setShowLogin(false)}><GiCrossedBones /></div>
@@ -75,7 +94,7 @@ const LoginPopUp = ({ setShowLogin }) => {
             onChange={(e) => setpassword(e.target.value)}
           />
         </div>
-        <button type="submit">
+        <button type="submit" >
           {currstate === "signup" ? "Create Account" : "Login"}
         </button>
         <div className="login-popup-condition">

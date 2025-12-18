@@ -17,14 +17,46 @@
     width: 40px;
     border-radius: 50%;
 }
-
+.nav-right-box{
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    
+    
+}
+.Nav-login-btn{
+     padding: 14px 16px;
+     border-radius: 35px;
+     border: none;
+     font-size: 15px;
+     color:  #585858;
+     font-weight: 600;
+     background: #f0f4f9;
+}
+.Nav-explore-btn{
+    display: flex;
+    align-items: center;
+      padding: 14px 16px;
+      gap: 8px;
+     border-radius: 35px;
+     border: none;
+     font-size: 15px;
+     color:  #585858;
+     font-weight: 600;
+     background: #f0f4f9;
+}
+.Nav-login-btn:hover{
+    background: rgb(152, 232, 145);
+    color: #fff;
+}
 .main-container {
     max-width: 900px;
     margin: auto;
+    margin-bottom: 10px;
 }
 
 .main .greet {
-    margin: 50px 0px;
+    margin: 20px 0px;
     font-size: 56px;
     color: #c4c7c5;
     font-weight: 500;
