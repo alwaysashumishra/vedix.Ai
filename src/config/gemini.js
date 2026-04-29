@@ -1,7 +1,5 @@
-
-
-const GEMINI_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
+const GEMINI_URL = import.meta.env.VITE_GEMINI_URL;
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
 export default async function runChat(prompt) {
   if (!prompt || !prompt.trim()) {
@@ -26,7 +24,6 @@ export default async function runChat(prompt) {
     const data = await response.json();
     console.log("Gemini Response 👉", data);
 
-    // ❌ Agar response nahi aaya
     if (!data.candidates || !data.candidates.length) {
       return "";
     }

@@ -9,7 +9,7 @@ const Preloader = () => {
         <div className="circle delay1"></div>
         <div className="circle delay2"></div>
       </div>
-      <h1 className="app-name">Lexi.AI</h1>
+      <h1 className="app-name">Vexi.Ai</h1>
       <p className="tagline">Your Smart AI Companion</p>
     </div>
   );
