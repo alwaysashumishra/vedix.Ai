@@ -29,7 +29,7 @@ const Main = ({ showLogin, setShowLogin, profile }) => {
   return (
     <div className="main">
       <div className="nav">
-        <p>Lexi.Ai</p>
+        <p>Vedix.Ai</p>
 
         {/* Profile picture with upload option */}
 

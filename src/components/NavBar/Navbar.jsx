@@ -8,7 +8,7 @@ const Navbar = () => {
 
       {/* LEFT CONTENT */}
       <div className="nav-left">
-        <h2 className="Lexi">Lexi.Ai</h2>
+        <h2 className="Lexi">Vedix.Ai</h2>
 
         <span className="nav-item active">Discover</span>
         <span className="nav-item">News</span>
