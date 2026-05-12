@@ -135,7 +135,7 @@
 }
 
 .main .greet p{
-    font-size: 45px;
+    font-size: 50px;
     font-weight: 600;
     color: #c4c7c5;
     line-height: 1.2;
@@ -323,92 +323,234 @@
 }
 
 /* ================= RESPONSIVE ================= */
+/* ================= RESPONSIVE ================= */
+/* ================= RESPONSIVE ================= */
 
-@media (max-width: 900px){
+/* ================= LAPTOP ================= */
 
-    .main .greet p{
-        font-size: 48px;
+@media (max-width: 1024px){
+
+    .main-container{
+        max-width: 100%;
+        padding: 20px;
     }
 
+    .main .greet p{
+        font-size: 44px;
+    }
+
+    .main .cards{
+        grid-template-columns: repeat(2,1fr);
+    }
 }
+
+
+/* ================= TABLET ================= */
 
 @media (max-width: 768px){
 
+    .main{
+        width: 100%;
+        overflow-x: hidden;
+    }
+
     .main .nav{
-        padding: 18px;
+        padding: 15px;
+        display: flex;
+        flex-direction:row ;
+        justify-content: space-between;
+        gap: 14px;
     }
 
     .main .nav p{
-        font-size: 22px;
+        font-size: 24px;
+    }
+
+    .nav-right-box{
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+        gap: 8cdpx;
+    }
+
+    .Nav-explore-btn,
+    .Nav-login-btn{
+        padding: 10px 16px;
+        font-size: 14px;
+    }
+
+    .profile-wrapper{
+        display: flex;
+        flex-direction: row;
+
+        align-items: center;
+        gap: 10px;
+    }
+
+    .profile-box{
+        padding: 6px 12px;
+    }
+
+    .username{
+        font-size: 14px;
+    }
+
+    .profile-picture{
+        width: 34px;
+        height: 34px;
+    }
+
+    .logout-btn{
+        padding: 10px 14px;
+        font-size: 13px;
+    }
+
+    .main .greet{
+        margin-top: 20px;
     }
 
     .main .greet p{
         font-size: 38px;
+        text-align: center;
     }
 
-    .main .cards{
-        grid-template-columns: repeat(auto-fit,minmax(160px,1fr));
-    }
-
-    .search-box{
-        padding: 10px 16px;
-    }
-
-    .search-box input{
-        font-size: 15px;
-    }
-
-}
-
-@media (max-width: 480px){
-
-    .main-container{
-        padding: 15px;
-    }
-
-    .main .greet p{
-        font-size: 30px;
+    .greet-greets{
         text-align: center;
     }
 
     .main .cards{
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2,1fr);
+        gap: 14px;
     }
 
     .main .card{
         min-height: 180px;
     }
 
-    .nav-right-box{
-        gap: 10px;
-    }
-
-    .Nav-explore-btn,
-    .Nav-login-btn{
-        padding: 10px 14px;
-        font-size: 13px;
+    .main .card p{
+        font-size: 16px;
     }
 
     .search-box{
-        gap: 10px;
-        padding: 8px 14px;
+        padding: 10px 16px;
+        border-radius: 20px;
     }
 
     .search-box input{
-        font-size: 14px;
+        font-size: 15px;
     }
 
     .search-box img{
         width: 20px;
     }
 
+    .result{
+        padding: 0 2%;
+    }
+
     .result-title{
-        flex-direction: column;
-        align-items: flex-start;
+        gap: 12px;
     }
 
     .result-data{
-        flex-direction: column;
+        gap: 12px;
     }
 
+    .result-data p{
+        font-size: 15px;
+        line-height: 1.7;
+    }
+}
+
+
+/* ================= MOBILE ================= */
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 480px){
+
+    .main .nav{
+        padding: 12px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .nav-right-box{
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 8px;
+        
+    }
+
+    .profile-wrapper{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .profile-box{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+        width: auto;
+    }
+
+    .Nav-explore-btn,
+    .Nav-login-btn{
+        width: auto;
+        padding: 10px 14px;
+        font-size: 13px;
+    }
+
+    .logout-btn{
+        width: auto;
+        padding: 10px 14px;
+        font-size: 13px;
+    }
+
+    .username{
+        display: none;
+    }
+
+    .profile-picture{
+        width: 34px;
+        height: 34px;
+    }
+}
+
+/* ================= EXTRA SMALL DEVICES ================= */
+
+@media (max-width: 350px){
+
+    .main .greet p{
+        font-size: 24px;
+    }
+
+    .Nav-explore-btn,
+    .Nav-login-btn{
+        font-size: 12px;
+        padding: 10px;
+    }
+
+    .search-box{
+        flex-direction: column;
+        align-items: stretch;
+        border-radius: 14px;
+    }
+
+    .search-box div{
+        justify-content: center;
+        width: 100%;
+    }
+
+    .search-box input{
+        width: 100%;
+    }
 }
