@@ -4,7 +4,12 @@ import { assets } from "../../assets/assets";
 import { Context } from "../../context/context";
 import { MdOutlineExplore } from "react-icons/md";
 import { NavLink } from "react-router-dom";
-const Main = ({ showLogin, setShowLogin, profile }) => {
+const Main = ({
+  showLogin,
+  setShowLogin,
+  profile,
+  setProfile,
+}) => {
   const {
     onSent,
     recentPrompt,
@@ -25,7 +30,14 @@ const Main = ({ showLogin, setShowLogin, profile }) => {
       setProfilePic(imageUrl);
     }
   };
+const handleLogout = () => {
 
+  localStorage.removeItem("user");
+
+  localStorage.removeItem("token");
+
+  setProfile(null);
+};
   return (
     <div className="main">
       <div className="nav">
@@ -33,40 +45,57 @@ const Main = ({ showLogin, setShowLogin, profile }) => {
 
         {/* Profile picture with upload option */}
 
-        <div className="nav-right-box">
-          {profile ? (
-            <>
-              <NavLink className="Nav-explore-btn" to="/explore">
-                <MdOutlineExplore />
-                Explore
-              </NavLink>
-              <button
-                onClick={() => setShowLogin(true)}
-                className="Nav-login-btn"
-              >
-                Sign up/Login
-              </button>
-            </>
-          ) : (
-            <div className="profile-container">
-              <label htmlFor="profile-upload">
-                <img
-                  src={profilePic}
-                  alt="profile"
-                  className="profile-picture"
-                  title="Click to upload profile picture"
-                />
-              </label>
-              <input
-                id="profile-upload"
-                type="file"
-                accept="image/*"
-                style={{ display: "none" }}
-                onChange={handleImageUpload}
-              />
-            </div>
-          )}
-        </div>
+ <div className="nav-right-box">
+
+  {/* ALWAYS SHOW EXPLORE */}
+  <NavLink
+    className="Nav-explore-btn"
+    to="/explore"
+  >
+    <MdOutlineExplore />
+    Explore
+  </NavLink>
+
+
+  {/* IF USER NOT LOGGED IN */}
+  {!profile ? (
+
+    <button
+      onClick={() => setShowLogin(true)}
+      className="Nav-login-btn"
+    >
+      Sign up/Login
+    </button>
+
+  ) : (
+
+    <div className="profile-wrapper">
+
+      <div className="profile-box">
+
+        <span className="username">
+          {profile.username}
+        </span>
+
+        <img
+          src={profile.profilePic}
+          alt="profile"
+          className="profile-picture"
+        />
+
+      </div>
+
+      <button
+        onClick={handleLogout}
+        className="logout-btn"
+      >
+        Logout
+      </button>
+
+    </div>
+  )}
+
+</div>
       </div>
 
       <div className="main-container">
