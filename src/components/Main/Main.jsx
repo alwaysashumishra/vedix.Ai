@@ -103,9 +103,9 @@ const handleLogout = () => {
           <>
             <div className="greet">
               <p>
-                <span>Hello, Human.</span>
+                <span >Hello, Human.</span>
               </p>
-              <p>How can I help you today?</p>
+              <p className="greet-greets">How can I help you today?</p>
             </div>
             <div className="cards">
               <div className="card">
