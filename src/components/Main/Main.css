@@ -321,7 +321,10 @@
     color: #6b7280;
     padding: 0 10px;
 }
-
+.result-data img{
+    height: 40px;
+    width: 40px;
+}
 /* ================= RESPONSIVE ================= */
 /* ================= RESPONSIVE ================= */
 /* ================= RESPONSIVE ================= */
@@ -341,6 +344,10 @@
 
     .main .cards{
         grid-template-columns: repeat(2,1fr);
+    }
+    .result-data img{
+        height: 30px;
+        width: 30px;
     }
 }
 

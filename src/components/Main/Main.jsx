@@ -133,7 +133,7 @@ const handleLogout = () => {
               <p>{recentPrompt}</p>
             </div>
             <div className="result-data">
-              <img src={assets.gemini_icon} alt="" />
+              <img  src={assets.gemini_icon} alt="" />
               {loading ? (
                 <div className="loader">
                   <hr />
@@ -162,7 +162,7 @@ const handleLogout = () => {
             </div>
           </div>
           <p className="bottom-info">
-            Lexi.AI may display inaccurate info, including about people, so
+            Vedix.AI may display inaccurate info, including about people, so
             double-check its response. Your privacy and lexi Apps
           </p>
         </div>
