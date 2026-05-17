@@ -1,11 +1,28 @@
-.sidebar {
-    min-height: 100vh;
-    display: inline-flex;
+.sidebar{
+    height: 100vh;
+
+    display: flex;
+
     flex-direction: column;
+
     justify-content: space-between;
+
     background: #f0f4f9;
+
     padding: 25px 15px;
+
+    overflow: hidden;
+
     transition: all 0.3s ease-in-out;
+}
+.top{
+    display: flex;
+
+    flex-direction: column;
+
+    height: 100%;
+
+    overflow: hidden;
 }
 
 /* Existing styles stay same */
@@ -29,9 +46,41 @@
     color: gray;
     cursor: pointer;
 }
-.sidebar .recent {
+.bottom{
     display: flex;
+
     flex-direction: column;
+
+    gap: 5px;
+
+    padding-top: 10px;
+
+    border-top: 1px solid rgba(255,255,255,0.08);
+
+    background: inherit;
+}
+.sidebar .recent{
+    display: flex;
+
+    flex-direction: column;
+
+    overflow-y: auto;
+
+    overflow-x: hidden;
+
+    flex: 1;
+
+    margin-top: 10px;
+
+    padding-right: 5px;
+}.recent::-webkit-scrollbar{
+    width: 5px;
+}
+
+.recent::-webkit-scrollbar-thumb{
+    background: #334155;
+
+    border-radius: 20px;
 }
 .sidebar .recent-title {
     margin-top: 30px;
@@ -71,7 +120,61 @@
         display: none; /* hide text, keep icons */
     }
 }
+/* ================= DARK MODE SIDEBAR ================= */
 
+body.dark .sidebar{
+    background: #111827;
+}
+
+
+body.dark .sidebar .new-chat{
+    background: #1e293b;
+
+    color: #e5e7eb;
+}
+
+
+body.dark .sidebar .recent-title{
+    color: #cbd5e1;
+}
+
+
+body.dark .sidebar .recent-entry{
+    color: #f3f4f6;
+}
+
+
+body.dark .sidebar .recent-entry:hover{
+    background: #1e293b;
+}
+
+
+body.dark .sidebar .bottom-item{
+    color: #f3f4f6;
+}
+
+
+body.dark .sidebar .menu{
+    filter: brightness(0) invert(1);
+}
+
+
+body.dark .sidebar .new-chat img,
+body.dark .sidebar .recent-entry img,
+body.dark .sidebar .bottom-item img{
+    filter: brightness(0) invert(1);
+}
+
+
+/* MOBILE MENU BUTTON */
+body.dark .sidebar .menu{
+    background: transparent;
+}
+
+
+body.dark .sidebar .menu:hover{
+    opacity: 0.8;
+}
 @media (max-width: 768px) {
     .sidebar {
         position: fixed;
@@ -82,6 +185,7 @@
         z-index: 1000;
         box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
     }
+    
 
     .sidebar.active {
         left: 0; /* slide in */

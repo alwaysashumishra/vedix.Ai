@@ -1,0 +1,64 @@
+.help-modal{
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0,0,0,0.5);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    z-index: 999;
+}
+
+.help-form{
+    width: 400px;
+
+    background: white;
+
+    padding: 25px;
+
+    border-radius: 20px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 15px;
+}
+
+.help-form input,
+.help-form textarea{
+    padding: 14px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 12px;
+
+    outline: none;
+}
+
+.help-form textarea{
+    height: 120px;
+
+    resize: none;
+}
+
+.help-form button{
+    padding: 14px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background: #2563eb;
+
+    color: white;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}

@@ -1,15 +1,31 @@
-import React, { useContext, useState } from "react";
+import React, {
+  useContext,
+  useState,
+} from "react";
+
 import "./Main.css";
+
 import { assets } from "../../assets/assets";
+
 import { Context } from "../../context/context";
+
+import { ThemeContext } from "../../context/ThemeContext";
+
 import { MdOutlineExplore } from "react-icons/md";
+
+import { MdDarkMode } from "react-icons/md";
+
+import { MdLightMode } from "react-icons/md";
+
 import { NavLink } from "react-router-dom";
+
 const Main = ({
   showLogin,
   setShowLogin,
   profile,
   setProfile,
 }) => {
+
   const {
     onSent,
     recentPrompt,
@@ -20,153 +36,296 @@ const Main = ({
     input,
   } = useContext(Context);
 
-  const [profilePic, setProfilePic] = useState(assets.user_icon); // default user icon
 
-  // Handle image upload
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file); // temporary preview
-      setProfilePic(imageUrl);
-    }
+  // THEME CONTEXT
+  const {
+    theme,
+    toggleTheme,
+  } = useContext(ThemeContext);
+
+
+  const [profilePic] = useState(
+    assets.user_icon
+  );
+
+
+  // LOGOUT
+  const handleLogout = () => {
+
+    localStorage.removeItem("user");
+
+    localStorage.removeItem("token");
+
+    setProfile(null);
   };
-const handleLogout = () => {
 
-  localStorage.removeItem("user");
 
-  localStorage.removeItem("token");
-
-  setProfile(null);
-};
   return (
+
     <div className="main">
+
+      {/* NAVBAR */}
       <div className="nav">
-        <p>Vedix.Ai</p>
 
-        {/* Profile picture with upload option */}
-
- <div className="nav-right-box">
-
-  {/* ALWAYS SHOW EXPLORE */}
-  <NavLink
-    className="Nav-explore-btn"
-    to="/explore"
-  >
-    <MdOutlineExplore />
-    Explore
-  </NavLink>
+        <p className="vedix-logo">
+          Vedix.Ai
+        </p>
 
 
-  {/* IF USER NOT LOGGED IN */}
-  {!profile ? (
+        <div className="nav-right-box">
 
-    <button
-      onClick={() => setShowLogin(true)}
-      className="Nav-login-btn"
-    >
-      Sign up/Login
-    </button>
+          {/* THEME BUTTON */}
+          <button
+            onClick={toggleTheme}
+            className="theme-toggle-btn"
+          >
+            {
+              theme === "light"
+                ? <MdDarkMode />
+                : <MdLightMode />
+            }
+          </button>
 
-  ) : (
 
-    <div className="profile-wrapper">
+          {/* EXPLORE */}
+          <NavLink
+            className="Nav-explore-btn"
+            to="/explore"
+          >
+            <MdOutlineExplore />
+            Explore
+          </NavLink>
 
-      <div className="profile-box">
 
-        <span className="username">
-          {profile.username}
-        </span>
+          {/* LOGIN */}
+          {!profile ? (
 
-        <img
-          src={profile.profilePic}
-          alt="profile"
-          className="profile-picture"
-        />
+            <button
+              onClick={() =>
+                setShowLogin(true)
+              }
+              className="Nav-login-btn"
+            >
+              Sign up/Login
+            </button>
 
+          ) : (
+
+            <div className="profile-wrapper">
+
+              {/* PROFILE */}
+              <div className="profile-box">
+
+                <span className="username">
+                  {profile.username}
+                </span>
+
+                <img
+                  src={profile.profilePic}
+                  alt="profile"
+                  className="profile-picture"
+                />
+
+              </div>
+
+
+              {/* LOGOUT */}
+              <button
+                onClick={handleLogout}
+                className="logout-btn"
+              >
+                Logout
+              </button>
+
+            </div>
+          )}
+
+        </div>
       </div>
 
-      <button
-        onClick={handleLogout}
-        className="logout-btn"
-      >
-        Logout
-      </button>
 
-    </div>
-  )}
 
-</div>
-      </div>
-
+      {/* MAIN CONTAINER */}
       <div className="main-container">
+
         {!showResult ? (
+
           <>
             <div className="greet">
+
               <p>
-                <span >Hello, Human.</span>
+                <span>
+                  Hello, Human.
+                </span>
               </p>
-              <p className="greet-greets">How can I help you today?</p>
+
+              <p className="greet-greets">
+                How can I help you today?
+              </p>
+
             </div>
+
+
+            {/* CARDS */}
             <div className="cards">
+
               <div className="card">
-                <p>Suggest beautiful places to see on an upcoming road trip</p>
-                <img src={assets.compass_icon} alt="" />
+                <p>
+                  Suggest beautiful places
+                  to see on an upcoming
+                  road trip
+                </p>
+
+                <img
+                  src={assets.compass_icon}
+                  alt=""
+                />
               </div>
+
+
               <div className="card">
-                <p>Breifly summarize this concept: urban planning</p>
-                <img src={assets.bulb_icon} alt="" />
+                <p>
+                  Briefly summarize this
+                  concept: urban planning
+                </p>
+
+                <img
+                  src={assets.bulb_icon}
+                  alt=""
+                />
               </div>
+
+
               <div className="card">
-                <p>Brainstrom team bonding activities for our work retreat</p>
-                <img src={assets.message_icon} alt="" />
+                <p>
+                  Brainstorm team bonding
+                  activities for our work
+                  retreat
+                </p>
+
+                <img
+                  src={assets.message_icon}
+                  alt=""
+                />
               </div>
+
+
               <div className="card">
-                <p>Improve the readability of the following code</p>
-                <img src={assets.code_icon} alt="" />
+                <p>
+                  Improve the readability
+                  of the following code
+                </p>
+
+                <img
+                  src={assets.code_icon}
+                  alt=""
+                />
               </div>
+
             </div>
+
           </>
+
         ) : (
+
           <div className="result">
+
             <div className="result-title">
-              <img src={profilePic} alt="user" className="profile-pic-small" />
+
+              <img
+                src={profile?.profilePic || profilePic}
+                alt="user"
+                className="profile-pic-small"
+              />
+
               <p>{recentPrompt}</p>
+
             </div>
+
+
             <div className="result-data">
-              <img  src={assets.gemini_icon} alt="" />
+
+              <img
+                src={assets.gemini_icon}
+                alt=""
+              />
+
               {loading ? (
+
                 <div className="loader">
                   <hr />
                   <hr />
                   <hr />
                 </div>
+
               ) : (
-                <p dangerouslySetInnerHTML={{ __html: resultData }}></p>
+
+                <p
+                  dangerouslySetInnerHTML={{
+                    __html: resultData,
+                  }}
+                ></p>
+
               )}
+
             </div>
+
           </div>
         )}
 
+
+
+        {/* BOTTOM INPUT */}
         <div className="main-bottom">
+
           <div className="search-box">
+
             <input
-              onChange={(e) => setInput(e.target.value)}
+              onChange={(e) =>
+                setInput(e.target.value)
+              }
               value={input}
               type="text"
               placeholder="Enter a prompt here"
             />
+
+
             <div>
-              <img src={assets.gallery_icon} alt="" />
-              <img src={assets.mic_icon} alt="" />
-              <img onClick={() => onSent()} src={assets.send_icon} alt="" />
+
+              <img
+                src={assets.gallery_icon}
+                alt=""
+              />
+
+              <img
+                src={assets.mic_icon}
+                alt=""
+              />
+
+              <img
+                onClick={() => onSent()}
+                src={assets.send_icon}
+                alt=""
+              />
+
             </div>
+
           </div>
+
+
           <p className="bottom-info">
-            Vedix.AI may display inaccurate info, including about people, so
-            double-check its response. Your privacy and lexi Apps
+
+            Vedix.AI may display
+            inaccurate info, including
+            about people, so double-check
+            its response.
+
           </p>
+
         </div>
+
       </div>
+
     </div>
   );
 };
