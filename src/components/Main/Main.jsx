@@ -48,7 +48,7 @@ const Main = ({
     assets.user_icon
   );
 
-
+ const [selectedImage, setSelectedImage] = useState(null);
   // LOGOUT
   const handleLogout = () => {
 
@@ -58,6 +58,7 @@ const Main = ({
 
     setProfile(null);
   };
+  const handleImageUpload = (e) => { const file = e.target.files[0]; if(file){ setSelectedImage(file); } };
 
 
   return (
@@ -291,22 +292,61 @@ const Main = ({
 
 
             <div>
+    {
+  selectedImage && (
 
-              <img
-                src={assets.gallery_icon}
-                alt=""
-              />
+    <div className="preview-container">
 
+      <img
+
+        src={URL.createObjectURL(
+          selectedImage
+        )}
+
+        alt="preview"
+
+        className="preview-image"
+      />
+
+
+      <button
+
+        className="remove-preview"
+
+        onClick={() =>
+          setSelectedImage(null)
+        }
+      >
+        ✕
+      </button>
+
+    </div>
+  )
+}
+
+
+              <label htmlFor="imageUpload"> <img src={assets.gallery_icon} alt="" /> </label>
               <img
                 src={assets.mic_icon}
                 alt=""
               />
+              <input type="file" id="imageUpload" hidden accept="image/*" onChange={handleImageUpload} />
+<img
 
-              <img
-                onClick={() => onSent()}
-                src={assets.send_icon}
-                alt=""
-              />
+  onClick={async () => {
+
+    await onSent(
+      input,
+      selectedImage
+    );
+
+    setSelectedImage(null);
+  }}
+
+  src={assets.send_icon}
+
+  alt=""
+/>
 
             </div>
 

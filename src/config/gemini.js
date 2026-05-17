@@ -1,74 +1,175 @@
-// src/config/gemini.js
 
-const GEMINI_URL = import.meta.env.VITE_GEMINI_URL;
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+const GEMINI_URL =
+  import.meta.env.VITE_GEMINI_URL;
 
-const runChat = async (prompt) => {
+const API_KEY =
+  import.meta.env.VITE_GEMINI_API_KEY;
 
-  // Empty input check
-  if (!prompt || !prompt.trim()) {
+
+
+const runChat = async (
+  prompt,
+  image
+) => {
+
+  // EMPTY CHECK
+  if (
+    !prompt?.trim() &&
+    !image
+  ) {
+
     return "⚠ Please enter a prompt";
   }
 
+
+
   try {
 
-    // Debug env values
-    console.log("Gemini URL 👉", GEMINI_URL);
-    console.log("API KEY 👉", API_KEY);
+    let parts = [];
 
-    // Check env variables
-    if (!GEMINI_URL || !API_KEY) {
-      return "⚠ Environment variables missing";
+
+
+    // TEXT
+    if(prompt){
+
+      parts.push({
+
+        text: prompt,
+      });
     }
 
-    // API request
-    const response = await fetch(`${GEMINI_URL}?key=${API_KEY}`, {
-      method: "POST",
 
-      headers: {
-        "Content-Type": "application/json",
-      },
 
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: prompt,
-              },
-            ],
+    // IMAGE
+    if(image){
+
+      const imagePart =
+        await fileToGenerativePart(
+          image
+        );
+
+      parts.push(imagePart);
+    }
+
+
+
+    // GEMINI API CALL
+    const response =
+      await fetch(
+
+        `${GEMINI_URL}?key=${API_KEY}`,
+
+        {
+          method: "POST",
+
+          headers: {
+
+            "Content-Type":
+            "application/json",
           },
-        ],
-      }),
-    });
 
-    // Convert response to JSON
-    const data = await response.json();
+          body: JSON.stringify({
 
-    console.log("Gemini Response 👉", data);
+            contents: [
 
-    // Handle Gemini API errors
-    if (data.error) {
+              {
+                parts: parts,
+              },
+
+            ],
+          }),
+        }
+      );
+
+
+
+    // RESPONSE
+    const data =
+      await response.json();
+
+    console.log(
+      "Gemini Response 👉",
+      data
+    );
+
+
+
+    // ERROR
+    if(data.error){
+
       return `⚠ ${data.error.message}`;
     }
 
-    // Extract response text safely
-    const text =
-      data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
-    // No response case
-    if (!text) {
-      return "⚠ No response received from Gemini";
+
+    // RESPONSE TEXT
+    const text =
+      data?.candidates?.[0]
+      ?.content?.parts?.[0]?.text;
+
+
+
+    if(!text){
+
+      return "⚠ No response received";
     }
 
     return text;
 
-  } catch (error) {
+  }
 
-    console.error("Gemini Fetch Error 👉", error);
+  catch(error){
 
-    return "⚠ Something went wrong while fetching response";
+    console.error(
+      "Gemini Fetch Error 👉",
+      error
+    );
+
+    return "⚠ Gemini API Error";
   }
 };
+
+
+
+
+
+// IMAGE → BASE64
+async function fileToGenerativePart(
+  file
+){
+
+  const base64EncodedDataPromise =
+    new Promise((resolve) => {
+
+      const reader =
+        new FileReader();
+
+      reader.onloadend = () => {
+
+        resolve(
+
+          reader.result
+          .split(",")[1]
+        );
+      };
+
+      reader.readAsDataURL(file);
+    });
+
+
+
+
+  return {
+
+    inline_data: {
+
+      data:
+      await base64EncodedDataPromise,
+
+      mime_type:
+      file.type,
+    },
+  };
+}
 
 export default runChat;

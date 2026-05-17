@@ -1,4 +1,8 @@
+
+/* ================= SIDEBAR ================= */
+
 .sidebar{
+
     height: 100vh;
 
     display: flex;
@@ -13,9 +17,83 @@
 
     overflow: hidden;
 
-    transition: all 0.3s ease-in-out;
+    transition: 0.3s ease;
 }
+
+
+/* DELETE CHAT */
+
+.recent-chat{
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 10px;
+}
+
+
+.recent-left{
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    flex: 1;
+
+    cursor: pointer;
+}
+
+
+
+/* DELETE BUTTON */
+
+.delete-chat{
+
+    width: 22px;
+
+    height: 22px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 11px;
+
+    background: transparent;
+
+    transition: 0.2s ease;
+
+    opacity: 0;
+}
+
+
+.recent-chat:hover .delete-chat{
+
+    opacity: 1;
+}
+
+
+.delete-chat:hover{
+
+    background: #ef4444;
+
+    color: white;
+}
+
+
+/* TOP */
+
 .top{
+
     display: flex;
 
     flex-direction: column;
@@ -25,41 +103,70 @@
     overflow: hidden;
 }
 
-/* Existing styles stay same */
-.sidebar img {
+
+
+/* ICONS */
+
+.sidebar img{
+
     width: 20px;
 }
-.sidebar .menu {
+
+
+
+/* MENU */
+
+.sidebar .menu{
+
     display: block;
+
     margin-left: 10px;
+
     cursor: pointer;
 }
-.sidebar .new-chat {
+
+
+
+/* NEW CHAT */
+
+.sidebar .new-chat{
+
     margin-top: 50px;
+
     display: inline-flex;
+
     align-items: center;
+
     gap: 12px;
-    padding: 8px 15px;
+
+    padding: 12px 15px;
+
     background: #e6eaf1;
+
     border-radius: 50px;
+
     font-size: 14px;
+
     color: gray;
+
     cursor: pointer;
+
+    transition: 0.2s ease;
 }
-.bottom{
-    display: flex;
 
-    flex-direction: column;
 
-    gap: 5px;
+.sidebar .new-chat:hover{
 
-    padding-top: 10px;
-
-    border-top: 1px solid rgba(255,255,255,0.08);
-
-    background: inherit;
+    background: #dfe5ee;
 }
+
+
+
+
+/* RECENT */
+
 .sidebar .recent{
+
     display: flex;
 
     flex-direction: column;
@@ -73,138 +180,257 @@
     margin-top: 10px;
 
     padding-right: 5px;
-}.recent::-webkit-scrollbar{
+}
+
+
+
+/* SCROLLBAR */
+
+.recent::-webkit-scrollbar{
+
     width: 5px;
 }
 
 .recent::-webkit-scrollbar-thumb{
+
     background: #334155;
 
     border-radius: 20px;
 }
-.sidebar .recent-title {
+
+
+
+/* RECENT TITLE */
+
+.sidebar .recent-title{
+
     margin-top: 30px;
+
     margin-bottom: 20px;
+
+    font-size: 15px;
+
+    font-weight: 600;
 }
-.sidebar .recent-entry {
+
+
+
+/* RECENT ENTRY */
+
+.sidebar .recent-entry{
+
     display: flex;
-    align-items: start;
-    gap: 10px;
-    padding: 10px;
-    padding-right: 40px;
-    border-radius: 50px;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 12px;
+
+    border-radius: 14px;
+
     color: #282828;
+
     cursor: pointer;
+
+    transition: 0.2s ease;
 }
-.sidebar .recent-entry:hover {
+
+
+.sidebar .recent-entry:hover{
+
     background: #e2e6eb;
 }
-.sidebar .bottom {
+
+
+
+
+/* BOTTOM */
+
+.bottom{
+
     display: flex;
+
     flex-direction: column;
-}
-.sidebar .bottom-item {
-    padding: 10px;
-    cursor: pointer;
+
+    gap: 5px;
+
+    padding-top: 10px;
+
+    border-top:
+    1px solid rgba(0,0,0,0.08);
 }
 
-/* ✅ Responsive design */
-@media (max-width: 1024px) {
-    .sidebar {
-        width: 70px;
-        padding: 20px 10px;
-    }
-    .sidebar .new-chat p,
-    .sidebar .recent,
-    .sidebar .bottom-item p {
-        display: none; /* hide text, keep icons */
-    }
+
+
+/* BOTTOM ITEM */
+
+.sidebar .bottom-item{
+
+    padding: 10px;
 }
-/* ================= DARK MODE SIDEBAR ================= */
+
+
+
+
+
+/* ================= DARK MODE ================= */
 
 body.dark .sidebar{
+
     background: #111827;
 }
 
 
 body.dark .sidebar .new-chat{
+
     background: #1e293b;
 
     color: #e5e7eb;
 }
 
 
+body.dark .sidebar .new-chat:hover{
+
+    background: #263548;
+}
+
+
 body.dark .sidebar .recent-title{
+
     color: #cbd5e1;
 }
 
 
 body.dark .sidebar .recent-entry{
+
     color: #f3f4f6;
 }
 
 
 body.dark .sidebar .recent-entry:hover{
+
     background: #1e293b;
 }
 
 
-body.dark .sidebar .bottom-item{
-    color: #f3f4f6;
+body.dark .sidebar .bottom{
+
+    border-top:
+    1px solid rgba(255,255,255,0.08);
 }
 
 
-body.dark .sidebar .menu{
-    filter: brightness(0) invert(1);
+body.dark .sidebar img{
+
+    filter:
+    brightness(0)
+    invert(1);
 }
 
 
-body.dark .sidebar .new-chat img,
-body.dark .sidebar .recent-entry img,
-body.dark .sidebar .bottom-item img{
-    filter: brightness(0) invert(1);
+
+
+
+/* ================= TABLET ================= */
+
+@media (max-width: 1024px){
+
+    .sidebar{
+
+        width: 78px;
+
+        padding: 20px 12px;
+    }
+
+
+    .sidebar .new-chat p,
+
+    .sidebar .recent,
+
+    .sidebar .bottom-item p{
+
+        display: none;
+    }
 }
 
 
-/* MOBILE MENU BUTTON */
-body.dark .sidebar .menu{
-    background: transparent;
-}
 
 
-body.dark .sidebar .menu:hover{
-    opacity: 0.8;
-}
-@media (max-width: 768px) {
-    .sidebar {
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 768px){
+
+    .sidebar{
+
         position: fixed;
-        left: -100%;
+
         top: 0;
-        height: 100%;
-        width: 220px;
-        z-index: 1000;
-        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
-    }
-    
 
-    .sidebar.active {
-        left: 0; /* slide in */
+        left: -260px;
+
+        width: 260px;
+
+        height: 100vh;
+
+        z-index: 999;
+
+        box-shadow:
+        0 10px 30px rgba(0,0,0,0.15);
     }
 
-    .sidebar .menu {
+
+
+    .sidebar.active{
+
+        left: 0;
+    }
+
+
+
+    .sidebar .menu{
+
         position: absolute;
-        top: 20px;
-        right: -45px;
-        background: #f0f4f9;
+
+        top: 22px;
+
+        right: -52px;
+
+        width: 42px;
+
+        height: 42px;
+
+        background: white;
+
         padding: 10px;
+
         border-radius: 50%;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+
+        box-shadow:
+        0 4px 14px rgba(0,0,0,0.12);
+
+        z-index: 1000;
+    }
+
+
+
+    body.dark .sidebar .menu{
+
+        background: #1e293b;
     }
 }
 
-@media (max-width: 480px) {
-    .sidebar {
-        width: 200px;
-        padding: 15px 10px;
+
+
+
+
+/* ================= SMALL MOBILE ================= */
+
+@media (max-width: 480px){
+
+    .sidebar{
+
+        width: 240px;
     }
 }
