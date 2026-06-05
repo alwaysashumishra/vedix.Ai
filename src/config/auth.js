@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API = "http://localhost:5000/api/auth";
+const API = "https://vedixai-production.up.railway.app/api/auth";
 
 
 // REGISTER
