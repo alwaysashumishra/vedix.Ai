@@ -110,7 +110,8 @@ console.log(
 
   process.env.GROQ_API_KEY
 );
-
+console.log("MONGO_URI:", !!process.env.MONGO_URI);
+console.log("GROQ_API_KEY:", !!process.env.GROQ_API_KEY);
 
 
 
