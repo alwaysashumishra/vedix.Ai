@@ -20,6 +20,21 @@ from "../HelpModel/HelpModal";
 import SettingsModal
 from "../SettingsModal/SettingsModal";
 
+import {
+  FiFileText
+}
+from "react-icons/fi";
+
+import {
+  MdOutlineArticle
+}
+from "react-icons/md";
+
+import {
+  NavLink
+}
+from "react-router-dom";
+
 
 
 const Sidebar = () => {
@@ -35,6 +50,7 @@ const Sidebar = () => {
   const [showSettings,
   setShowSettings] =
     useState(false);
+
 
 
 
@@ -55,7 +71,8 @@ const Sidebar = () => {
 
 
 
-  // LOAD OLD CHAT
+
+  /* LOAD OLD CHAT */
   const loadPrompt =
   async (prompt) => {
 
@@ -74,7 +91,8 @@ const Sidebar = () => {
 
 
 
-  // NEW CHAT
+
+  /* NEW CHAT */
   const newChat = () => {
 
     setShowResult(false);
@@ -89,12 +107,14 @@ const Sidebar = () => {
 
 
 
-  // DELETE SINGLE CHAT
+
+  /* DELETE CHAT */
   const deleteChat = (
     indexToDelete
   ) => {
 
     const updatedChats =
+
       prevPrompts.filter(
 
         (_, index) =>
@@ -102,9 +122,13 @@ const Sidebar = () => {
         index !== indexToDelete
       );
 
+
+
     setprevPrompts(
       updatedChats
     );
+
+
 
     localStorage.setItem(
 
@@ -120,11 +144,13 @@ const Sidebar = () => {
 
 
 
+
+
   return (
 
     <>
 
-      {/* HELP MODAL */}
+      {/* HELP */}
       {
         showHelp && (
 
@@ -138,7 +164,9 @@ const Sidebar = () => {
 
 
 
-      {/* SETTINGS MODAL */}
+
+
+      {/* SETTINGS */}
       {
         showSettings && (
 
@@ -153,6 +181,9 @@ const Sidebar = () => {
 
 
 
+
+
+
       {/* SIDEBAR */}
       <div
         className={`sidebar ${
@@ -162,8 +193,10 @@ const Sidebar = () => {
 
 
 
+
         {/* TOP */}
         <div className="top">
+
 
 
           {/* MENU */}
@@ -185,6 +218,8 @@ const Sidebar = () => {
 
 
 
+
+
           {/* NEW CHAT */}
           <div
 
@@ -200,10 +235,88 @@ const Sidebar = () => {
 
             {
               extended &&
-              <p>New Chat</p>
+              <p>
+                New Chat
+              </p>
             }
 
           </div>
+
+
+
+
+
+
+
+          {/* AI TOOLS */}
+          {
+            extended && (
+
+              <div className="
+              ai-tools
+              ">
+
+                <p className="
+                recent-title
+                ">
+
+                  AI Tools
+
+                </p>
+
+
+
+
+
+                {/* RESUME */}
+                <NavLink
+
+                  to="/resume-analyzer"
+
+                  className="
+                  recent-entry
+                  ai-tool-link
+                  "
+                >
+
+                  <FiFileText />
+
+                  <p>
+                    Resume AI
+                  </p>
+
+                </NavLink>
+
+
+
+
+
+
+                {/* RESEARCH */}
+                <NavLink
+
+                  to="/paper-analyzer"
+
+                  className="
+                  recent-entry
+                  ai-tool-link
+                  "
+                >
+
+                  <MdOutlineArticle />
+
+                  <p>
+                    Research AI
+                  </p>
+
+                </NavLink>
+
+              </div>
+            )
+          }
+
+
+
 
 
 
@@ -213,16 +326,25 @@ const Sidebar = () => {
           {
             extended && (
 
-              <div className="recent">
+              <div className="
+              recent
+              ">
 
-                <p className="recent-title">
+                <p className="
+                recent-title
+                ">
+
                   Recent
+
                 </p>
+
+
 
 
 
                 {
                   prevPrompts.map(
+
                     (
                       item,
                       index
@@ -240,7 +362,10 @@ const Sidebar = () => {
                           "
                         >
 
-                          {/* LOAD CHAT */}
+
+
+
+                          {/* LOAD */}
                           <div
 
                             className="
@@ -253,6 +378,7 @@ const Sidebar = () => {
                           >
 
                             <img
+
                               src={
                                 assets.message_icon
                               }
@@ -275,6 +401,9 @@ const Sidebar = () => {
 
 
 
+
+
+
                           {/* DELETE */}
                           <span
 
@@ -288,7 +417,9 @@ const Sidebar = () => {
                               )
                             }
                           >
+
                             ✕
+
                           </span>
 
                         </div>
@@ -307,8 +438,15 @@ const Sidebar = () => {
 
 
 
+
+
+
         {/* BOTTOM */}
-        <div className="bottom">
+        <div className="
+        bottom
+        ">
+
+
 
 
           {/* HELP */}
@@ -331,10 +469,13 @@ const Sidebar = () => {
 
             {
               extended &&
-              <p>Help</p>
+              <p>
+                Help
+              </p>
             }
 
           </div>
+
 
 
 
@@ -355,10 +496,13 @@ const Sidebar = () => {
 
             {
               extended &&
-              <p>Activity</p>
+              <p>
+                Activity
+              </p>
             }
 
           </div>
+
 
 
 
@@ -384,7 +528,9 @@ const Sidebar = () => {
 
             {
               extended &&
-              <p>Settings</p>
+              <p>
+                Settings
+              </p>
             }
 
           </div>

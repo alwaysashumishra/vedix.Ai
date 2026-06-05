@@ -1,0 +1,256 @@
+.resume-page {
+  min-height: 100vh;
+  width: 100%;
+  padding: 36px;
+  background: #f6f8fb;
+  color: #172033;
+}
+
+.resume-shell {
+  max-width: 1180px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(280px, 0.9fr) minmax(320px, 1.35fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.resume-hero,
+.resume-workspace {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+}
+
+.resume-hero {
+  padding: 34px;
+  position: sticky;
+  top: 28px;
+}
+
+.tool-kicker {
+  display: inline-flex;
+  margin-bottom: 18px;
+  color: #047857;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.resume-hero h1 {
+  margin: 0 0 16px;
+  font-size: 44px;
+  line-height: 1.04;
+  letter-spacing: 0;
+  color: #111827;
+}
+
+.resume-hero p {
+  margin: 0;
+  color: #536179;
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+.resume-stats {
+  display: grid;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.resume-stats span {
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: #ecfdf5;
+  color: #065f46;
+  font-weight: 700;
+}
+
+.resume-workspace {
+  padding: 28px;
+}
+
+.resume-upload {
+  min-height: 250px;
+  border: 2px dashed #94a3b8;
+  border-radius: 8px;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.resume-upload:hover,
+.resume-upload.has-file {
+  border-color: #047857;
+  background: #ecfdf5;
+}
+
+.resume-upload-icon {
+  font-size: 58px;
+  color: #2563eb;
+}
+
+.resume-upload strong {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  color: #111827;
+  font-size: 18px;
+}
+
+.resume-upload span {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.resume-analyze-btn {
+  width: 100%;
+  margin-top: 20px;
+  border: 0;
+  border-radius: 8px;
+  padding: 15px 18px;
+  background: #111827;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.resume-analyze-btn:hover {
+  transform: translateY(-2px);
+}
+
+.resume-analyze-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+  transform: none;
+}
+
+.resume-message,
+.resume-empty,
+.resume-result {
+  margin-top: 20px;
+  border-radius: 8px;
+}
+
+.resume-message {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  font-weight: 700;
+}
+
+.resume-message.error {
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.resume-empty {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px;
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.resume-empty svg {
+  color: #2563eb;
+  font-size: 24px;
+}
+
+.resume-empty p {
+  margin: 0;
+}
+
+.resume-result {
+  background: #0f172a;
+  color: #ffffff;
+  padding: 24px;
+}
+
+.resume-result-header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.resume-result-header svg {
+  color: #34d399;
+  font-size: 28px;
+}
+
+.resume-result h2,
+.resume-result p {
+  margin: 0;
+}
+
+.resume-result p {
+  color: #cbd5e1;
+  margin-top: 4px;
+}
+
+.resume-result pre {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.8;
+  color: #e5e7eb;
+  font-family: inherit;
+}
+
+@media (max-width: 860px) {
+  .resume-page {
+    padding: 20px;
+  }
+
+  .resume-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .resume-hero {
+    position: static;
+  }
+
+  .resume-hero h1 {
+    font-size: 34px;
+  }
+}
+
+@media (max-width: 480px) {
+  .resume-page {
+    padding: 14px;
+  }
+
+  .resume-hero,
+  .resume-workspace {
+    padding: 18px;
+  }
+
+  .resume-hero h1 {
+    font-size: 30px;
+  }
+
+  .resume-stats {
+    grid-template-columns: 1fr;
+    margin-top: 22px;
+  }
+
+  .resume-upload {
+    min-height: 190px;
+  }
+
+  .resume-result {
+    padding: 18px;
+  }
+}

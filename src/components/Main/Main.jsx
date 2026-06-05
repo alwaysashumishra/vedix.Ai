@@ -1,31 +1,24 @@
-import React, {
-  useContext,
-  useState,
-} from "react";
-
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { NavLink } from "react-router-dom";
+import { FiCopy, FiImage, FiMic, FiSend, FiVolume2, FiVolumeX, FiX } from "react-icons/fi";
+import { MdDarkMode, MdLightMode, MdOutlineExplore } from "react-icons/md";
+import { RiArticleLine } from "react-icons/ri";
+import { FiFileText } from "react-icons/fi";
+import { assets } from "../../assets/assets";
+import { Context } from "../../context/context";
+import { ThemeContext } from "../../context/ThemeContext";
 import "./Main.css";
 
-import { assets } from "../../assets/assets";
-
-import { Context } from "../../context/context";
-
-import { ThemeContext } from "../../context/ThemeContext";
-
-import { MdOutlineExplore } from "react-icons/md";
-
-import { MdDarkMode } from "react-icons/md";
-
-import { MdLightMode } from "react-icons/md";
-
-import { NavLink } from "react-router-dom";
+const stripHtml = (html) =>
+  html
+    .replace(/<br\/>/g, "\n")
+    .replace(/<[^>]*>?/gm, "");
 
 const Main = ({
-  showLogin,
   setShowLogin,
   profile,
   setProfile,
 }) => {
-
   const {
     onSent,
     recentPrompt,
@@ -36,336 +29,333 @@ const Main = ({
     input,
   } = useContext(Context);
 
+  const { theme, toggleTheme } = useContext(ThemeContext);
 
-  // THEME CONTEXT
-  const {
-    theme,
-    toggleTheme,
-  } = useContext(ThemeContext);
+  const [profilePic] = useState(assets.user_icon);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [listening, setListening] = useState(false);
+  const [voiceError, setVoiceError] = useState("");
+  const [speaking, setSpeaking] = useState(false);
+  const recognitionRef = useRef(null);
 
+  useEffect(() => {
+    return () => {
+      recognitionRef.current?.stop();
+      window.speechSynthesis?.cancel();
+    };
+  }, []);
 
-  const [profilePic] = useState(
-    assets.user_icon
-  );
-
- const [selectedImage, setSelectedImage] = useState(null);
-  // LOGOUT
   const handleLogout = () => {
-
     localStorage.removeItem("user");
-
     localStorage.removeItem("token");
-
     setProfile(null);
   };
-  const handleImageUpload = (e) => { const file = e.target.files[0]; if(file){ setSelectedImage(file); } };
 
+  const handleImageUpload = (event) => {
+    const file = event.target.files?.[0];
+
+    if (file) {
+      setSelectedImage(file);
+    }
+  };
+
+  const sendMessage = async () => {
+    await onSent(input, selectedImage);
+    setSelectedImage(null);
+  };
+
+  const toggleListening = () => {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      setVoiceError("Voice input is not supported in this browser.");
+      return;
+    }
+
+    if (listening) {
+      recognitionRef.current?.stop();
+      setListening(false);
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = "en-IN";
+
+    recognition.onstart = () => {
+      setVoiceError("");
+      setListening(true);
+    };
+
+    recognition.onresult = (event) => {
+      const transcript = Array.from(event.results)
+        .map((result) => result[0]?.transcript || "")
+        .join("");
+
+      setInput(transcript);
+    };
+
+    recognition.onerror = () => {
+      setVoiceError("Voice input stopped. Please try again.");
+      setListening(false);
+    };
+
+    recognition.onend = () => {
+      setListening(false);
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
+  };
+
+  const toggleSpeech = () => {
+    if (!window.speechSynthesis) {
+      setVoiceError("Voice playback is not supported in this browser.");
+      return;
+    }
+
+    if (speaking) {
+      window.speechSynthesis.cancel();
+      setSpeaking(false);
+      return;
+    }
+
+    const text = stripHtml(resultData);
+
+    if (!text.trim()) {
+      return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-IN";
+    utterance.rate = 1;
+    utterance.onend = () => setSpeaking(false);
+    utterance.onerror = () => setSpeaking(false);
+    setSpeaking(true);
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utterance);
+  };
 
   return (
-
     <div className="main">
-
-      {/* NAVBAR */}
       <div className="nav">
-
-        <p className="vedix-logo">
-          Vedix.Ai
-        </p>
-
+        <p className="vedix-logo">Vedix.Ai</p>
 
         <div className="nav-right-box">
-
-          {/* THEME BUTTON */}
           <button
             onClick={toggleTheme}
             className="theme-toggle-btn"
+            title="Toggle theme"
           >
-            {
-              theme === "light"
-                ? <MdDarkMode />
-                : <MdLightMode />
-            }
+            {theme === "light" ? <MdDarkMode /> : <MdLightMode />}
           </button>
 
-
-          {/* EXPLORE */}
-          <NavLink
-            className="Nav-explore-btn"
-            to="/explore"
-          >
+          <NavLink className="Nav-explore-btn" to="/explore">
             <MdOutlineExplore />
             Explore
           </NavLink>
 
+          <NavLink to="/resume-analyzer" className="ai-nav-btn">
+            <FiFileText />
+            Resume AI
+          </NavLink>
 
-          {/* LOGIN */}
+          <NavLink to="/paper-analyzer" className="ai-nav-btn">
+            <RiArticleLine />
+            Research AI
+          </NavLink>
+
           {!profile ? (
-
             <button
-              onClick={() =>
-                setShowLogin(true)
-              }
+              onClick={() => setShowLogin(true)}
               className="Nav-login-btn"
             >
               Sign up/Login
             </button>
-
           ) : (
-
             <div className="profile-wrapper">
-
-              {/* PROFILE */}
               <div className="profile-box">
-
-                <span className="username">
-                  {profile.username}
-                </span>
-
+                <span className="username">{profile.username}</span>
                 <img
                   src={profile.profilePic}
                   alt="profile"
                   className="profile-picture"
                 />
-
               </div>
 
-
-              {/* LOGOUT */}
-              <button
-                onClick={handleLogout}
-                className="logout-btn"
-              >
+              <button onClick={handleLogout} className="logout-btn">
                 Logout
               </button>
-
             </div>
           )}
-
         </div>
       </div>
 
-
-
-      {/* MAIN CONTAINER */}
       <div className="main-container">
-
         {!showResult ? (
-
           <>
             <div className="greet">
-
               <p>
-                <span>
-                  Hello, Human.
-                </span>
+                <span>Hello, Human.</span>
               </p>
-
-              <p className="greet-greets">
-                How can I help you today?
-              </p>
-
+              <p className="greet-greets">How can I help you today?</p>
             </div>
 
-
-            {/* CARDS */}
             <div className="cards">
-
               <div className="card">
-                <p>
-                  Suggest beautiful places
-                  to see on an upcoming
-                  road trip
-                </p>
-
-                <img
-                  src={assets.compass_icon}
-                  alt=""
-                />
+                <p>Analyze resume professionally using AI</p>
+                <img src={assets.message_icon} alt="" />
               </div>
 
-
               <div className="card">
-                <p>
-                  Briefly summarize this
-                  concept: urban planning
-                </p>
-
-                <img
-                  src={assets.bulb_icon}
-                  alt=""
-                />
+                <p>Analyze research papers and summarize concepts</p>
+                <img src={assets.bulb_icon} alt="" />
               </div>
 
-
               <div className="card">
-                <p>
-                  Brainstorm team bonding
-                  activities for our work
-                  retreat
-                </p>
-
-                <img
-                  src={assets.message_icon}
-                  alt=""
-                />
+                <p>Upload image and ask AI anything visually</p>
+                <img src={assets.gallery_icon} alt="" />
               </div>
 
-
               <div className="card">
-                <p>
-                  Improve the readability
-                  of the following code
-                </p>
-
-                <img
-                  src={assets.code_icon}
-                  alt=""
-                />
+                <p>Improve readability of code instantly</p>
+                <img src={assets.code_icon} alt="" />
               </div>
-
             </div>
-
           </>
-
         ) : (
-
           <div className="result">
-
             <div className="result-title">
-
               <img
                 src={profile?.profilePic || profilePic}
                 alt="user"
                 className="profile-pic-small"
               />
-
               <p>{recentPrompt}</p>
-
             </div>
-
 
             <div className="result-data">
+              <img src={assets.gemini_icon} alt="" className="ai-logo" />
 
-              <img
-                src={assets.gemini_icon}
-                alt=""
-              />
+              <div className="response-box">
+                {loading ? (
+                  <div className="loader">
+                    <hr />
+                    <hr />
+                    <hr />
+                  </div>
+                ) : (
+                  <>
+                    <div
+                      className="formatted-response"
+                      dangerouslySetInnerHTML={{
+                        __html: resultData,
+                      }}
+                    ></div>
 
-              {loading ? (
+                    <div className="response-actions">
+                      <button
+                        className="copy-btn"
+                        onClick={() => {
+                          navigator.clipboard.writeText(stripHtml(resultData));
+                        }}
+                        title="Copy response"
+                      >
+                        <FiCopy />
+                        Copy
+                      </button>
 
-                <div className="loader">
-                  <hr />
-                  <hr />
-                  <hr />
-                </div>
-
-              ) : (
-
-                <p
-                  dangerouslySetInnerHTML={{
-                    __html: resultData,
-                  }}
-                ></p>
-
-              )}
-
+                      <button
+                        className={`voice-action-btn ${speaking ? "active" : ""}`}
+                        onClick={toggleSpeech}
+                        title={speaking ? "Stop speaking" : "Read response aloud"}
+                      >
+                        {speaking ? <FiVolumeX /> : <FiVolume2 />}
+                        {speaking ? "Stop" : "Speak"}
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
-
           </div>
         )}
 
-
-
-        {/* BOTTOM INPUT */}
         <div className="main-bottom">
+          {voiceError && <p className="voice-error">{voiceError}</p>}
 
-          <div className="search-box">
+          <div className={`search-box ${listening ? "is-listening" : ""}`}>
+            {selectedImage && (
+              <div className="preview-container">
+                <img
+                  src={URL.createObjectURL(selectedImage)}
+                  alt="preview"
+                  className="preview-image"
+                />
+
+                <button
+                  className="remove-preview"
+                  onClick={() => setSelectedImage(null)}
+                  title="Remove image"
+                >
+                  <FiX />
+                </button>
+              </div>
+            )}
 
             <input
-              onChange={(e) =>
-                setInput(e.target.value)
-              }
+              onChange={(event) => setInput(event.target.value)}
               value={input}
               type="text"
-              placeholder="Enter a prompt here"
+              placeholder={listening ? "Listening..." : "Enter a prompt here"}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  sendMessage();
+                }
+              }}
             />
 
+            <div className="chat-actions">
+              <label htmlFor="imageUpload" className="chat-icon-btn" title="Upload image">
+                <FiImage />
+              </label>
 
-            <div>
-    {
-  selectedImage && (
-
-    <div className="preview-container">
-
-      <img
-
-        src={URL.createObjectURL(
-          selectedImage
-        )}
-
-        alt="preview"
-
-        className="preview-image"
-      />
-
-
-      <button
-
-        className="remove-preview"
-
-        onClick={() =>
-          setSelectedImage(null)
-        }
-      >
-        ✕
-      </button>
-
-    </div>
-  )
-}
-
-
-              <label htmlFor="imageUpload"> <img src={assets.gallery_icon} alt="" /> </label>
-              <img
-                src={assets.mic_icon}
-                alt=""
+              <input
+                type="file"
+                id="imageUpload"
+                hidden
+                accept="image/*"
+                onChange={handleImageUpload}
               />
-              <input type="file" id="imageUpload" hidden accept="image/*" onChange={handleImageUpload} />
-<img
 
-  onClick={async () => {
+              <button
+                type="button"
+                className={`chat-icon-btn ${listening ? "active" : ""}`}
+                onClick={toggleListening}
+                title={listening ? "Stop listening" : "Start voice input"}
+              >
+                <FiMic />
+              </button>
 
-    await onSent(
-      input,
-      selectedImage
-    );
-
-    setSelectedImage(null);
-  }}
-
-  src={assets.send_icon}
-
-  alt=""
-/>
-
+              <button
+                type="button"
+                className="chat-icon-btn send"
+                onClick={sendMessage}
+                title="Send prompt"
+              >
+                <FiSend />
+              </button>
             </div>
-
           </div>
 
-
           <p className="bottom-info">
-
-            Vedix.AI may display
-            inaccurate info, including
-            about people, so double-check
-            its response.
-
+            Vedix.AI may display inaccurate info, including about people, so
+            double-check its response.
           </p>
-
         </div>
-
       </div>
-
     </div>
   );
 };

@@ -1,14 +1,15 @@
 .login-popup{
-    position: absolute;
-    z-index: 1;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
     width: 100%;
-    min-height: 110%;
+    min-height: 100vh;
     background: #00000090;
     display: grid;
 }
 .login-popup-container{
     place-self: center;
-    width: max(23vw,230px);
+    width: min(420px, calc(100vw - 32px));
     color: #808080;
     background: white;
     display: flex;
@@ -78,6 +79,7 @@
 }
 @media (max-width: 900px) {
    .login-popup-container{
-     width: 90%;
+     width: min(420px, calc(100vw - 32px));
+     padding: 22px;
 }
 }

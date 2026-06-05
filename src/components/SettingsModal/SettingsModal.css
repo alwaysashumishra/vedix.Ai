@@ -15,7 +15,7 @@
 }
 
 .settings-box{
-    width: 420px;
+    width: min(420px, calc(100vw - 32px));
 
     background: white;
 
@@ -99,4 +99,21 @@ body.dark .setting-item{
 
 body.dark .about-box{
     background: #1e293b;
+}
+
+@media (max-width: 480px){
+    .settings-modal{
+        align-items: flex-end;
+    }
+
+    .settings-box{
+        border-radius: 18px 18px 0 0;
+        padding: 24px 18px;
+    }
+
+    .setting-item{
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+    }
 }

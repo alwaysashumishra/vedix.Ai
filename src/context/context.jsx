@@ -1,38 +1,69 @@
+
 import {
   createContext,
-  useState
+  useState,
 }
 from "react";
 
 import runChat
 from "../config/gemini";
 
+
+
 export const Context =
   createContext();
 
 
 
-const ContextProvider = (props) => {
 
-  const [input, setInput] =
+const ContextProvider =
+(props) => {
+
+  /* INPUT */
+  const [input,
+  setInput] =
     useState("");
 
+
+
+  /* RECENT PROMPT */
   const [recentPrompt,
   setRecentPrompt] =
     useState("");
 
+
+
+  /* RECENT CHATS */
   const [prevPrompts,
   setprevPrompts] =
-    useState([]);
+    useState(
 
+      JSON.parse(
+
+        localStorage.getItem(
+          "prevPrompts"
+        )
+
+      ) || []
+    );
+
+
+
+  /* RESULT */
   const [showResult,
   setShowResult] =
     useState(false);
 
+
+
+  /* LOADING */
   const [loading,
   setLoading] =
     useState(false);
 
+
+
+  /* RESULT DATA */
   const [resultData,
   setResultData] =
     useState("");
@@ -40,44 +71,65 @@ const ContextProvider = (props) => {
 
 
 
-  // TYPING EFFECT
+
+
+  /* TYPING EFFECT */
   const delayPara = (
+
     index,
+
     nextWord
+
   ) => {
 
     setTimeout(() => {
 
       setResultData(
+
         (prev) =>
+
         prev + nextWord
       );
 
-    }, 20 * index);
+    }, 12 * index);
+
   };
 
 
 
 
-  // SEND PROMPT
+
+
+
+
+  /* SEND PROMPT */
   const onSent = async (
 
     prompt,
+
     image
 
   ) => {
 
     const finalPrompt =
+
       prompt || input;
 
 
 
-    if (
-      !finalPrompt?.trim() &&
+
+    /* EMPTY CHECK */
+    if(
+
+      !finalPrompt?.trim()
+
+      &&
+
       !image
-    ) {
+    ){
 
       setResultData(
+
         "⚠ Please enter a prompt"
       );
 
@@ -86,7 +138,10 @@ const ContextProvider = (props) => {
 
 
 
-    try {
+
+
+
+    try{
 
       setLoading(true);
 
@@ -96,35 +151,62 @@ const ContextProvider = (props) => {
 
 
 
+      /* SET PROMPT */
       setRecentPrompt(
         finalPrompt
       );
 
 
 
-      setprevPrompts((prev) => [
 
-        ...prev,
+
+      /* SAVE CHATS */
+      const updatedPrompts = [
+
+        ...prevPrompts,
+
+        finalPrompt
+      ];
+
+
+
+      setprevPrompts(
+        updatedPrompts
+      );
+
+
+
+      localStorage.setItem(
+
+        "prevPrompts",
+
+        JSON.stringify(
+          updatedPrompts
+        )
+      );
+
+
+
+
+
+
+      /* GEMINI */
+      const response =
+      await runChat(
 
         finalPrompt,
-      ]);
+
+        image
+      );
 
 
-
-
-      // GEMINI RESPONSE
-      const response =
-        await runChat(
-
-          finalPrompt,
-          image
-        );
 
 
 
       if(!response){
 
         setResultData(
+
           "⚠ No response from Gemini"
         );
 
@@ -134,82 +216,141 @@ const ContextProvider = (props) => {
 
 
 
-      // BOLD FORMAT
-      let responseArray =
-        response.split("**");
-
-      let newResponse = "";
 
 
+      /* =========================
+         MARKDOWN FORMAT
+      ========================= */
 
-      for(
-        let i = 0;
-        i < responseArray.length;
-        i++
-      ){
-
-        if(i % 2 === 0){
-
-          newResponse +=
-            responseArray[i];
-
-        }
-
-        else{
-
-          newResponse +=
-
-            `<b>${
-              responseArray[i]
-            }</b>`;
-        }
-      }
+      let formatted =
+        response;
 
 
 
+      /* BOLD */
+      formatted = formatted.replace(
 
-      // LINE BREAKS
-      let formattedResponse =
+        /\*\*(.*?)\*\*/g,
 
-        newResponse.replace(
-          /\n/g,
-          "<br/>"
-        );
-
+        "<b>$1</b>"
+      );
 
 
 
-      // TYPING EFFECT
+      /* CODE BLOCK */
+      formatted = formatted.replace(
+
+        /```([\s\S]*?)```/g,
+
+        "<pre><code>$1</code></pre>"
+      );
+
+
+
+      /* INLINE CODE */
+      formatted = formatted.replace(
+
+        /`(.*?)`/g,
+
+        "<code>$1</code>"
+      );
+
+
+
+      /* HEADINGS */
+      formatted = formatted.replace(
+
+        /^### (.*$)/gim,
+
+        "<h3>$1</h3>"
+      );
+
+
+
+      formatted = formatted.replace(
+
+        /^## (.*$)/gim,
+
+        "<h2>$1</h2>"
+      );
+
+
+
+      formatted = formatted.replace(
+
+        /^# (.*$)/gim,
+
+        "<h1>$1</h1>"
+      );
+
+
+
+      /* LINE BREAK */
+      formatted = formatted.replace(
+
+        /\n/g,
+
+        "<br/>"
+      );
+
+
+
+
+
+
+
+      /* TYPING */
       let words =
-        formattedResponse.split(" ");
+      formatted.split(" ");
+
 
 
 
       for(
+
         let i = 0;
+
         i < words.length;
+
         i++
       ){
 
         delayPara(
+
           i,
+
           words[i] + " "
         );
       }
 
     }
 
+
+
+
+
+
     catch(error){
 
       console.error(
+
         "Context Error 👉",
+
         error
       );
 
+
+
       setResultData(
+
         "⚠ Gemini API Error"
       );
     }
+
+
+
+
+
 
     finally{
 
@@ -223,9 +364,15 @@ const ContextProvider = (props) => {
 
 
 
+
+
+
+
+  /* CONTEXT VALUE */
   const contextValue = {
 
     prevPrompts,
+
     setprevPrompts,
 
     onSent,
@@ -249,6 +396,10 @@ const ContextProvider = (props) => {
 
 
 
+
+
+
+
   return (
 
     <Context.Provider
@@ -261,5 +412,7 @@ const ContextProvider = (props) => {
   );
 };
 
-export default ContextProvider;
 
+
+
+export default ContextProvider;
