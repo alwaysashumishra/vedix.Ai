@@ -1934,3 +1934,47 @@ body.dark .main {
         font-size: 18px !important;
     }
 }
+
+/* ================= TABLET HEADER MATCH MOBILE ================= */
+@media (max-width: 900px) {
+    .Nav-explore-btn,
+    .ai-nav-btn {
+        display: none !important;
+    }
+
+    .main .nav {
+        padding-left: 58px;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .nav-right-box {
+        max-width: calc(100vw - 210px);
+        flex-wrap: nowrap;
+        gap: 8px;
+    }
+}
+
+@media (min-width: 561px) and (max-width: 900px) {
+    .sidebar .menu {
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        right: auto;
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+        margin: 0;
+        padding: 9px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.94);
+        box-shadow: 0 8px 22px rgba(15, 23, 42, 0.16);
+        z-index: 1200;
+    }
+
+    .sidebar.active .menu {
+        left: 218px;
+        right: auto;
+        top: 18px;
+    }
+}
