@@ -1,123 +1,87 @@
+import React, { useEffect } from "react";
+import { Routes, Route } from "react-router-dom";
+import Home from "./Pages/Home/Home";
+import Explore from "./Pages/Explore/Explore";
+import ResumeAnalyzer from "./Pages/ResumeAnalyzer/ResumeAnalyzer";
+import PaperAnalyzer from "./Pages/PaperAnalyzer/PaperAnalyzer";
+import Plans from "./Pages/Plans/Plans";
 
-import React from "react";
+const AccessGate = ({ setShowLogin }) => (
+  <div className="access-gate">
+    <div className="access-gate-card">
+      <h1>Sign in to continue</h1>
+      <p>Log in or create your account to use this section.</p>
+      <button type="button" onClick={() => setShowLogin(true)}>
+        Open login
+      </button>
+    </div>
+  </div>
+);
 
-import {
-  Routes,
-  Route
-}
-from "react-router-dom";
+const ProtectedRoute = ({ profile, setShowLogin, children }) => {
+  useEffect(() => {
+    if (!profile) {
+      setShowLogin(true);
+    }
+  }, [profile, setShowLogin]);
 
+  if (!profile) {
+    return <AccessGate setShowLogin={setShowLogin} />;
+  }
 
+  return children;
+};
 
-/* PAGES */
-import Home
-from "./Pages/Home/Home";
-
-import Explore
-from "./Pages/Explore/Explore";
-
-import ResumeAnalyzer
-from "./Pages/ResumeAnalyzer/ResumeAnalyzer";
-
-import PaperAnalyzer
-from "./Pages/PaperAnalyzer/PaperAnalyzer";
-
-
-
-const Router = ({
-
-  showLogin,
-
-  setShowLogin,
-
-  profile,
-
-  setProfile,
-
-}) => {
-
+const Router = ({ showLogin, setShowLogin, profile, setProfile }) => {
   return (
-
     <Routes>
-
-
-
-      {/* HOME */}
       <Route
-
         path="/"
-
         element={
-
           <Home
-
-            showLogin={
-              showLogin
-            }
-
-            setShowLogin={
-              setShowLogin
-            }
-
+            showLogin={showLogin}
+            setShowLogin={setShowLogin}
             profile={profile}
-
-            setProfile={
-              setProfile
-            }
+            setProfile={setProfile}
           />
         }
       />
 
-
-
-
-
-
-      {/* EXPLORE */}
       <Route
+        path="/plans"
+        element={<Plans profile={profile} setShowLogin={setShowLogin} />}
+      />
 
+      <Route
         path="/explore"
-
         element={
-          <Explore />
+          <ProtectedRoute profile={profile} setShowLogin={setShowLogin}>
+            <Explore
+              profile={profile}
+              setProfile={setProfile}
+              setShowLogin={setShowLogin}
+            />
+          </ProtectedRoute>
         }
       />
 
-
-
-
-
-
-
-      {/* RESUME ANALYZER */}
       <Route
-
         path="/resume-analyzer"
-
         element={
-          <ResumeAnalyzer />
+          <ProtectedRoute profile={profile} setShowLogin={setShowLogin}>
+            <ResumeAnalyzer />
+          </ProtectedRoute>
         }
       />
 
-
-
-
-
-
-
-
-      {/* RESEARCH PAPER */}
       <Route
-
         path="/paper-analyzer"
-
         element={
-          <PaperAnalyzer />
+          <ProtectedRoute profile={profile} setShowLogin={setShowLogin}>
+            <PaperAnalyzer />
+          </ProtectedRoute>
         }
       />
-
-
-
     </Routes>
   );
 };

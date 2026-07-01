@@ -4,12 +4,10 @@
   "type": "module",
   "main": "server.js",
   "scripts": {
-    
-   "start": "node server.js",
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon server.js"
   },
-  
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -20,6 +18,8 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "fast-xml-parser": "^5.9.3",
+    "google-auth-library": "^10.9.0",
     "groq-sdk": "^1.2.0",
     "jsonwebtoken": "^9.0.3",
     "mammoth": "^1.12.0",

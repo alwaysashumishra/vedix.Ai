@@ -15,17 +15,17 @@ const Home = ({
 }) => {
 
   return (
-    <>
+    <div className="home-layout">
 
       <Sidebar />
 
-<Main
-  showLogin={showLogin}
-  setShowLogin={setShowLogin}
-  profile={profile}
-  setProfile={setProfile}
-/>
-    </>
+      <Main
+        showLogin={showLogin}
+        setShowLogin={setShowLogin}
+        profile={profile}
+        setProfile={setProfile}
+      />
+    </div>
   );
 };
 

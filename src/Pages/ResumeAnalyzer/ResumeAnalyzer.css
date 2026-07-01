@@ -1,37 +1,57 @@
 .resume-page {
   min-height: 100vh;
   width: 100%;
-  padding: 36px;
-  background: #f6f8fb;
+  padding: 32px;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(34, 197, 94, 0.12), transparent 28%),
+    radial-gradient(circle at 82% 8%, rgba(37, 99, 235, 0.12), transparent 30%),
+    #f6f8fb;
   color: #172033;
 }
 
-.resume-shell {
-  max-width: 1180px;
+.resume-stage {
+  width: min(1120px, 100%);
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: minmax(280px, 0.9fr) minmax(320px, 1.35fr);
-  gap: 28px;
-  align-items: start;
 }
 
-.resume-hero,
-.resume-workspace {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+.resume-topbar {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 18px;
 }
 
-.resume-hero {
-  padding: 34px;
-  position: sticky;
-  top: 28px;
+.resume-back-btn,
+.resume-reset-btn {
+  border: 1px solid #dbe3ef;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  color: #334155;
+  padding: 10px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+}
+
+.resume-reset-btn {
+  background: #111827;
+  border-color: #111827;
+  color: #ffffff;
+}
+
+.resume-premium-hero {
+  margin-bottom: 24px;
 }
 
 .tool-kicker {
   display: inline-flex;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
   color: #047857;
   font-size: 13px;
   font-weight: 800;
@@ -39,41 +59,39 @@
   text-transform: uppercase;
 }
 
-.resume-hero h1 {
-  margin: 0 0 16px;
-  font-size: 44px;
+.resume-premium-hero h1 {
+  margin: 0 0 12px;
+  color: #111827;
+  font-size: 46px;
   line-height: 1.04;
   letter-spacing: 0;
-  color: #111827;
 }
 
-.resume-hero p {
+.resume-premium-hero p {
+  max-width: 720px;
   margin: 0;
   color: #536179;
   font-size: 16px;
   line-height: 1.75;
 }
 
-.resume-stats {
-  display: grid;
-  gap: 10px;
-  margin-top: 30px;
-}
-
-.resume-stats span {
-  padding: 12px 14px;
+.resume-upload-card,
+.resume-loading-panel,
+.resume-report-card,
+.career-links-panel,
+.resume-next-steps {
   border-radius: 8px;
-  background: #ecfdf5;
-  color: #065f46;
-  font-weight: 700;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 22px 55px rgba(15, 23, 42, 0.08);
 }
 
-.resume-workspace {
+.resume-upload-card {
   padding: 28px;
 }
 
 .resume-upload {
-  min-height: 250px;
+  min-height: 300px;
   border: 2px dashed #94a3b8;
   border-radius: 8px;
   background: #f8fafc;
@@ -84,17 +102,18 @@
   gap: 10px;
   text-align: center;
   cursor: pointer;
-  transition: border-color 0.2s ease, background 0.2s ease;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
 }
 
 .resume-upload:hover,
 .resume-upload.has-file {
   border-color: #047857;
   background: #ecfdf5;
+  transform: translateY(-2px);
 }
 
 .resume-upload-icon {
-  font-size: 58px;
+  font-size: 62px;
   color: #2563eb;
 }
 
@@ -102,12 +121,14 @@
   max-width: 100%;
   overflow-wrap: anywhere;
   color: #111827;
-  font-size: 18px;
+  font-size: 22px;
+  line-height: 1.3;
 }
 
 .resume-upload span {
   color: #64748b;
   font-size: 14px;
+  font-weight: 600;
 }
 
 .resume-analyze-btn {
@@ -115,7 +136,7 @@
   margin-top: 20px;
   border: 0;
   border-radius: 8px;
-  padding: 15px 18px;
+  padding: 16px 18px;
   background: #111827;
   color: #ffffff;
   font-size: 16px;
@@ -134,18 +155,13 @@
   transform: none;
 }
 
-.resume-message,
-.resume-empty,
-.resume-result {
-  margin-top: 20px;
-  border-radius: 8px;
-}
-
 .resume-message {
   display: flex;
   align-items: center;
   gap: 10px;
+  margin-top: 18px;
   padding: 14px;
+  border-radius: 8px;
   font-weight: 700;
 }
 
@@ -154,59 +170,259 @@
   color: #991b1b;
 }
 
-.resume-empty {
+.resume-loading-panel {
+  padding: 42px 28px;
+  text-align: center;
+}
+
+.resume-loading-icon {
+  width: 66px;
+  height: 66px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 30px;
+}
+
+.resume-loading-panel h2 {
+  margin: 0 0 10px;
+  color: #111827;
+  font-size: 28px;
+}
+
+.resume-loading-panel p {
+  margin: 0 auto;
+  max-width: 560px;
+  color: #64748b;
+  line-height: 1.7;
+}
+
+.resume-progress-lines {
+  width: min(520px, 100%);
+  margin: 26px auto 0;
+  display: grid;
+  gap: 10px;
+}
+
+.resume-progress-lines span {
+  height: 12px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #dbeafe, #ffffff, #dbeafe);
+  background-size: 220% 100%;
+  animation: resumePulse 1.2s linear infinite;
+}
+
+.resume-progress-lines span:nth-child(2) {
+  width: 82%;
+}
+
+.resume-progress-lines span:nth-child(3) {
+  width: 64%;
+}
+
+@keyframes resumePulse {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 220% 0;
+  }
+}
+
+.resume-report-layout {
+  display: grid;
+  gap: 22px;
+}
+
+.resume-report-card {
+  padding: 26px;
+}
+
+.resume-report-header,
+.career-links-header {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.report-icon,
+.career-role-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 24px;
+}
+
+.report-icon.success {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.career-role-icon {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.resume-report-header span,
+.career-links-header span {
+  display: block;
+  margin-bottom: 4px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.resume-report-header h2,
+.career-links-header h2 {
+  margin: 0;
+  color: #111827;
+  font-size: 25px;
+  line-height: 1.2;
+}
+
+.analysis-section-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.analysis-section-card {
   padding: 18px;
+  border-radius: 8px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.analysis-section-card h3 {
+  margin: 0 0 12px;
+  color: #111827;
+  font-size: 18px;
+  line-height: 1.3;
+}
+
+.analysis-section-card ul {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 8px;
+}
+
+.analysis-section-card li {
+  color: #475569;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+
+.premium-career-panel {
+  padding: 24px;
+}
+
+.role-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.role-chip-row span {
+  padding: 8px 11px;
+  border-radius: 999px;
+  background: #ecfdf5;
+  color: #047857;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.career-platform-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
+  gap: 12px;
+}
+
+.career-platform-card {
+  min-height: 84px;
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #172033;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.career-platform-card:hover {
+  transform: translateY(-3px);
+  border-color: #93c5fd;
+  background: #eff6ff;
+}
+
+.career-platform-card span {
+  display: block;
+  margin-bottom: 6px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.career-platform-card strong {
+  display: block;
+  color: #111827;
+  font-size: 17px;
+}
+
+.career-platform-card svg {
+  color: #2563eb;
+  flex-shrink: 0;
+}
+
+.career-keywords,
+.resume-next-steps {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 8px;
   background: #f1f5f9;
   color: #475569;
 }
 
-.resume-empty svg {
+.career-keywords {
+  margin-top: 16px;
+}
+
+.career-keywords svg,
+.resume-next-steps svg {
+  margin-top: 3px;
+  flex-shrink: 0;
   color: #2563eb;
-  font-size: 24px;
 }
 
-.resume-empty p {
+.career-keywords p,
+.resume-next-steps p {
   margin: 0;
-}
-
-.resume-result {
-  background: #0f172a;
-  color: #ffffff;
-  padding: 24px;
-}
-
-.resume-result-header {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  margin-bottom: 18px;
-}
-
-.resume-result-header svg {
-  color: #34d399;
-  font-size: 28px;
-}
-
-.resume-result h2,
-.resume-result p {
-  margin: 0;
-}
-
-.resume-result p {
-  color: #cbd5e1;
-  margin-top: 4px;
-}
-
-.resume-result pre {
-  margin: 0;
-  white-space: pre-wrap;
+  line-height: 1.6;
   overflow-wrap: anywhere;
-  line-height: 1.8;
-  color: #e5e7eb;
-  font-family: inherit;
+}
+
+.resume-next-steps h3 {
+  margin: 0 0 6px;
+  color: #111827;
+  font-size: 18px;
 }
 
 @media (max-width: 860px) {
@@ -214,43 +430,52 @@
     padding: 20px;
   }
 
-  .resume-shell {
+  .resume-premium-hero h1 {
+    font-size: 36px;
+  }
+
+  .analysis-section-grid {
     grid-template-columns: 1fr;
-  }
-
-  .resume-hero {
-    position: static;
-  }
-
-  .resume-hero h1 {
-    font-size: 34px;
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 520px) {
   .resume-page {
     padding: 14px;
   }
 
-  .resume-hero,
-  .resume-workspace {
-    padding: 18px;
+  .resume-topbar {
+    align-items: stretch;
+    flex-direction: column;
   }
 
-  .resume-hero h1 {
+  .resume-back-btn,
+  .resume-reset-btn {
+    justify-content: center;
+  }
+
+  .resume-premium-hero h1 {
     font-size: 30px;
   }
 
-  .resume-stats {
-    grid-template-columns: 1fr;
-    margin-top: 22px;
+  .resume-upload-card,
+  .resume-report-card,
+  .premium-career-panel,
+  .resume-loading-panel {
+    padding: 18px;
   }
 
   .resume-upload {
-    min-height: 190px;
+    min-height: 220px;
   }
 
-  .resume-result {
-    padding: 18px;
+  .resume-report-header h2,
+  .career-links-header h2 {
+    font-size: 21px;
   }
+}
+
+/* Back home link polish */
+.resume-back-btn {
+  text-decoration: none;
 }

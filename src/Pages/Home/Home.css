@@ -1,0 +1,13 @@
+.home-layout {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: stretch;
+  background: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .home-layout {
+    display: block;
+  }
+}

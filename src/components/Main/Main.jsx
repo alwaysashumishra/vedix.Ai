@@ -1,24 +1,26 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { NavLink } from "react-router-dom";
-import { FiCopy, FiImage, FiMic, FiSend, FiVolume2, FiVolumeX, FiX } from "react-icons/fi";
+import {
+  FiCopy,
+  FiImage,
+  FiMic,
+  FiSend,
+  FiVolume2,
+  FiVolumeX,
+  FiX,
+  FiFileText,
+} from "react-icons/fi";
 import { MdDarkMode, MdLightMode, MdOutlineExplore } from "react-icons/md";
 import { RiArticleLine } from "react-icons/ri";
-import { FiFileText } from "react-icons/fi";
 import { assets } from "../../assets/assets";
 import { Context } from "../../context/context";
 import { ThemeContext } from "../../context/ThemeContext";
 import "./Main.css";
 
 const stripHtml = (html) =>
-  html
-    .replace(/<br\/>/g, "\n")
-    .replace(/<[^>]*>?/gm, "");
+  html.replace(/<br\/>/g, "\n").replace(/<[^>]*>?/gm, "");
 
-const Main = ({
-  setShowLogin,
-  profile,
-  setProfile,
-}) => {
+const Main = ({ setShowLogin, profile, setProfile }) => {
   const {
     onSent,
     recentPrompt,
@@ -49,6 +51,7 @@ const Main = ({
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     setProfile(null);
+    setShowLogin(true);
   };
 
   const handleImageUpload = (event) => {
@@ -60,6 +63,11 @@ const Main = ({
   };
 
   const sendMessage = async () => {
+    if (!profile) {
+      setShowLogin(true);
+      return;
+    }
+
     await onSent(input, selectedImage);
     setSelectedImage(null);
   };
@@ -139,18 +147,12 @@ const Main = ({
   };
 
   return (
-    
     <div className="main">
-      
       <div className="nav">
         <p className="vedix-logo">Vedix.Ai</p>
 
         <div className="nav-right-box">
-          <button
-            onClick={toggleTheme}
-            className="theme-toggle-btn"
-            title="Toggle theme"
-          >
+          <button onClick={toggleTheme} className="theme-toggle-btn" title="Toggle theme">
             {theme === "light" ? <MdDarkMode /> : <MdLightMode />}
           </button>
 
@@ -167,13 +169,8 @@ const Main = ({
           <NavLink to="/paper-analyzer" className="ai-nav-btn">
             <RiArticleLine />
             Research AI
-          </NavLink>
-
-          {!profile ? (
-            <button
-              onClick={() => setShowLogin(true)}
-              className="Nav-login-btn"
-            >
+          </NavLink>{!profile ? (
+            <button onClick={() => setShowLogin(true)} className="Nav-login-btn">
               Sign up/Login
             </button>
           ) : (
@@ -181,7 +178,7 @@ const Main = ({
               <div className="profile-box">
                 <span className="username">{profile.username}</span>
                 <img
-                  src={profile.profilePic}
+                  src={profile.profilePic || assets.user_icon}
                   alt="profile"
                   className="profile-picture"
                 />
@@ -199,8 +196,8 @@ const Main = ({
         {!showResult ? (
           <>
             <div className="greet">
-              <p>
-                <span>Hello, Human.</span>
+              <p className="greetwelcome">
+                <span>Hello, {profile?.username || "Human"}.</span>
               </p>
               <p className="greet-greets">How can I help you today?</p>
             </div>
@@ -353,8 +350,8 @@ const Main = ({
           </div>
 
           <p className="bottom-info">
-            Vedix.AI may display inaccurate info, including about people, so
-            double-check its response.
+            Vedix.AI may display inaccurate info, including about people, so double-check its
+            response.
           </p>
         </div>
       </div>
@@ -363,3 +360,9 @@ const Main = ({
 };
 
 export default Main;
+
+
+
+
+
+

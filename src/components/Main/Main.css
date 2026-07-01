@@ -787,7 +787,7 @@ body.dark .preview-container{
     }
 
     .main .greet p{
-        font-size: 44px;
+        font-size: 35px;
     }
 
     .main .cards{
@@ -881,10 +881,10 @@ body.dark .preview-container{
     }
 
     .main .greet p{
-        font-size: 38px;
+        font-size: 35px;
         text-align: center;
     }
-
+    
     .greet-greets{
         text-align: center;
     }
@@ -1180,4 +1180,757 @@ body.dark .preview-container{
     filter: blur(90px);
 
     z-index: -1;
+}
+/* ================= RESTORED HOME UI ================= */
+
+.main {
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 18% 18%, rgba(104,255,104,0.14), transparent 24%),
+      radial-gradient(circle at 82% 20%, rgba(58,105,177,0.14), transparent 30%),
+      radial-gradient(circle at 52% 86%, rgba(124,58,237,0.09), transparent 34%),
+      #ffffff;
+}
+
+.main::before {
+    background-image:
+      linear-gradient(rgba(15,23,42,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(15,23,42,0.035) 1px, transparent 1px);
+    background-size: 60px 60px;
+}
+
+.main::after {
+    width: 660px;
+    height: 660px;
+    top: -210px;
+    right: -170px;
+    filter: blur(92px);
+}
+
+.main .nav {
+    padding: 22px 30px 8px;
+    min-height: 74px;
+    align-items: center;
+}
+
+.main .nav p.vedix-logo {
+    font-size: 30px;
+    line-height: 1;
+    font-weight: 700;
+    color: #4b5563;
+}
+
+.nav-right-box {
+    gap: 20px;
+}
+
+.theme-toggle-btn {
+    width: 44px;
+    height: 44px;
+    background: #f0f4f9;
+    color: #020617;
+}
+
+.Nav-explore-btn,
+.ai-nav-btn,
+.Nav-login-btn {
+    min-height: 44px;
+    padding: 0 20px;
+    border-radius: 999px;
+    background: #f0f4f9;
+    color: #555;
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.Nav-explore-btn svg,
+.ai-nav-btn svg {
+    font-size: 16px;
+}
+
+.main-container {
+    width: min(910px, calc(100% - 64px));
+    min-height: calc(100vh - 82px);
+    margin: 0 auto;
+    padding: 28px 0 34px;
+}
+
+.main .greet {
+    margin-top: 0;
+}
+
+.main .greet p {
+    font-size: 50px;
+    line-height: 1.18;
+    font-weight: 700;
+    color: #c4c7c5;
+}
+
+.main .greet span {
+    background: linear-gradient(90deg, #68ff68 0%, #3a69b1 88%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.main .cards {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 18px;
+}
+
+.main .card {
+    min-height: 200px;
+    border-radius: 18px;
+    padding: 22px 20px;
+    background: rgba(255,255,255,0.72);
+    border: 1px solid rgba(104,255,104,0.16);
+    box-shadow: 0 18px 42px rgba(15,23,42,0.06);
+}
+
+.main .card p {
+    font-size: 17px;
+    line-height: 1.55;
+    font-weight: 500;
+    color: #5b5b5b;
+    padding-right: 14px;
+}
+
+.main .card img {
+    width: 38px;
+    height: 38px;
+    padding: 7px;
+    bottom: 17px;
+    right: 17px;
+}
+
+.main-bottom {
+    padding-top: 64px;
+}
+
+.search-box {
+    min-height: 60px;
+    padding: 12px 18px 12px 20px;
+    border-radius: 999px;
+    background: #edf2f8;
+}
+
+.search-box input {
+    font-size: 16px;
+    font-weight: 500;
+    color: #5b6472;
+}
+
+.chat-actions {
+    gap: 12px;
+}
+
+.chat-icon-btn {
+    width: 38px;
+    height: 38px;
+    background: #ffffff;
+    color: #344054;
+    font-size: 19px;
+}
+
+.chat-icon-btn.send {
+    background: #111827;
+    color: #ffffff;
+}
+
+.main .bottom-info {
+    margin-top: 15px;
+    font-size: 12px;
+    color: #667085;
+}
+
+.result {
+    max-height: calc(100vh - 190px);
+}
+
+body.dark .main {
+    background: #0f172a;
+}
+
+@media (max-width: 1180px) {
+    .main-container {
+        width: min(910px, calc(100% - 40px));
+    }
+
+    .nav-right-box {
+        gap: 12px;
+    }
+
+    .Nav-explore-btn,
+    .ai-nav-btn,
+    .Nav-login-btn {
+        padding: 0 16px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .main .cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .main .nav {
+        padding: 14px 16px;
+    }
+
+    .main-container {
+        width: calc(100% - 28px);
+        min-height: calc(100vh - 78px);
+        padding: 18px 0 24px;
+    }
+
+    .main .greet p {
+        font-size: 38px;
+    }
+
+    .main-bottom {
+        padding-top: 30px;
+    }
+}
+
+@media (max-width: 560px) {
+    .main .cards {
+        grid-template-columns: 1fr;
+    }
+
+    .main .greet p {
+        font-size: 30px;
+    }
+}
+
+/* ================= TYPOGRAPHY POLISH ================= */
+
+.main .nav p.vedix-logo {
+    font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 28px;
+    line-height: 1;
+    font-weight: 650;
+    letter-spacing: 0;
+    color: #4f5663;
+}
+
+.main .greet p {
+    font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 48px;
+    line-height: 1.22;
+    font-weight: 600;
+    letter-spacing: 0;
+    color: #bfc3c0;
+}
+
+.main .greet span {
+    font-weight: 700;
+    background: linear-gradient(90deg, #68f06b 0%, #2f7dc1 92%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.greet-greets {
+    font-weight: 600;
+    color: #c2c5c3 !important;
+}
+
+@media (max-width: 768px) {
+    .main .nav p.vedix-logo {
+        font-size: 24px;
+    }
+
+    .main .greet p {
+        font-size: 38px;
+    }
+}
+
+@media (max-width: 480px) {
+    .main .nav p.vedix-logo {
+        font-size: 21px;
+    }
+
+    .main .greet p {
+        font-size: 30px;
+    }
+}
+
+/* ================= MOBILE HEADER + HOME FIX ================= */
+@media (max-width: 560px) {
+    .main {
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+
+    .main .nav {
+        min-height: 58px;
+        padding: 10px 9px;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .main .nav p.vedix-logo {
+        font-size: 13px;
+        white-space: nowrap;
+        flex: 0 0 auto;
+    }
+
+    .nav-right-box {
+        width: auto;
+        max-width: calc(100vw - 70px);
+        margin-left: auto;
+        gap: 5px;
+        flex-wrap: nowrap;
+        justify-content: flex-end;
+        overflow: visible;
+    }
+
+    .Nav-explore-btn,
+    .ai-nav-btn {
+        display: none;
+    }
+
+    .theme-toggle-btn {
+        width: 26px;
+        height: 26px;
+        min-width: 26px;
+        font-size: 14px;
+    }
+
+    .profile-wrapper {
+        gap: 4px;
+        flex-shrink: 0;
+    }
+
+    .profile-box {
+        width: 28px;
+        height: 28px;
+        min-width: 28px;
+        padding: 0;
+        border-radius: 50%;
+        overflow: hidden;
+    }
+
+    .profile-box .username {
+        display: none;
+    }
+
+    .profile-picture {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+    }
+
+    .logout-btn,
+    .Nav-login-btn {
+        min-height: 26px;
+        padding: 0 8px;
+        border-radius: 999px;
+        font-size: 8px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .main-container {
+        width: calc(100% - 16px);
+        max-width: none;
+        min-height: calc(100vh - 58px);
+        padding: 10px 0 18px;
+        margin: 0 auto;
+    }
+
+    .main .greet {
+        margin-top: 0;
+    }
+
+    .main .greet p {
+        font-size: 22px;
+        line-height: 1.12;
+        text-align: left;
+        overflow-wrap: anywhere;
+    }
+
+    .main .greet span {
+        display: inline;
+    }
+
+    .greet-greets {
+        font-size: 20px !important;
+        line-height: 1.16 !important;
+        margin-top: 2px;
+        text-align: left !important;
+    }
+
+    .main .cards {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin-top: 12px;
+    }
+
+    .main .card {
+        min-height: 100px;
+        padding: 15px 15px;
+        border-radius: 9px;
+    }
+
+    .main .card p {
+        max-width: calc(100% - 34px);
+        padding-right: 0;
+        font-size: 11px;
+        line-height: 1.45;
+    }
+
+    .main .card img {
+        width: 25px;
+        height: 25px;
+        padding: 5px;
+        right: 12px;
+        bottom: 12px;
+    }
+
+    .main-bottom {
+        padding-top: 14px;
+    }
+
+    .search-box {
+        min-height: 44px;
+        padding: 7px 8px 7px 13px;
+        gap: 6px;
+        border-radius: 999px;
+    }
+
+    .search-box input {
+        font-size: 13px;
+    }
+
+    .chat-icon-btn {
+        width: 30px;
+        height: 30px;
+        min-width: 30px;
+        font-size: 15px;
+    }
+
+    .bottom-info {
+        padding: 0 8px;
+        font-size: 9px;
+        line-height: 1.35;
+    }
+}
+
+@media (max-width: 360px) {
+    .main .nav p.vedix-logo {
+        font-size: 12px;
+    }
+
+    .main .greet p {
+        font-size: 20px;
+    }
+
+    .greet-greets {
+        font-size: 18px !important;
+    }
+
+    .main .card {
+        min-height: 88px;
+    }
+}
+
+/* ================= MOBILE NAV SPACE FOR SIDEBAR MENU ================= */
+@media (max-width: 560px) {
+    .main .nav {
+        padding-left: 52px;
+    }
+}
+
+/* ================= DESKTOP HOME LAYOUT REFINEMENT ================= */
+@media (min-width: 769px) {
+    .main .nav {
+        padding: 22px 32px 10px;
+        min-height: 76px;
+    }
+
+    .main-container {
+        width: min(1000px, calc(100% - 96px));
+        min-height: calc(100vh - 86px);
+        margin: 0 auto;
+        padding: 28px 0 24px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .main .greet {
+        margin-top: 4px;
+        margin-bottom: 24px;
+    }
+
+    .main .greet p {
+        font-size: clamp(40px, 4.1vw, 54px);
+        line-height: 1.08;
+    }
+
+    .greet-greets {
+        margin-top: 7px;
+    }
+
+    .main .cards {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 18px;
+        margin-top: 0;
+    }
+
+    .main .card {
+        min-height: 178px;
+        padding: 24px 18px 20px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.78);
+        box-shadow: 0 18px 45px rgba(15, 23, 42, 0.06);
+    }
+
+    .main .card p {
+        font-size: 16px;
+        line-height: 1.48;
+        font-weight: 500;
+        padding-right: 8px;
+    }
+
+    .main .card img {
+        width: 34px;
+        height: 34px;
+        right: 17px;
+        bottom: 17px;
+        padding: 7px;
+    }
+
+    .main-bottom {
+        margin-top: auto;
+        padding-top: 42px;
+    }
+
+    .search-box {
+        min-height: 58px;
+        padding: 11px 14px 11px 20px;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.65);
+    }
+
+    .bottom-info {
+        margin-top: 12px;
+    }
+}
+
+@media (min-width: 769px) and (max-height: 720px) {
+    .main-container {
+        padding-top: 14px;
+    }
+
+    .main .greet {
+        margin-bottom: 18px;
+    }
+
+    .main .greet p {
+        font-size: clamp(36px, 3.6vw, 48px);
+    }
+
+    .main .card {
+        min-height: 160px;
+    }
+
+    .main-bottom {
+        padding-top: 28px;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1120px) {
+    .main-container {
+        width: min(920px, calc(100% - 64px));
+    }
+
+    .main .cards {
+        gap: 16px;
+    }
+}
+
+/* ================= MAIN 3D DEPTH EFFECT ================= */
+.main {
+    perspective: 1400px;
+    isolation: isolate;
+}
+
+.main::after {
+    transform: translate3d(0, 0, -1px) rotate(-9deg);
+    filter: blur(2px);
+}
+
+.main-container {
+    transform-style: preserve-3d;
+}
+
+.main-container::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 160px;
+    width: min(820px, 72vw);
+    height: 260px;
+    transform: translateX(-50%) translateZ(-48px) rotateX(62deg);
+    border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(59, 130, 246, 0.14), rgba(20, 184, 166, 0.07) 42%, transparent 72%);
+    filter: blur(18px);
+    opacity: 0.86;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.main .cards {
+    perspective: 1100px;
+    transform-style: preserve-3d;
+}
+
+.main .card {
+    transform-style: preserve-3d;
+    border: 1px solid rgba(255, 255, 255, 0.72);
+    background:
+      linear-gradient(145deg, rgba(255,255,255,0.94), rgba(245,250,255,0.70));
+    box-shadow:
+      0 26px 52px rgba(15, 23, 42, 0.10),
+      0 7px 14px rgba(15, 23, 42, 0.06),
+      inset 0 1px 0 rgba(255,255,255,0.9);
+    transform: translateZ(0) rotateX(0deg) rotateY(0deg);
+    transition:
+      transform 0.28s ease,
+      box-shadow 0.28s ease,
+      border-color 0.28s ease,
+      background 0.28s ease;
+}
+
+.main .card::after {
+    content: "";
+    position: absolute;
+    inset: 10px;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(255,255,255,0.48), transparent 45%);
+    opacity: 0;
+    transform: translateZ(20px);
+    pointer-events: none;
+    transition: opacity 0.28s ease;
+}
+
+.main .card:nth-child(1) {
+    transform: translateZ(14px) rotateY(-2deg);
+}
+
+.main .card:nth-child(2) {
+    transform: translateZ(22px) rotateY(-0.8deg);
+}
+
+.main .card:nth-child(3) {
+    transform: translateZ(22px) rotateY(0.8deg);
+}
+
+.main .card:nth-child(4) {
+    transform: translateZ(14px) rotateY(2deg);
+}
+
+.main .card:hover {
+    transform: translateY(-12px) translateZ(46px) rotateX(4deg) rotateY(-3deg);
+    border-color: rgba(20, 184, 166, 0.36);
+    background:
+      linear-gradient(145deg, rgba(255,255,255,0.98), rgba(240,253,250,0.84));
+    box-shadow:
+      0 34px 70px rgba(15, 23, 42, 0.16),
+      0 12px 24px rgba(20, 184, 166, 0.10),
+      inset 0 1px 0 rgba(255,255,255,0.95);
+}
+
+.main .card:hover::after {
+    opacity: 1;
+}
+
+.main .card p,
+.main .card img {
+    transform: translateZ(26px);
+}
+
+.main .card img {
+    box-shadow:
+      0 10px 22px rgba(15, 23, 42, 0.10),
+      inset 0 1px 0 rgba(255,255,255,0.95);
+    transition: transform 0.28s ease, box-shadow 0.28s ease;
+}
+
+.main .card:hover img {
+    transform: translateZ(46px) scale(1.08) rotate(-4deg);
+    box-shadow: 0 16px 30px rgba(15, 23, 42, 0.16);
+}
+
+.search-box {
+    transform: translateZ(18px);
+    box-shadow:
+      0 18px 45px rgba(15, 23, 42, 0.09),
+      inset 0 1px 0 rgba(255,255,255,0.72);
+}
+
+@media (max-width: 768px) {
+    .main {
+        perspective: none;
+    }
+
+    .main-container::before {
+        display: none;
+    }
+
+    .main .cards,
+    .main .card {
+        transform-style: flat;
+    }
+
+    .main .card,
+    .main .card:nth-child(1),
+    .main .card:nth-child(2),
+    .main .card:nth-child(3),
+    .main .card:nth-child(4),
+    .main .card:hover {
+        transform: none;
+    }
+
+    .main .card:hover {
+        box-shadow: 0 18px 36px rgba(15, 23, 42, 0.10);
+    }
+
+    .main .card p,
+    .main .card img,
+    .main .card:hover img,
+    .search-box {
+        transform: none;
+    }
+}
+
+/* ================= GREETING SIZE TUNING ================= */
+@media (min-width: 769px) {
+    .main .greet p {
+        font-size: clamp(32px, 3.25vw, 44px);
+        line-height: 1.12;
+    }
+}
+
+@media (min-width: 769px) and (max-height: 720px) {
+    .main .greet p {
+        font-size: clamp(30px, 3vw, 40px);
+    }
+}
+
+@media (max-width: 768px) {
+    .main .greet p {
+        font-size: 32px;
+    }
+}
+
+@media (max-width: 560px) {
+    .main .greet p {
+        font-size: 20px;
+    }
+
+    .greet-greets {
+        font-size: 18px !important;
+    }
 }

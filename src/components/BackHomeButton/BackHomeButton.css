@@ -1,0 +1,47 @@
+﻿.back-home-btn {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.38);
+  background: rgba(255, 255, 255, 0.86);
+  color: #334155;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.back-home-btn:hover {
+  transform: translateY(-1px);
+  background: #ffffff;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.12);
+}
+
+.back-home-btn svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+}
+
+.back-home-icon {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .back-home-btn {
+    min-height: 36px;
+    padding: 0 12px;
+    gap: 7px;
+    font-size: 13px;
+    background: rgba(255, 255, 255, 0.94);
+  }
+
+  .back-home-icon {
+    display: block;
+  }
+}

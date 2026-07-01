@@ -6,37 +6,48 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
+      trim: true,
     },
 
     name: {
       type: String,
-      required: true,
+      default: "",
+      trim: true,
     },
 
     surname: {
       type: String,
-      required: true,
+      default: "",
+      trim: true,
     },
 
     dob: {
       type: String,
-      required: true,
+      default: "",
     },
 
     email: {
       type: String,
       required: true,
       unique: true,
+      lowercase: true,
+      trim: true,
     },
 
     password: {
       type: String,
-      required: true,
+      default: null,
     },
 
     profilePic: {
       type: String,
       default: "",
+    },
+
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true,
     },
   },
   {

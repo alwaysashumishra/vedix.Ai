@@ -20,10 +20,7 @@ from "../HelpModel/HelpModal";
 import SettingsModal
 from "../SettingsModal/SettingsModal";
 
-import {
-  FiFileText
-}
-from "react-icons/fi";
+import { FiCreditCard, FiFileText } from "react-icons/fi";
 
 import {
   MdOutlineArticle
@@ -311,6 +308,28 @@ const Sidebar = () => {
 
                 </NavLink>
 
+
+
+
+                {/* PLANS */}
+                <NavLink
+
+                  to="/plans"
+
+                  className="
+                  recent-entry
+                  ai-tool-link
+                  "
+                >
+
+                  <FiCreditCard />
+
+                  <p>
+                    Plans
+                  </p>
+
+                </NavLink>
+
               </div>
             )
           }
@@ -544,3 +563,4 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+
