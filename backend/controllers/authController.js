@@ -1,9 +1,9 @@
-import User from "../models/User.js";
+﻿import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
 
-const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const getGoogleClientId = () => process.env.GOOGLE_CLIENT_ID || process.env.VITE_GOOGLE_CLIENT_ID;
 
 const createToken = (user) =>
   jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
@@ -144,16 +144,19 @@ export const googleAuth = async (req, res) => {
       });
     }
 
-    if (!process.env.GOOGLE_CLIENT_ID) {
+    const googleClientId = getGoogleClientId();
+
+    if (!googleClientId) {
       return res.status(500).json({
         success: false,
         message: "Google auth is not configured on the server",
       });
     }
 
+    const googleClient = new OAuth2Client(googleClientId);
     const ticket = await googleClient.verifyIdToken({
       idToken: credential,
-      audience: process.env.GOOGLE_CLIENT_ID,
+      audience: googleClientId,
     });
 
     const payload = ticket.getPayload();
@@ -205,3 +208,4 @@ export const googleAuth = async (req, res) => {
     });
   }
 };
+

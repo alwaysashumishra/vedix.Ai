@@ -3,7 +3,7 @@ import "./Explore.css";
 import Navbar from "../../components/NavBar/Navbar";
 import { fetchNewsFeed } from "../../config/news";
 import { FaFire, FaGlobe, FaSearch } from "react-icons/fa";
-import { FiExternalLink, FiRefreshCcw } from "react-icons/fi";
+import { FiCalendar, FiClock, FiExternalLink, FiRefreshCcw } from "react-icons/fi";
 import BackHomeButton from "../../components/BackHomeButton/BackHomeButton";
 
 const fallbackImages = {
@@ -20,6 +20,30 @@ const getFallbackImage = (category) =>
 
 const handleImageError = (event, category) => {
   event.currentTarget.src = getFallbackImage(category);
+};
+
+
+const stripHtml = (value = "") =>
+  value
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/\s+/g, " ")
+    .trim();
+
+const getExcerpt = (article, fallback = "A quick read from the live feed with the key context you need before opening the full story.") => {
+  const text = stripHtml(article?.description || "");
+
+  if (!text) {
+    return fallback;
+  }
+
+  return text.length > 150 ? `${text.slice(0, 150).trim()}...` : text;
+};
+
+const getReadTime = (article) => {
+  const words = `${article?.title || ""} ${stripHtml(article?.description || "")}`.split(/\s+/).filter(Boolean).length;
+  return `${Math.max(1, Math.ceil(words / 180))} min read`;
 };
 const formatTime = (value) => {
   if (!value) {
@@ -48,6 +72,8 @@ const Explore = ({ profile, setProfile, setShowLogin }) => {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [now, setNow] = useState(new Date());
 
   const loadNews = async () => {
     setLoading(true);
@@ -70,34 +96,85 @@ const Explore = ({ profile, setProfile, setShowLogin }) => {
   }, []);
 
   useEffect(() => {
-    if (newsData.hero.length <= 1) {
-      return undefined;
-    }
+    const timer = setInterval(() => setNow(new Date()), 30000);
+    return () => clearInterval(timer);
+  }, []);
 
-    const auto = setInterval(() => {
-      setIndex((prev) => (prev + 1) % newsData.hero.length);
-    }, 5000);
+  const categoryTabs = useMemo(
+    () => [
+      { key: "All", label: "All", count: newsData.latest.length },
+      ...newsData.categories.map((category) => ({
+        key: category.label,
+        label: category.label,
+        count: category.articles?.length || 0,
+      })),
+    ],
+    [newsData.categories, newsData.latest.length]
+  );
 
-    return () => clearInterval(auto);
-  }, [newsData.hero]);
+  const selectedCategory = useMemo(
+    () => newsData.categories.find((category) => category.label === activeCategory),
+    [activeCategory, newsData.categories]
+  );
+
+  const displayHeroList =
+    activeCategory === "All"
+      ? newsData.hero
+      : selectedCategory?.articles?.slice(0, 5) || [];
+
+  const categoryHighlights =
+    activeCategory === "All"
+      ? newsData.categories
+      : selectedCategory
+        ? [{ ...selectedCategory, articles: selectedCategory.articles || [] }]
+        : [];
 
   const filteredLatest = useMemo(() => {
     const query = search.trim().toLowerCase();
+    const sourceArticles =
+      activeCategory === "All" ? newsData.latest : selectedCategory?.articles || [];
 
     if (!query) {
-      return newsData.latest;
+      return sourceArticles;
     }
 
-    return newsData.latest.filter((article) => {
+    return sourceArticles.filter((article) => {
       return (
         article.title.toLowerCase().includes(query) ||
         article.category.toLowerCase().includes(query) ||
         article.source.toLowerCase().includes(query)
       );
     });
-  }, [newsData.latest, search]);
+  }, [activeCategory, newsData.latest, search, selectedCategory]);
 
-  const heroArticle = newsData.hero[index];
+  useEffect(() => {
+    if (displayHeroList.length <= 1) {
+      return undefined;
+    }
+
+    const auto = setInterval(() => {
+      setIndex((prev) => (prev + 1) % displayHeroList.length);
+    }, 5000);
+
+    return () => clearInterval(auto);
+  }, [displayHeroList.length]);
+
+  useEffect(() => {
+    setIndex(0);
+  }, [activeCategory]);
+
+  const heroArticle = displayHeroList[index] || displayHeroList[0];
+  const tickerArticles = (activeCategory === "All"
+    ? newsData.latest
+    : selectedCategory?.articles || []
+  ).slice(0, 8);
+  const heroStack = displayHeroList
+    .filter((item) => item.id !== heroArticle?.id)
+    .slice(0, 3);
+  const categoryCount = activeCategory === "All" ? newsData.categories.length : 1;
+  const dayLabel = now.toLocaleDateString("en-IN", { weekday: "long" });
+  const dateLabel = now.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+  const timeLabel = now.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" });
 
   return (
     <div className="explores">
@@ -105,6 +182,28 @@ const Explore = ({ profile, setProfile, setShowLogin }) => {
 
       <div className="explore-container">
         <BackHomeButton className="explore-home-link" />
+
+        <div className="explore-heading-panel">
+          <div className="explore-heading-copy">
+            <span className="explore-kicker">Live intelligence</span>
+            <h1>Explore current news by category</h1>
+            <p>Search, filter, refresh, and open live stories from trusted current feeds.</p>
+          </div>
+
+          <aside className="time-orbit-card" aria-label="Today and time">
+            <div className="watch-orbit">
+              <span className="orbit-ring"></span>
+              <FiClock />
+            </div>
+            <div className="calendar-chip">
+              <FiCalendar />
+              <span>{dayLabel}</span>
+            </div>
+            <strong>{timeLabel}</strong>
+            <p>{dateLabel}</p>
+          </aside>
+        </div>
+
         <div className="explore-topbar">
           <div className="search-wrapper">
             <div className="search-box">
@@ -114,7 +213,7 @@ const Explore = ({ profile, setProfile, setShowLogin }) => {
                 placeholder="Search current news, AI, business, sports, science..."
                 className="search-input"
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(event) => setSearch(event.target.value)}
               />
             </div>
           </div>
@@ -125,10 +224,63 @@ const Explore = ({ profile, setProfile, setShowLogin }) => {
           </button>
         </div>
 
+        {tickerArticles.length > 0 && (
+          <div className="live-ticker" aria-label="Live news ticker">
+            <span className="ticker-label">Live now</span>
+            <div className="ticker-track">
+              {[...tickerArticles, ...tickerArticles].map((article, itemIndex) => (
+                <a
+                  href={article.link}
+                  target="_blank"
+                  rel="noreferrer"
+                  key={`${article.id}-${itemIndex}`}
+                >
+                  <b>{article.category}</b>
+                  {article.title}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="news-stats-strip">
+          <div>
+            <span>{filteredLatest.length}</span>
+            <p>Live stories</p>
+          </div>
+          <div>
+            <span>{categoryCount}</span>
+            <p>{activeCategory === "All" ? "Categories" : "Selected category"}</p>
+          </div>
+          <div>
+            <span>{newsData.updatedAt ? formatTime(newsData.updatedAt) : "Now"}</span>
+            <p>Last refreshed</p>
+          </div>
+        </div>
+
+        <div className="category-tabs" aria-label="News categories">
+          {categoryTabs.map((category) => (
+            <button
+              key={category.key}
+              type="button"
+              className={`category-tab ${activeCategory === category.label ? "active" : ""}`}
+              onClick={() => setActiveCategory(category.label)}
+            >
+              <span>{category.label}</span>
+              <b>{category.count}</b>
+            </button>
+          ))}
+        </div>
+
         {heroArticle && (
           <div className="hero-section">
             <a href={heroArticle.link} className="big-card" target="_blank" rel="noreferrer">
-              <img src={heroArticle.image || getFallbackImage(heroArticle.category)} className="big-img" alt={heroArticle.title} onError={(event) => handleImageError(event, heroArticle.category)} />
+              <img
+                src={heroArticle.image || getFallbackImage(heroArticle.category)}
+                className="big-img"
+                alt={heroArticle.title}
+                onError={(event) => handleImageError(event, heroArticle.category)}
+              />
 
               <div className="big-overlay">
                 <span className="source">
@@ -138,10 +290,15 @@ const Explore = ({ profile, setProfile, setShowLogin }) => {
 
                 <h1 className="big-title">{heroArticle.title}</h1>
 
-                <p className="hero-meta">Live top story from the current feed</p>
+                <p className="hero-meta">{getExcerpt(heroArticle, activeCategory === "All" ? "Live top story from the current feed" : `${activeCategory} headline`)}</p>
+
+                <div className="hero-reading-cues">
+                  <span>{getReadTime(heroArticle)}</span>
+                  <span>Why read: understand what changed and why it matters</span>
+                </div>
 
                 <div className="slider-dots">
-                  {newsData.hero.map((item, i) => (
+                  {displayHeroList.map((item, i) => (
                     <button
                       key={item.id}
                       type="button"
@@ -156,13 +313,36 @@ const Explore = ({ profile, setProfile, setShowLogin }) => {
                 </div>
               </div>
             </a>
+
+            <div className="hero-stack">
+              <div className="hero-stack-title">
+                <span>Up next</span>
+                <b>{activeCategory}</b>
+              </div>
+              {heroStack.map((article, stackIndex) => (
+                <a
+                  href={article.link}
+                  target="_blank"
+                  rel="noreferrer"
+                  key={article.id}
+                  className="hero-stack-card"
+                >
+                  <span>{String(stackIndex + 1).padStart(2, "0")}</span>
+                  <div>
+                    <b>{article.category}</b>
+                    <p>{article.title}</p>
+                    <small>{article.source} • {formatTime(article.publishedAt)} • {getReadTime(article)}</small>
+                  </div>
+                </a>
+              ))}
+            </div>
           </div>
         )}
 
         <div className="section-header">
           <h2>
             <FaFire />
-            Current Highlights
+            {activeCategory === "All" ? "Current Highlights" : `${activeCategory} Highlights`}
           </h2>
           <p>{newsData.updatedAt ? `Updated ${new Date(newsData.updatedAt).toLocaleString()}` : ""}</p>
         </div>
@@ -174,7 +354,7 @@ const Explore = ({ profile, setProfile, setShowLogin }) => {
         ) : (
           <>
             <div className="top-grid">
-              {newsData.categories.map((category) =>
+              {categoryHighlights.map((category) =>
                 category.lead ? (
                   <a
                     key={category.key}
@@ -183,10 +363,16 @@ const Explore = ({ profile, setProfile, setShowLogin }) => {
                     rel="noreferrer"
                     className="category-card glass"
                   >
-                    <img src={category.lead.image || getFallbackImage(category.lead.category)} className="side-img" alt={category.lead.title} onError={(event) => handleImageError(event, category.lead.category)} />
+                    <img
+                      src={category.lead.image || getFallbackImage(category.lead.category)}
+                      className="side-img"
+                      alt={category.lead.title}
+                      onError={(event) => handleImageError(event, category.lead.category)}
+                    />
                     <div className="category-copy">
                       <span className="category-pill">{category.label}</span>
                       <h2 className="side-title">{category.lead.title}</h2>
+                      <p className="news-excerpt">{getExcerpt(category.lead)}</p>
                       <div className="side-actions">
                         <span>{category.lead.source}</span>
                         <span>{formatTime(category.lead.publishedAt)}</span>
@@ -198,7 +384,7 @@ const Explore = ({ profile, setProfile, setShowLogin }) => {
             </div>
 
             <div className="section-header">
-              <h2>Explore Live Feed</h2>
+              <h2>{activeCategory === "All" ? "Explore Live Feed" : `${activeCategory} Live Feed`}</h2>
               <p>{filteredLatest.length} stories</p>
             </div>
 
@@ -211,13 +397,18 @@ const Explore = ({ profile, setProfile, setShowLogin }) => {
                   rel="noreferrer"
                   className="small-card glass"
                 >
-                  <img src={article.image || getFallbackImage(article.category)} alt={article.title} onError={(event) => handleImageError(event, article.category)} />
+                  <img
+                    src={article.image || getFallbackImage(article.category)}
+                    alt={article.title}
+                    onError={(event) => handleImageError(event, article.category)}
+                  />
                   <div className="small-card-copy">
                     <span className="category-pill">{article.category}</span>
                     <h3>{article.title}</h3>
+                    <p className="news-excerpt">{getExcerpt(article)}</p>
                     <div className="news-meta-row">
                       <span>{article.source}</span>
-                      <span>{formatTime(article.publishedAt)}</span>
+                      <span>{formatTime(article.publishedAt)} • {getReadTime(article)}</span>
                     </div>
                     <span className="read-link">
                       Read story
