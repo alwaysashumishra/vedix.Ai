@@ -1,4 +1,4 @@
-// routes/userRoutes.js
+﻿// routes/userRoutes.js
 
 import express from "express";
 import User from "../models/User.js";
@@ -13,7 +13,7 @@ router.put("/update-profile/:id", async (req, res) => {
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
       { profilePic },
-      { new: true }
+      { returnDocument: "after" }
     );
 
     res.status(200).json(updatedUser);

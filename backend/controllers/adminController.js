@@ -24,7 +24,7 @@ const getConfigDocument = async () => {
   const config = await AdminConfig.findOneAndUpdate(
     { key: CONFIG_KEY },
     { $setOnInsert: { value: defaultConfig } },
-    { new: true, upsert: true }
+    { returnDocument: "after", upsert: true }
   );
 
   return {
@@ -153,7 +153,7 @@ export const updateAdminConfig = async (req, res) => {
         value: mergedValue,
         updatedBy: req.adminUser?.email || "admin",
       },
-      { new: true, upsert: true }
+      { returnDocument: "after", upsert: true }
     );
 
     res.json({
@@ -228,7 +228,7 @@ export const updateAdminUser = async (req, res) => {
     }
 
     const user = await User.findByIdAndUpdate(req.params.id, updates, {
-      new: true,
+      returnDocument: "after",
       runValidators: true,
     }).select("username name surname email profilePic googleId plan credits isBlocked lastAdminNote createdAt updatedAt");
 
@@ -242,5 +242,7 @@ export const updateAdminUser = async (req, res) => {
     res.status(500).json({ success: false, message: "Unable to update user" });
   }
 };
+
+
 
 
