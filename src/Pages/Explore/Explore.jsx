@@ -2,6 +2,7 @@
 import "./Explore.css";
 import Navbar from "../../components/NavBar/Navbar";
 import { fetchNewsFeed } from "../../config/news";
+import { getPublicConfig } from "../../config/publicConfig";
 import { FaFire, FaGlobe, FaSearch } from "react-icons/fa";
 import { FiCalendar, FiClock, FiExternalLink, FiRefreshCcw } from "react-icons/fi";
 import BackHomeButton from "../../components/BackHomeButton/BackHomeButton";
@@ -74,6 +75,7 @@ const Explore = ({ profile, setProfile, setShowLogin }) => {
   const [error, setError] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
   const [now, setNow] = useState(new Date());
+  const [siteConfig, setSiteConfig] = useState({});
 
   const loadNews = async () => {
     setLoading(true);
@@ -186,7 +188,7 @@ const Explore = ({ profile, setProfile, setShowLogin }) => {
         <div className="explore-heading-panel">
           <div className="explore-heading-copy">
             <span className="explore-kicker">Live intelligence</span>
-            <h1>Explore current news by category</h1>
+            <h1>{siteConfig.exploreHeadline || "Explore current news by category"}</h1>
             <p>Search, filter, refresh, and open live stories from trusted current feeds.</p>
           </div>
 
@@ -426,5 +428,6 @@ const Explore = ({ profile, setProfile, setShowLogin }) => {
 };
 
 export default Explore;
+
 
 

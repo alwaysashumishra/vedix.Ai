@@ -1,4 +1,4 @@
-
+﻿
 import React,
 {
   useContext,
@@ -20,12 +20,9 @@ from "../HelpModel/HelpModal";
 import SettingsModal
 from "../SettingsModal/SettingsModal";
 
-import { FiCreditCard, FiFileText } from "react-icons/fi";
+import { FiCompass, FiCreditCard, FiFileText, FiShield } from "react-icons/fi";
 
-import {
-  MdOutlineArticle
-}
-from "react-icons/md";
+import { MdOutlineArticle } from "react-icons/md";
 
 import {
   NavLink
@@ -262,6 +259,29 @@ const Sidebar = () => {
                 </p>
 
 
+                {/* EXPLORE */}
+                <NavLink
+
+                  to="/explore"
+
+                  className="
+                  recent-entry
+                  ai-tool-link
+                  "
+                >
+
+                  <FiCompass />
+
+                  <p>
+                    Explore
+                  </p>
+
+                </NavLink>
+
+
+
+
+
 
 
 
@@ -326,6 +346,26 @@ const Sidebar = () => {
 
                   <p>
                     Plans
+                  </p>
+
+                </NavLink>
+
+
+                {/* ADMIN */}
+                <NavLink
+
+                  to="/admin"
+
+                  className="
+                  recent-entry
+                  ai-tool-link
+                  "
+                >
+
+                  <FiShield />
+
+                  <p>
+                    Admin
                   </p>
 
                 </NavLink>
@@ -437,7 +477,7 @@ const Sidebar = () => {
                             }
                           >
 
-                            ✕
+                            âœ•
 
                           </span>
 
@@ -563,4 +603,8 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+
+
+
+
 

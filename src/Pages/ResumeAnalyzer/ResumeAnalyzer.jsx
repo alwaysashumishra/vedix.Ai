@@ -13,8 +13,8 @@ import {
 import BackHomeButton from "../../components/BackHomeButton/BackHomeButton";
 import "./ResumeAnalyzer.css";
 
-const backendUrl =
-  import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+const API_BASE =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
 
 const slugifyRole = (role) =>
   role
@@ -215,7 +215,7 @@ const ResumeAnalyzer = () => {
       formData.append("resume", file);
 
       const response = await axios.post(
-        `${backendUrl}/api/analyze/resume`,
+        `${API_BASE}/analyze/resume`,
         formData,
         {
           headers: {
@@ -402,4 +402,5 @@ const ResumeAnalyzer = () => {
 };
 
 export default ResumeAnalyzer;
+
 

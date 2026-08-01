@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+﻿import React, { useContext, useEffect, useRef, useState } from "react";
 import { NavLink } from "react-router-dom";
 import {
   FiCopy,
@@ -9,12 +9,14 @@ import {
   FiVolumeX,
   FiX,
   FiFileText,
+  FiCompass,
 } from "react-icons/fi";
-import { MdDarkMode, MdLightMode, MdOutlineExplore } from "react-icons/md";
+import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { RiArticleLine } from "react-icons/ri";
 import { assets } from "../../assets/assets";
 import { Context } from "../../context/context";
 import { ThemeContext } from "../../context/ThemeContext";
+import { getPublicConfig } from "../../config/publicConfig";
 import "./Main.css";
 
 const stripHtml = (html) =>
@@ -38,7 +40,14 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
   const [listening, setListening] = useState(false);
   const [voiceError, setVoiceError] = useState("");
   const [speaking, setSpeaking] = useState(false);
+  const [siteConfig, setSiteConfig] = useState({});
   const recognitionRef = useRef(null);
+
+  useEffect(() => {
+    getPublicConfig()
+      .then(setSiteConfig)
+      .catch(() => setSiteConfig({}));
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -157,7 +166,7 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
           </button>
 
           <NavLink className="Nav-explore-btn" to="/explore">
-            <MdOutlineExplore />
+            <FiCompass />
             Explore
           </NavLink>
 
@@ -204,12 +213,12 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
 
             <div className="cards">
               <div className="card">
-                <p>Analyze resume professionally using AI</p>
+                <p>{siteConfig.resumeCta || "Analyze resume professionally using AI"}</p>
                 <img src={assets.message_icon} alt="" />
               </div>
 
               <div className="card">
-                <p>Analyze research papers and summarize concepts</p>
+                <p>{siteConfig.researchCta || "Analyze research papers and summarize concepts"}</p>
                 <img src={assets.bulb_icon} alt="" />
               </div>
 
@@ -360,6 +369,8 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
 };
 
 export default Main;
+
+
 
 
 

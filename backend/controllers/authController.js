@@ -100,6 +100,13 @@ export const loginUser = async (req, res) => {
       });
     }
 
+    if (user.isBlocked) {
+      return res.status(403).json({
+        success: false,
+        message: "This account has been blocked by admin",
+      });
+    }
+
     if (!user.password) {
       return res.status(400).json({
         success: false,
@@ -192,6 +199,13 @@ export const googleAuth = async (req, res) => {
       await user.save();
     }
 
+    if (user.isBlocked) {
+      return res.status(403).json({
+        success: false,
+        message: "This account has been blocked by admin",
+      });
+    }
+
     const token = createToken(user);
 
     res.status(200).json({
@@ -208,4 +222,5 @@ export const googleAuth = async (req, res) => {
     });
   }
 };
+
 

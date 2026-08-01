@@ -1,9 +1,10 @@
-﻿import React from "react";
+﻿import React, { useEffect, useMemo, useState } from "react";
 import { FiCheck, FiCreditCard, FiLock, FiStar, FiZap } from "react-icons/fi";
 import BackHomeButton from "../../components/BackHomeButton/BackHomeButton";
 import "./Plans.css";
+import { getPublicConfig } from "../../config/publicConfig";
 
-const plans = [
+const buildPlans = (siteConfig = {}) => [
   {
     name: "Free",
     price: "₹0",
@@ -13,7 +14,7 @@ const plans = [
     tone: "free",
     description: "For trying Vedix AI with basic daily limits.",
     features: [
-      "5 AI prompts per day",
+      `${siteConfig.freeDailyLimit || 5} AI prompts per day`,
       "1 resume analysis per week",
       "Basic Explore news feed",
       "Limited image upload prompts",
@@ -23,7 +24,7 @@ const plans = [
   },
   {
     name: "Pro",
-    price: "₹199",
+    price: `₹${siteConfig.proPlanPrice || 199}`,
     period: "per month",
     badge: "Most useful",
     icon: FiZap,
@@ -41,7 +42,7 @@ const plans = [
   },
   {
     name: "Premium",
-    price: "₹499",
+    price: `₹${siteConfig.premiumPlanPrice || 499}`,
     period: "per month",
     badge: "Power plan",
     icon: FiStar,
@@ -59,6 +60,15 @@ const plans = [
 ];
 
 const Plans = ({ profile, setShowLogin }) => {
+  const [siteConfig, setSiteConfig] = useState({});
+
+  useEffect(() => {
+    getPublicConfig()
+      .then(setSiteConfig)
+      .catch(() => setSiteConfig({}));
+  }, []);
+
+  const plans = useMemo(() => buildPlans(siteConfig), [siteConfig]);
   const handlePlanClick = (plan) => {
     if (!profile) {
       setShowLogin(true);
@@ -145,5 +155,6 @@ const Plans = ({ profile, setShowLogin }) => {
 };
 
 export default Plans;
+
 
 
