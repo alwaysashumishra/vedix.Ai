@@ -21,6 +21,7 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
   const [password, setpassword] = useState("");
   const [profilePic, setProfilePic] = useState(assets.user_icon);
   const [loading, setLoading] = useState(false);
+  const [googleError, setGoogleError] = useState("");
 
   const saveSession = (data) => {
     localStorage.setItem("token", data.token);
@@ -75,14 +76,24 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
 
   const handleGoogleSuccess = async (response) => {
     setLoading(true);
+    setGoogleError("");
 
     try {
+      if (!response?.credential) {
+        throw new Error("Google did not return a credential. Open the site in Chrome and try again.");
+      }
+
       const data = await googleAuthUser(response.credential);
       saveSession(data);
       alert(`Welcome ${data.user.username}`);
     } catch (error) {
       console.log(error);
-      alert(error.response?.data?.message || "Google sign-in failed");
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Google sign-in failed. Open this site in Chrome, not an in-app browser, and try again.";
+      setGoogleError(message);
+      alert(message);
     } finally {
       setLoading(false);
     }
@@ -190,13 +201,33 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
             <div className="google-login-wrap">
               <GoogleLogin
                 onSuccess={handleGoogleSuccess}
-                onError={() => alert("Google sign-in failed")}
+                onError={(err) => {
+                  console.error("Google Sign-In component error:", err);
+                  const message =
+                    "Google sign-in failed. Please check browser console (F12) for details and ensure popups/cookies are allowed.";
+                  setGoogleError(message);
+                  alert(message);
+                }}
+                promptMomentNotification={(notification) => {
+                  if (notification.isNotDisplayed?.()) {
+                    console.log("Google prompt not displayed:", notification.getNotDisplayedReason?.());
+                  }
+                  if (notification.isSkippedMoment?.()) {
+                    console.log("Google prompt skipped:", notification.getSkippedReason?.());
+                  }
+                  if (notification.isDismissedMoment?.()) {
+                    console.log("Google prompt dismissed:", notification.getDismissedReason?.());
+                  }
+                }}
                 width="100%"
                 theme="outline"
                 shape="rectangular"
                 text={currstate === "signup" ? "signup_with" : "signin_with"}
+                itp_support
               />
             </div>
+
+            {googleError && <p className="google-mobile-error">{googleError}</p>}
           </>
         )}
 
@@ -226,3 +257,4 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
 };
 
 export default LoginPopUp;
+

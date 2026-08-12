@@ -154,3 +154,15 @@
     padding: 22px;
   }
 }
+
+.google-mobile-error {
+  margin: 8px 0 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #fff7ed;
+  color: #9a3412;
+  border: 1px solid rgba(249, 115, 22, 0.22);
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.45;
+}

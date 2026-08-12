@@ -1,4 +1,4 @@
-﻿import User from "../models/User.js";
+import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
@@ -214,11 +214,11 @@ export const googleAuth = async (req, res) => {
       user,
     });
   } catch (error) {
-    console.log(error);
+    console.error("Google Auth Error:", error);
 
     res.status(500).json({
       success: false,
-      message: "Google sign-in failed",
+      message: error.message || "Google sign-in failed",
     });
   }
 };
