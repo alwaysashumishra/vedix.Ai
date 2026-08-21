@@ -74,8 +74,23 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
         alert(`Welcome ${data.user.username}`);
       }
     } catch (error) {
-      console.log(error);
-      alert(error.response?.data?.message || "Something went wrong");
+      console.error("Auth submit error:", error);
+      const serverMessage = error.response?.data?.message;
+      const status = error.response?.status;
+
+      let message = serverMessage;
+      if (!message) {
+        if (status === 405) {
+          message = "Backend server URL is misconfigured (returned 405 HTML). Please verify Railway backend service deployment.";
+        } else if (status === 404) {
+          message = "Backend auth endpoint not found (404). Check API_BASE configuration.";
+        } else {
+          message = error.message || "Network Error: Could not connect to backend server. Ensure VITE_API_BASE_URL is set in Vercel.";
+        }
+      }
+
+      setGoogleError(message);
+      alert(message);
     } finally {
       setLoading(false);
     }
