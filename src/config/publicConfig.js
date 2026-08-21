@@ -1,6 +1,6 @@
-﻿import axios from "axios";
+import axios from "axios";
+import { API_BASE } from "./apiConfig";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
 const CONFIG_API = `${API_BASE}/admin/public-config`;
 
 export const getPublicConfig = async () => {

@@ -1,4 +1,4 @@
-﻿import React, { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import axios from "axios";
 import {
   FiAlertCircle,  FiBriefcase,
@@ -13,8 +13,7 @@ import {
 import BackHomeButton from "../../components/BackHomeButton/BackHomeButton";
 import "./ResumeAnalyzer.css";
 
-const API_BASE =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+import { API_BASE } from "../../config/apiConfig";
 
 const slugifyRole = (role) =>
   role
@@ -121,55 +120,90 @@ const parseAnalysisSections = (analysis) => {
     return [];
   }
 
-  const lines = analysis
-    .replace(/\r/g, "")
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean);
-
+  const cleanText = analysis.replace(/\r/g, "");
+  const blocks = cleanText.split(/(?=\n#{1,3}\s+|^#{1,3}\s+)/g);
   const sections = [];
-  let current = null;
 
-  lines.forEach((line) => {
-    const headingMatch = line.match(/^(?:\d+[.)]\s*)?\*{0,2}([A-Za-z][A-Za-z\s/()-]{2,45})\*{0,2}\s*:?\s*(.*)$/);
-    const isLikelyHeading =
-      headingMatch &&
-      line.length < 90 &&
-      /score|skill|strength|weakness|role|suggestion|summary|gap|experience|project|education|ats/i.test(
-        headingMatch[1]
-      );
+  blocks.forEach((block) => {
+    const trimmed = block.trim();
+    if (!trimmed) return;
 
-    if (isLikelyHeading) {
-      current = {
-        title: headingMatch[1].replace(/\*\*/g, "").trim(),
-        points: [],
-      };
+    const lines = trimmed
+      .split("\n")
+      .map((l) => l.trim())
+      .filter(Boolean);
 
-      if (headingMatch[2]) {
-        current.points.push(headingMatch[2].replace(/^[-:]+\s*/, ""));
+    if (lines.length === 0) return;
+
+    const headerMatch = lines[0].match(/^#{1,3}\s*(.*)$/);
+
+    if (headerMatch) {
+      const title = headerMatch[1]
+        .replace(/\*\*/g, "")
+        .replace(/^[\d+.)\s-]+/, "")
+        .trim();
+
+      const points = lines
+        .slice(1)
+        .map((line) =>
+          line
+            .replace(/^[-*•\d+.)]\s*/, "")
+            .replace(/\*\*/g, "")
+            .replace(/`/g, "")
+            .trim()
+        )
+        .filter(Boolean);
+
+      if (title && points.length > 0) {
+        sections.push({ title, points });
       }
+    } else {
+      let currentSection = null;
 
-      sections.push(current);
-      return;
+      lines.forEach((line) => {
+        const headingMatch = line.match(
+          /^(?:\d+[.)]\s*)?\*{0,2}([A-Za-z][A-Za-z\s/()&-]{2,45})\*{0,2}\s*:?\s*(.*)$/
+        );
+        const isHeading =
+          headingMatch &&
+          line.length < 80 &&
+          /score|skill|strength|weakness|role|suggestion|summary|gap|experience|ats/i.test(
+            headingMatch[1]
+          );
+
+        if (isHeading) {
+          currentSection = {
+            title: headingMatch[1].replace(/\*\*/g, "").trim(),
+            points: [],
+          };
+          if (headingMatch[2]) {
+            currentSection.points.push(
+              headingMatch[2].replace(/^[-:]+\s*/, "").replace(/\*\*/g, "").trim()
+            );
+          }
+          sections.push(currentSection);
+        } else if (currentSection) {
+          const cleanedLine = line
+            .replace(/^[-*•\d+.)]\s*/, "")
+            .replace(/\*\*/g, "")
+            .trim();
+          if (cleanedLine) {
+            currentSection.points.push(cleanedLine);
+          }
+        }
+      });
     }
-
-    if (!current) {
-      current = {
-        title: "Overview",
-        points: [],
-      };
-      sections.push(current);
-    }
-
-    current.points.push(line.replace(/^[-*]\s*/, ""));
   });
 
   return sections.length
     ? sections
     : [
         {
-          title: "AI Analysis",
-          points: [analysis],
+          title: "AI Analysis Report",
+          points: analysis
+            .split("\n")
+            .map((l) => l.replace(/\*\*/g, "").trim())
+            .filter(Boolean),
         },
       ];
 };

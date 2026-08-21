@@ -1,4 +1,4 @@
-﻿import React, { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import axios from "axios";
 import {
   FiAlertCircle,
@@ -16,8 +16,7 @@ import {
 import BackHomeButton from "../../components/BackHomeButton/BackHomeButton";
 import "./PaperAnalyzer.css";
 
-const API_BASE =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+import { API_BASE } from "../../config/apiConfig";
 
 const sectionIcons = {
   "Paper Snapshot": FiFileText,
@@ -57,10 +56,40 @@ const parseSections = (text) => {
   }
 
   const normalized = text.replace(/\r\n/g, "\n").trim();
-  const matches = [...normalized.matchAll(/^##\s+(.+)$/gm)];
+  const blocks = normalized.split(/(?=\n#{1,3}\s+|^#{1,3}\s+)/g);
+  const sections = [];
 
+  blocks.forEach((block) => {
+    const trimmed = block.trim();
+    if (!trimmed) return;
+
+    const lines = trimmed
+      .split("\n")
+      .map((l) => l.trim())
+      .filter(Boolean);
+
+    if (!lines.length) return;
+
+    const headerMatch = lines[0].match(/^#{1,3}\s*(.*)$/);
+    if (headerMatch) {
+      const title = headerMatch[1]
+        .replace(/\*\*/g, "")
+        .replace(/^[\d+.)\s-]+/, "")
+        .trim();
+      const body = lines.slice(1).join("\n").trim();
+      if (title && body) {
+        sections.push({ title, body });
+      }
+    }
+  });
+
+  if (sections.length > 0) {
+    return sections;
+  }
+
+  const matches = [...normalized.matchAll(/^##\s+(.+)$/gm)];
   if (!matches.length) {
-    return [{ title: "AI Research Report", body: normalized }];
+    return [{ title: "Research Paper Review Report", body: normalized }];
   }
 
   return matches.map((match, index) => {
@@ -68,7 +97,7 @@ const parseSections = (text) => {
     const end = matches[index + 1]?.index ?? normalized.length;
 
     return {
-      title: match[1].trim(),
+      title: match[1].replace(/\*\*/g, "").trim(),
       body: normalized.slice(start, end).trim(),
     };
   });
@@ -76,19 +105,20 @@ const parseSections = (text) => {
 
 const cleanLine = (line) =>
   line
-    .replace(/^[-*]\\s*/, "")
-    .replace(/^\\d+[.)]\\s*/, "")
-    .replace(/\\*\\*/g, "")
+    .replace(/^[-*•\d+.)]\s*/, "")
+    .replace(/\*\*/g, "")
+    .replace(/`/g, "")
     .trim();
 
 const slugify = (value) =>
   value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
 const formatInlineLabel = (line) => {
-  const match = line.match(/^([^:]{3,42}):\s*(.+)$/);
+  const cleanStr = line.replace(/\*\*/g, "").trim();
+  const match = cleanStr.match(/^([^:]{2,45}):\s*(.+)$/);
 
   if (!match) {
-    return line;
+    return cleanStr;
   }
 
   return (
@@ -102,17 +132,18 @@ const renderBody = (body) => {
   const blocks = body.split(/\n{2,}/).filter(Boolean);
 
   return blocks.map((block, index) => {
-    const lines = block.split("\n").map(cleanLine).filter(Boolean);
-    const isList = block
+    const lines = block
       .split("\n")
-      .filter(Boolean)
-      .every((line) => /^\s*([-*]|\d+[.)])\s+/.test(line));
+      .map((l) => l.trim())
+      .filter(Boolean);
+
+    const isList = lines.some((line) => /^[-*•\d+.)]\s+/.test(line));
 
     if (isList || lines.length > 1) {
       return (
         <ul key={index} className="paper-report-list">
-          {lines.map((line) => (
-            <li key={line}>{formatInlineLabel(line)}</li>
+          {lines.map((line, lIdx) => (
+            <li key={lIdx}>{formatInlineLabel(cleanLine(line))}</li>
           ))}
         </ul>
       );

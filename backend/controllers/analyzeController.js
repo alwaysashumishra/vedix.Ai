@@ -1,4 +1,4 @@
-﻿import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
+import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 import mammoth from "mammoth";
 import Groq from "groq-sdk";
 
@@ -78,19 +78,60 @@ const ensureTextWasExtracted = (text, label) => {
   return cleanText.slice(0, MAX_ANALYSIS_CHARS);
 };
 
-const createAnalysis = async (prompt) => {
-  const completion = await getGroq().chat.completions.create({
-    messages: [
-      {
-        role: "user",
-        content: prompt,
-      },
-    ],
-    model: "llama-3.3-70b-versatile",
-    temperature: 0.2,
-  });
+const getAvailableModels = async () => {
+  const defaultModels = [
+    process.env.GROQ_MODEL,
+    "openai/gpt-oss-120b",
+    "openai/gpt-oss-20b",
+    "groq/compound",
+    "qwen/qwen3.6-27b",
+    "groq/compound-mini",
+    "llama-3.3-70b-versatile",
+    "llama3-8b-8192",
+  ].filter(Boolean);
 
-  return completion.choices[0]?.message?.content?.trim();
+  try {
+    const list = await getGroq().models.list();
+    const activeModels = list.data
+      .map((m) => m.id)
+      .filter((id) => !id.includes("whisper") && !id.includes("guard"));
+
+    const combined = Array.from(new Set([...defaultModels, ...activeModels]));
+    return combined.length ? combined : defaultModels;
+  } catch (err) {
+    console.warn("Could not list Groq models dynamically, using defaults:", err.message);
+    return defaultModels;
+  }
+};
+
+const createAnalysis = async (prompt) => {
+  const modelsToTry = await getAvailableModels();
+  let lastError = null;
+
+  for (const model of modelsToTry) {
+    try {
+      const completion = await getGroq().chat.completions.create({
+        messages: [
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+        model,
+        temperature: 0.2,
+      });
+
+      const content = completion.choices[0]?.message?.content?.trim();
+      if (content) {
+        return content;
+      }
+    } catch (err) {
+      console.warn(`Groq model '${model}' failed:`, err.message);
+      lastError = err;
+    }
+  }
+
+  throw lastError || new Error("No Groq models succeeded");
 };
 
 const parseJsonObject = (value) => {
@@ -223,18 +264,33 @@ export const analyzeResume = async (req, res) => {
     );
 
     const prompt = `
-Analyze this resume professionally.
+Analyze this resume professionally and objectively.
 
-Return a clear, structured report with:
-1. ATS Score out of 100
-2. Technical Skills
-3. Soft Skills
-4. Missing Skills
-5. Strengths
-6. Weaknesses
-7. Best Job Roles
-8. Improvement Suggestions
-9. Resume Summary
+Return a clean, structured report using EXACT Markdown section headers in this format (use ## for each section header):
+
+## ATS Score
+State the estimated ATS Score out of 100 with a concise 1-sentence justification.
+
+## Resume Summary
+Give a concise 2-3 sentence summary of the candidate's experience and skill profile.
+
+## Technical Skills
+List all technical skills, frameworks, tools, and languages found.
+
+## Soft Skills
+List key interpersonal and work-related soft skills.
+
+## Missing & Recommended Skills
+List important missing skills or tools that would make this candidate significantly stronger for target roles.
+
+## Key Strengths
+Give 3-5 bullet points highlighting the candidate's main strengths.
+
+## Areas For Improvement
+Give 3-5 clear bullet points on how to improve resume quality, impact, and content.
+
+## Best Job Roles
+List 3-5 specific job titles that best match this candidate.
 
 Resume Content:
 ${extractedText}
