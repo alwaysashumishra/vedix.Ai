@@ -34,8 +34,15 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
     const file = event.target.files[0];
 
     if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setProfilePic(imageUrl);
+      if (file.size > 5 * 1024 * 1024) {
+        alert("Image size should be less than 5MB");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfilePic(reader.result);
+      };
+      reader.readAsDataURL(file);
     }
   };
 

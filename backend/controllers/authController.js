@@ -41,19 +41,30 @@ export const registerUser = async (req, res) => {
       profilePic,
     } = req.body;
 
-    const existingUser = await User.findOne({ email });
-
-    if (existingUser) {
+    if (!username || !email || !password) {
       return res.status(400).json({
         success: false,
-        message: "User already exists",
+        message: "Username, Email, and Password are required",
       });
     }
 
-    if (!password) {
+    const cleanEmail = email.toLowerCase().trim();
+    const cleanUsername = username.trim();
+
+    const existingUser = await User.findOne({
+      $or: [{ email: cleanEmail }, { username: cleanUsername }],
+    });
+
+    if (existingUser) {
+      if (existingUser.email === cleanEmail) {
+        return res.status(400).json({
+          success: false,
+          message: "An account with this email already exists",
+        });
+      }
       return res.status(400).json({
         success: false,
-        message: "Password is required",
+        message: "Username is already taken. Please choose another.",
       });
     }
 
@@ -61,13 +72,13 @@ export const registerUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const user = await User.create({
-      username,
-      name,
-      surname,
-      dob,
-      email,
+      username: cleanUsername,
+      name: name || "",
+      surname: surname || "",
+      dob: dob || "",
+      email: cleanEmail,
       password: hashedPassword,
-      profilePic,
+      profilePic: profilePic || "",
     });
 
     const token = createToken(user);
@@ -78,11 +89,19 @@ export const registerUser = async (req, res) => {
       user,
     });
   } catch (error) {
-    console.log(error);
+    console.error("Register Error:", error);
+
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyPattern || {})[0] || "field";
+      return res.status(400).json({
+        success: false,
+        message: `This ${field} is already registered. Please use another.`,
+      });
+    }
 
     res.status(500).json({
       success: false,
-      message: "Server Error",
+      message: error.message || "Registration failed. Please try again.",
     });
   }
 };
