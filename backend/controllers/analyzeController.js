@@ -1,3 +1,4 @@
+import "../config/polyfills.js";
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 import mammoth from "mammoth";
 import Groq from "groq-sdk";
