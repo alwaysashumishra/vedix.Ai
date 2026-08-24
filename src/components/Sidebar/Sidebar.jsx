@@ -1,4 +1,4 @@
-﻿
+
 import React,
 {
   useContext,
@@ -49,51 +49,34 @@ const Sidebar = () => {
 
 
   const {
-
     onSent,
-
+    newChat: contextNewChat,
     prevPrompts,
-
     setprevPrompts,
-
     setRecentPrompt,
-
     setShowResult,
-
   } = useContext(Context);
 
-
-
-
-
   /* LOAD OLD CHAT */
-  const loadPrompt =
-  async (prompt) => {
-
+  const loadPrompt = async (prompt) => {
     setRecentPrompt(prompt);
-
     await onSent(prompt);
 
     // MOBILE AUTO CLOSE
-    if(
-      window.innerWidth < 768
-    ){
+    if (window.innerWidth < 768) {
       setextended(false);
     }
   };
 
-
-
-
-
   /* NEW CHAT */
   const newChat = () => {
+    if (contextNewChat) {
+      contextNewChat();
+    } else {
+      setShowResult(false);
+    }
 
-    setShowResult(false);
-
-    if(
-      window.innerWidth < 768
-    ){
+    if (window.innerWidth < 768) {
       setextended(false);
     }
   };

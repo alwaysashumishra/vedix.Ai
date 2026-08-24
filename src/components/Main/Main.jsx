@@ -1,4 +1,4 @@
-﻿import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { NavLink } from "react-router-dom";
 import {
   FiCopy,
@@ -31,6 +31,7 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
     resultData,
     setInput,
     input,
+    messages,
   } = useContext(Context);
 
   const { theme, toggleTheme } = useContext(ThemeContext);
@@ -42,12 +43,19 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
   const [speaking, setSpeaking] = useState(false);
   const [siteConfig, setSiteConfig] = useState({});
   const recognitionRef = useRef(null);
+  const resultRef = useRef(null);
 
   useEffect(() => {
     getPublicConfig()
       .then(setSiteConfig)
       .catch(() => setSiteConfig({}));
   }, []);
+
+  useEffect(() => {
+    if (resultRef.current) {
+      resultRef.current.scrollTop = resultRef.current.scrollHeight;
+    }
+  }, [messages, loading, resultData]);
 
   useEffect(() => {
     return () => {
@@ -127,7 +135,7 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
     recognition.start();
   };
 
-  const toggleSpeech = () => {
+  const toggleSpeech = (customText) => {
     if (!window.speechSynthesis) {
       setVoiceError("Voice playback is not supported in this browser.");
       return;
@@ -139,7 +147,8 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
       return;
     }
 
-    const text = stripHtml(resultData);
+    const targetText = typeof customText === "string" ? customText : resultData;
+    const text = stripHtml(targetText);
 
     if (!text.trim()) {
       return;
@@ -234,60 +243,103 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
             </div>
           </>
         ) : (
-          <div className="result">
-            <div className="result-title">
-              <img
-                src={profile?.profilePic || profilePic}
-                alt="user"
-                className="profile-pic-small"
-              />
-              <p>{recentPrompt}</p>
-            </div>
+          <div className="result" ref={resultRef}>
+            {messages && messages.length > 0 ? (
+              messages.map((msg) => (
+                <div key={msg.id} className="chat-thread-item" style={{ marginBottom: "24px" }}>
+                  {msg.role === "user" ? (
+                    <div className="result-title">
+                      <img
+                        src={profile?.profilePic || profilePic}
+                        alt="user"
+                        className="profile-pic-small"
+                      />
+                      <div>
+                        {msg.image && (
+                          <img
+                            src={msg.image}
+                            alt="preview"
+                            style={{ maxWidth: "220px", borderRadius: "12px", marginBottom: "8px" }}
+                          />
+                        )}
+                        <p>{msg.text}</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="result-data">
+                      <img src={assets.gemini_icon} alt="" className="ai-logo" />
 
-            <div className="result-data">
-              <img src={assets.gemini_icon} alt="" className="ai-logo" />
+                      <div className="response-box">
+                        <div
+                          className="formatted-response"
+                          dangerouslySetInnerHTML={{
+                            __html: msg.text,
+                          }}
+                        ></div>
 
-              <div className="response-box">
-                {loading ? (
-                  <div className="loader">
-                    <hr />
-                    <hr />
-                    <hr />
-                  </div>
-                ) : (
-                  <>
+                        <div className="response-actions">
+                          <button
+                            className="copy-btn"
+                            onClick={() => {
+                              navigator.clipboard.writeText(stripHtml(msg.text));
+                            }}
+                            title="Copy response"
+                          >
+                            <FiCopy />
+                            Copy
+                          </button>
+
+                          <button
+                            className={`voice-action-btn ${speaking ? "active" : ""}`}
+                            onClick={() => toggleSpeech(msg.text)}
+                            title={speaking ? "Stop speaking" : "Read response aloud"}
+                          >
+                            {speaking ? <FiVolumeX /> : <FiVolume2 />}
+                            {speaking ? "Stop" : "Speak"}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
+              <>
+                <div className="result-title">
+                  <img
+                    src={profile?.profilePic || profilePic}
+                    alt="user"
+                    className="profile-pic-small"
+                  />
+                  <p>{recentPrompt}</p>
+                </div>
+
+                <div className="result-data">
+                  <img src={assets.gemini_icon} alt="" className="ai-logo" />
+                  <div className="response-box">
                     <div
                       className="formatted-response"
                       dangerouslySetInnerHTML={{
                         __html: resultData,
                       }}
                     ></div>
+                  </div>
+                </div>
+              </>
+            )}
 
-                    <div className="response-actions">
-                      <button
-                        className="copy-btn"
-                        onClick={() => {
-                          navigator.clipboard.writeText(stripHtml(resultData));
-                        }}
-                        title="Copy response"
-                      >
-                        <FiCopy />
-                        Copy
-                      </button>
-
-                      <button
-                        className={`voice-action-btn ${speaking ? "active" : ""}`}
-                        onClick={toggleSpeech}
-                        title={speaking ? "Stop speaking" : "Read response aloud"}
-                      >
-                        {speaking ? <FiVolumeX /> : <FiVolume2 />}
-                        {speaking ? "Stop" : "Speak"}
-                      </button>
-                    </div>
-                  </>
-                )}
+            {loading && (
+              <div className="result-data loading-data" style={{ marginTop: "16px" }}>
+                <img src={assets.gemini_icon} alt="" className="ai-logo" />
+                <div className="response-box">
+                  <div className="loader">
+                    <hr />
+                    <hr />
+                    <hr />
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )}
 

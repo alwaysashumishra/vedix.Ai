@@ -9,7 +9,8 @@ const API_KEY =
 
 const runChat = async (
   prompt,
-  image
+  image,
+  history = []
 ) => {
 
   // EMPTY CHECK
@@ -53,6 +54,17 @@ const runChat = async (
 
 
 
+    // MULTI-TURN CONVERSATION CONTENTS
+    const contents = [
+      ...history,
+      {
+        role: "user",
+        parts: parts,
+      },
+    ];
+
+
+
     // GEMINI API CALL
     const response =
       await fetch(
@@ -69,14 +81,7 @@ const runChat = async (
           },
 
           body: JSON.stringify({
-
-            contents: [
-
-              {
-                parts: parts,
-              },
-
-            ],
+            contents: contents,
           }),
         }
       );

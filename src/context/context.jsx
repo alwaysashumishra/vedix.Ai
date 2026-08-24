@@ -16,403 +16,145 @@ export const Context =
 
 
 
-const ContextProvider =
-(props) => {
-
+const ContextProvider = (props) => {
   /* INPUT */
-  const [input,
-  setInput] =
-    useState("");
-
-
+  const [input, setInput] = useState("");
 
   /* RECENT PROMPT */
-  const [recentPrompt,
-  setRecentPrompt] =
-    useState("");
-
-
+  const [recentPrompt, setRecentPrompt] = useState("");
 
   /* RECENT CHATS */
-  const [prevPrompts,
-  setprevPrompts] =
-    useState(
+  const [prevPrompts, setprevPrompts] = useState(
+    JSON.parse(localStorage.getItem("prevPrompts")) || []
+  );
 
-      JSON.parse(
+  /* RESULT & LOADING */
+  const [showResult, setShowResult] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [resultData, setResultData] = useState("");
 
-        localStorage.getItem(
-          "prevPrompts"
-        )
+  /* CONVERSATION HISTORY FOR GEMINI MULTI-TURN */
+  const [chatHistory, setChatHistory] = useState([]);
+  const [messages, setMessages] = useState([]);
 
-      ) || []
-    );
-
-
-
-  /* RESULT */
-  const [showResult,
-  setShowResult] =
-    useState(false);
-
-
-
-  /* LOADING */
-  const [loading,
-  setLoading] =
-    useState(false);
-
-
-
-  /* RESULT DATA */
-  const [resultData,
-  setResultData] =
-    useState("");
-
-
-
-
-
-
-  /* TYPING EFFECT */
-  const delayPara = (
-
-    index,
-
-    nextWord
-
-  ) => {
-
-    setTimeout(() => {
-
-      setResultData(
-
-        (prev) =>
-
-        prev + nextWord
-      );
-
-    }, 12 * index);
-
+  const formatMarkdown = (response) => {
+    let formatted = response;
+    formatted = formatted.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
+    formatted = formatted.replace(/```([\s\S]*?)```/g, "<pre><code>$1</code></pre>");
+    formatted = formatted.replace(/`(.*?)`/g, "<code>$1</code>");
+    formatted = formatted.replace(/^### (.*$)/gim, "<h3>$1</h3>");
+    formatted = formatted.replace(/^## (.*$)/gim, "<h2>$1</h2>");
+    formatted = formatted.replace(/^# (.*$)/gim, "<h1>$1</h1>");
+    formatted = formatted.replace(/\n/g, "<br/>");
+    return formatted;
   };
 
-
-
-
-
-
-
+  /* NEW CHAT RESET */
+  const newChat = () => {
+    setLoading(false);
+    setShowResult(false);
+    setResultData("");
+    setRecentPrompt("");
+    setChatHistory([]);
+    setMessages([]);
+    setInput("");
+  };
 
   /* SEND PROMPT */
-  const onSent = async (
+  const onSent = async (prompt, image) => {
+    const finalPrompt = prompt || input;
 
-    prompt,
-
-    image
-
-  ) => {
-
-    const finalPrompt =
-
-      prompt || input;
-
-
-
-
-    /* EMPTY CHECK */
-    if(
-
-      !finalPrompt?.trim()
-
-      &&
-
-      !image
-    ){
-
-      setResultData(
-
-        "⚠ Please enter a prompt"
-      );
-
+    if (!finalPrompt?.trim() && !image) {
+      setResultData("⚠ Please enter a prompt");
       return;
     }
 
-
-
-
-
-
-    try{
-
+    try {
       setLoading(true);
-
       setShowResult(true);
-
       setResultData("");
+      setRecentPrompt(finalPrompt);
 
+      /* SAVE PROMPT IN SIDEBAR RECENT */
+      if (!prevPrompts.includes(finalPrompt)) {
+        const updatedPrompts = [...prevPrompts, finalPrompt];
+        setprevPrompts(updatedPrompts);
+        localStorage.setItem("prevPrompts", JSON.stringify(updatedPrompts));
+      }
 
+      /* CREATE USER MESSAGE IN UI THREAD */
+      const userMsgId = Date.now();
+      const userMessage = {
+        id: userMsgId,
+        role: "user",
+        text: finalPrompt,
+        image: image ? URL.createObjectURL(image) : null,
+      };
 
-      /* SET PROMPT */
-      setRecentPrompt(
-        finalPrompt
-      );
+      setMessages((prev) => [...prev, userMessage]);
 
+      /* CALL GEMINI WITH CONVERSATION HISTORY */
+      const response = await runChat(finalPrompt, image, chatHistory);
 
-
-
-
-      /* SAVE CHATS */
-      const updatedPrompts = [
-
-        ...prevPrompts,
-
-        finalPrompt
-      ];
-
-
-
-      setprevPrompts(
-        updatedPrompts
-      );
-
-
-
-      localStorage.setItem(
-
-        "prevPrompts",
-
-        JSON.stringify(
-          updatedPrompts
-        )
-      );
-
-
-
-
-
-
-      /* GEMINI */
-      const response =
-      await runChat(
-
-        finalPrompt,
-
-        image
-      );
-
-
-
-
-
-      if(!response){
-
-        setResultData(
-
-          "⚠ No response from Gemini"
-        );
-
+      if (!response) {
+        setResultData("⚠ No response from Gemini");
         return;
       }
 
-
-
-
-
-
-      /* =========================
-         MARKDOWN FORMAT
-      ========================= */
-
-      let formatted =
-        response;
-
-
-
-      /* BOLD */
-      formatted = formatted.replace(
-
-        /\*\*(.*?)\*\*/g,
-
-        "<b>$1</b>"
-      );
-
-
-
-      /* CODE BLOCK */
-      formatted = formatted.replace(
-
-        /```([\s\S]*?)```/g,
-
-        "<pre><code>$1</code></pre>"
-      );
-
-
-
-      /* INLINE CODE */
-      formatted = formatted.replace(
-
-        /`(.*?)`/g,
-
-        "<code>$1</code>"
-      );
-
-
-
-      /* HEADINGS */
-      formatted = formatted.replace(
-
-        /^### (.*$)/gim,
-
-        "<h3>$1</h3>"
-      );
-
-
-
-      formatted = formatted.replace(
-
-        /^## (.*$)/gim,
-
-        "<h2>$1</h2>"
-      );
-
-
-
-      formatted = formatted.replace(
-
-        /^# (.*$)/gim,
-
-        "<h1>$1</h1>"
-      );
-
-
-
-      /* LINE BREAK */
-      formatted = formatted.replace(
-
-        /\n/g,
-
-        "<br/>"
-      );
-
-
-
-
-
-
-
-      /* TYPING */
-      let words =
-      formatted.split(" ");
-
-
-
-
-      for(
-
-        let i = 0;
-
-        i < words.length;
-
-        i++
-      ){
-
-        delayPara(
-
-          i,
-
-          words[i] + " "
-        );
-      }
-
-    }
-
-
-
-
-
-
-    catch(error){
-
-      console.error(
-
-        "Context Error 👉",
-
-        error
-      );
-
-
-
-      setResultData(
-
-        "⚠ Gemini API Error"
-      );
-    }
-
-
-
-
-
-
-    finally{
-
+      const formatted = formatMarkdown(response);
+      setResultData(formatted);
+
+      /* CREATE MODEL MESSAGE IN UI THREAD */
+      const aiMessage = {
+        id: Date.now() + 1,
+        role: "model",
+        text: formatted,
+        rawText: response,
+      };
+
+      setMessages((prev) => [...prev, aiMessage]);
+
+      /* UPDATE MULTI-TURN HISTORY FOR GEMINI API */
+      const userPart = { text: finalPrompt };
+      const modelPart = { text: response };
+
+      setChatHistory((prev) => [
+        ...prev,
+        { role: "user", parts: [userPart] },
+        { role: "model", parts: [modelPart] },
+      ]);
+    } catch (error) {
+      console.error("Context Error 👉", error);
+      setResultData("⚠ Gemini API Error");
+    } finally {
       setLoading(false);
-
       setInput("");
     }
   };
 
-
-
-
-
-
-
-
-
   /* CONTEXT VALUE */
   const contextValue = {
-
     prevPrompts,
-
     setprevPrompts,
-
     onSent,
-
+    newChat,
     setRecentPrompt,
-
     setShowResult,
-
     recentPrompt,
-
     showResult,
-
     loading,
-
     resultData,
-
     input,
-
     setInput,
+    chatHistory,
+    messages,
   };
 
-
-
-
-
-
-
   return (
-
-    <Context.Provider
-      value={contextValue}
-    >
-
+    <Context.Provider value={contextValue}>
       {props.children}
-
     </Context.Provider>
   );
 };
-
-
-
 
 export default ContextProvider;
