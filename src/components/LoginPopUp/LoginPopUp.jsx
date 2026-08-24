@@ -10,6 +10,7 @@ import {
 } from "../../config/auth";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+const ENABLE_GOOGLE_AUTH = false; // Set to true to re-enable Google Auth in future
 
 const LoginPopUp = ({ setShowLogin, setProfile }) => {
   const [currstate, setcurrstate] = useState("login");
@@ -214,7 +215,7 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
           {loading ? "Please wait..." : currstate === "signup" ? "Create Account" : "Login"}
         </button>
 
-        {GOOGLE_CLIENT_ID && (
+        {ENABLE_GOOGLE_AUTH && GOOGLE_CLIENT_ID && (
           <>
             <div className="login-divider">
               <span>or continue with Google</span>
@@ -241,7 +242,7 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
                     console.log("Google prompt dismissed:", notification.getDismissedReason?.());
                   }
                 }}
-                width="100%"
+                width="320"
                 theme="outline"
                 shape="rectangular"
                 text={currstate === "signup" ? "signup_with" : "signin_with"}
@@ -253,7 +254,7 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
           </>
         )}
 
-        {!GOOGLE_CLIENT_ID && (
+        {ENABLE_GOOGLE_AUTH && !GOOGLE_CLIENT_ID && (
           <p className="google-config-note">
             Add <strong>VITE_GOOGLE_CLIENT_ID</strong> to enable Google sign-in.
           </p>
