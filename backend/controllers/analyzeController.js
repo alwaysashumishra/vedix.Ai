@@ -1,5 +1,4 @@
 import "../config/polyfills.js";
-import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 import mammoth from "mammoth";
 import Groq from "groq-sdk";
 
@@ -22,6 +21,9 @@ const getGroq = () => {
 };
 
 const extractTextFromPDF = async (buffer) => {
+  const pdfjsModule = await import("pdfjs-dist/legacy/build/pdf.mjs");
+  const pdfjsLib = pdfjsModule.default || pdfjsModule;
+
   const pdf = await pdfjsLib.getDocument({
     data: new Uint8Array(buffer),
     disableFontFace: true,
