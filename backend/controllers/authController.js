@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 import { OAuth2Client } from "google-auth-library";
 
 const getGoogleClientId = () => process.env.GOOGLE_CLIENT_ID || process.env.VITE_GOOGLE_CLIENT_ID;
@@ -9,6 +10,15 @@ const createToken = (user) =>
   jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
     expiresIn: "7d",
   });
+
+const isDbConnected = () => mongoose.connection.readyState === 1;
+
+const handleDbDisconnected = (res) => {
+  return res.status(503).json({
+    success: false,
+    message: "Database connection is unavailable. Ensure MONGO_URI is set in Railway variables and MongoDB Atlas Network Access allows 0.0.0.0/0.",
+  });
+};
 
 const normalizeUsername = (value = "") =>
   value
@@ -31,6 +41,10 @@ const buildUniqueUsername = async (seed) => {
 
 export const registerUser = async (req, res) => {
   try {
+    if (!isDbConnected()) {
+      return handleDbDisconnected(res);
+    }
+
     const {
       username,
       name,
@@ -108,9 +122,21 @@ export const registerUser = async (req, res) => {
 
 export const loginUser = async (req, res) => {
   try {
+    if (!isDbConnected()) {
+      return handleDbDisconnected(res);
+    }
+
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and Password are required",
+      });
+    }
+
+    const cleanEmail = email.toLowerCase().trim();
+    const user = await User.findOne({ email: cleanEmail });
 
     if (!user) {
       return res.status(400).json({
@@ -150,11 +176,11 @@ export const loginUser = async (req, res) => {
       user,
     });
   } catch (error) {
-    console.log(error);
+    console.error("Login Error:", error);
 
     res.status(500).json({
       success: false,
-      message: "Server Error",
+      message: error.message || "Server Error",
     });
   }
 };
