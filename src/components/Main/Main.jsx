@@ -164,12 +164,6 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
     window.speechSynthesis.speak(utterance);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setProfile(null);
-  };
-
   return (
     <div className="main">
       <div className="nav">
