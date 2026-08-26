@@ -1,4 +1,4 @@
-﻿* {
+* {
   box-sizing: border-box;
 }
 
@@ -543,6 +543,9 @@
 }
 
 .ticker-label {
+  position: relative;
+  z-index: 5;
+  flex-shrink: 0;
   height: 100%;
   display: inline-flex;
   align-items: center;
@@ -552,6 +555,7 @@
   font-weight: 900;
   text-transform: uppercase;
   white-space: nowrap;
+  box-shadow: 4px 0 12px rgba(15, 23, 42, 0.5);
 }
 
 .ticker-track {

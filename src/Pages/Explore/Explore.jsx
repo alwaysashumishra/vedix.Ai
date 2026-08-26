@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import "./Explore.css";
 import Navbar from "../../components/NavBar/Navbar";
 import { fetchNewsFeed } from "../../config/news";
@@ -63,6 +63,7 @@ const formatTime = (value) => {
 };
 
 const Explore = ({ profile, setProfile, setShowLogin }) => {
+  const [lang, setLang] = useState("en");
   const [newsData, setNewsData] = useState({
     hero: [],
     latest: [],
@@ -77,12 +78,12 @@ const Explore = ({ profile, setProfile, setShowLogin }) => {
   const [now, setNow] = useState(new Date());
   const [siteConfig, setSiteConfig] = useState({});
 
-  const loadNews = async () => {
+  const loadNews = async (currentLang = lang) => {
     setLoading(true);
     setError("");
 
     try {
-      const data = await fetchNewsFeed();
+      const data = await fetchNewsFeed(currentLang);
       setNewsData(data);
       setIndex(0);
     } catch (fetchError) {
@@ -94,8 +95,8 @@ const Explore = ({ profile, setProfile, setShowLogin }) => {
   };
 
   useEffect(() => {
-    loadNews();
-  }, []);
+    loadNews(lang);
+  }, [lang]);
 
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 30000);
@@ -104,15 +105,17 @@ const Explore = ({ profile, setProfile, setShowLogin }) => {
 
   const categoryTabs = useMemo(
     () => [
-      { key: "All", label: "All", count: newsData.latest.length },
+      { key: "All", label: lang === "hi" ? "सब" : "All", count: newsData.latest.length },
       ...newsData.categories.map((category) => ({
         key: category.label,
         label: category.label,
         count: category.articles?.length || 0,
       })),
     ],
-    [newsData.categories, newsData.latest.length]
+    [newsData.categories, newsData.latest.length, lang]
   );
+
+  const isAllCategory = activeCategory === "All" || activeCategory === "सब";
 
   const selectedCategory = useMemo(
     () => newsData.categories.find((category) => category.label === activeCategory),
@@ -120,12 +123,12 @@ const Explore = ({ profile, setProfile, setShowLogin }) => {
   );
 
   const displayHeroList =
-    activeCategory === "All"
+    isAllCategory
       ? newsData.hero
       : selectedCategory?.articles?.slice(0, 5) || [];
 
   const categoryHighlights =
-    activeCategory === "All"
+    isAllCategory
       ? newsData.categories
       : selectedCategory
         ? [{ ...selectedCategory, articles: selectedCategory.articles || [] }]
@@ -134,7 +137,7 @@ const Explore = ({ profile, setProfile, setShowLogin }) => {
   const filteredLatest = useMemo(() => {
     const query = search.trim().toLowerCase();
     const sourceArticles =
-      activeCategory === "All" ? newsData.latest : selectedCategory?.articles || [];
+      isAllCategory ? newsData.latest : selectedCategory?.articles || [];
 
     if (!query) {
       return sourceArticles;
@@ -180,7 +183,16 @@ const Explore = ({ profile, setProfile, setShowLogin }) => {
 
   return (
     <div className="explores">
-      <Navbar profile={profile} setProfile={setProfile} setShowLogin={setShowLogin} />
+      <Navbar
+        profile={profile}
+        setProfile={setProfile}
+        setShowLogin={setShowLogin}
+        lang={lang}
+        setLang={setLang}
+        activeCategory={activeCategory}
+        onCategorySelect={(cat) => setActiveCategory(cat)}
+        categories={newsData.categories}
+      />
 
       <div className="explore-container">
         <BackHomeButton className="explore-home-link" />
