@@ -1,3 +1,9 @@
+import nodeCrypto from "node:crypto";
+
+if (!globalThis.crypto) {
+  globalThis.crypto = nodeCrypto.webcrypto;
+}
+
 // Polyfills for Node.js environments (Railway, Render, Linux)
 if (typeof globalThis.DOMMatrix === "undefined") {
   globalThis.DOMMatrix = class DOMMatrix {
