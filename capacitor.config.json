@@ -1,0 +1,9 @@
+{
+  "appId": "com.vedix.ai",
+  "appName": "Vedix.Ai",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  }
+}

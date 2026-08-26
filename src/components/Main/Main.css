@@ -823,7 +823,7 @@ body.dark .preview-container{
 
 /* ================= TABLET ================= */
 
-"@media (max-width: 768px){
+@media (max-width: 768px){
 
     .main{
         width: 100%;
@@ -1058,7 +1058,7 @@ body.dark .preview-container{
 
     .main .cards{
         grid-template-columns: 1fr;
-    }"
+    }
 
     .main .card{
         min-height: 132px;
