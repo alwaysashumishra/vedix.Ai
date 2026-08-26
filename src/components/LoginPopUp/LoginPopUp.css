@@ -166,3 +166,16 @@
   font-weight: 700;
   line-height: 1.45;
 }
+
+.forgot-password-link {
+  font-size: 13px;
+  color: #2962ff;
+  text-align: right;
+  cursor: pointer;
+  margin-top: -10px;
+  font-weight: 500;
+}
+
+.forgot-password-link:hover {
+  text-decoration: underline;
+}

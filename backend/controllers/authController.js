@@ -268,4 +268,66 @@ export const googleAuth = async (req, res) => {
   }
 };
 
+export const resetPassword = async (req, res) => {
+  try {
+    if (!isDbConnected()) {
+      return handleDbDisconnected(res);
+    }
 
+    const { email, newPassword } = req.body;
+
+    if (!email || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and New Password are required",
+      });
+    }
+
+    if (newPassword.length < 4) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 4 characters long",
+      });
+    }
+
+    const cleanEmail = email.toLowerCase().trim();
+    const user = await User.findOne({ email: cleanEmail });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "No account found with this email address",
+      });
+    }
+
+    if (user.isBlocked) {
+      return res.status(403).json({
+        success: false,
+        message: "This account has been blocked by admin",
+      });
+    }
+
+    if (!user.password && user.googleId) {
+      return res.status(400).json({
+        success: false,
+        message: "This account was created using Google sign-in. Password cannot be reset.",
+      });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Password reset successfully. You can now log in with your new password.",
+    });
+  } catch (error) {
+    console.error("Reset Password Error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: error.message || "Failed to reset password. Please try again.",
+    });
+  }
+};

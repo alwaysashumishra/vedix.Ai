@@ -7,6 +7,7 @@ import {
   registerUser,
   loginUser,
   googleAuthUser,
+  resetPasswordUser,
 } from "../../config/auth";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -20,6 +21,7 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
   const [dob, setDob] = useState("");
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [profilePic, setProfilePic] = useState(assets.user_icon);
   const [loading, setLoading] = useState(false);
   const [googleError, setGoogleError] = useState("");
@@ -65,6 +67,22 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
 
         saveSession(data);
         alert("Account created successfully");
+      } else if (currstate === "forgot") {
+        if (password !== confirmPassword) {
+          alert("Passwords do not match!");
+          setLoading(false);
+          return;
+        }
+
+        const data = await resetPasswordUser({
+          email,
+          newPassword: password,
+        });
+
+        alert(data.message || "Password reset successfully!");
+        setcurrstate("login");
+        setpassword("");
+        setConfirmPassword("");
       } else {
         const data = await loginUser({
           email,
@@ -126,7 +144,13 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
     <div className="login-popup">
       <form className="login-popup-container" onSubmit={handleSubmit}>
         <div className="login-popup-title">
-          <h2>{currstate === "signup" ? "Create account" : "Login"}</h2>
+          <h2>
+            {currstate === "signup"
+              ? "Create account"
+              : currstate === "forgot"
+              ? "Reset Password"
+              : "Login"}
+          </h2>
 
           <button
             type="button"
@@ -204,15 +228,44 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
 
           <input
             type="password"
-            placeholder="Password"
+            placeholder={currstate === "forgot" ? "New Password" : "Password"}
             required
             value={password}
             onChange={(e) => setpassword(e.target.value)}
           />
+
+          {currstate === "forgot" && (
+            <input
+              type="password"
+              placeholder="Confirm New Password"
+              required
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+          )}
+
+          {currstate === "login" && (
+            <p
+              className="forgot-password-link"
+              onClick={() => {
+                setcurrstate("forgot");
+                setpassword("");
+                setConfirmPassword("");
+              }}
+            >
+              Forgot Password?
+            </p>
+          )}
         </div>
 
         <button type="submit" disabled={loading}>
-          {loading ? "Please wait..." : currstate === "signup" ? "Create Account" : "Login"}
+          {loading
+            ? "Please wait..."
+            : currstate === "signup"
+            ? "Create Account"
+            : currstate === "forgot"
+            ? "Reset Password"
+            : "Login"}
         </button>
 
         {ENABLE_GOOGLE_AUTH && GOOGLE_CLIENT_ID && (
@@ -265,13 +318,19 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
           <p>By continuing, I agree to the terms and privacy policy.</p>
         </div>
 
-        {currstate === "login" ? (
+        {currstate === "login" && (
           <p>
             Create new account? <span onClick={() => setcurrstate("signup")}>Click here</span>
           </p>
-        ) : (
+        )}
+        {currstate === "signup" && (
           <p>
             Already have account? <span onClick={() => setcurrstate("login")}>Login</span>
+          </p>
+        )}
+        {currstate === "forgot" && (
+          <p>
+            Remembered your password? <span onClick={() => setcurrstate("login")}>Login</span>
           </p>
         )}
       </form>
@@ -280,4 +339,3 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
 };
 
 export default LoginPopUp;
-

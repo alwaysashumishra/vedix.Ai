@@ -17,3 +17,8 @@ export const googleAuthUser = async (credential) => {
   const response = await axios.post(`${API}/google`, { credential });
   return response.data;
 };
+
+export const resetPasswordUser = async (data) => {
+  const response = await axios.post(`${API}/reset-password`, data);
+  return response.data;
+};
