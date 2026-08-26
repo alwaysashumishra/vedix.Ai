@@ -9,6 +9,7 @@ import userRoutes from "./routes/userRoutes.js";
 import analyzeRoutes from "./routes/analyzeRoutes.js";
 import newsRoutes from "./routes/newsRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import cricketRoutes from "./routes/cricketRoutes.js";
 import { trackUsage } from "./middleware/trackUsage.js";
 
 dotenv.config();
@@ -33,6 +34,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/analyze", analyzeRoutes);
 app.use("/api/news", newsRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/cricket", cricketRoutes);
 
 app.get("/", (_req, res) => {
   res.send("Vedix AI Backend Running");

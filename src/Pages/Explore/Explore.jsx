@@ -6,6 +6,8 @@ import { getPublicConfig } from "../../config/publicConfig";
 import { FaFire, FaGlobe, FaSearch } from "react-icons/fa";
 import { FiCalendar, FiClock, FiExternalLink, FiRefreshCcw } from "react-icons/fi";
 import BackHomeButton from "../../components/BackHomeButton/BackHomeButton";
+import CricketScoreWidget from "../../components/CricketScore/CricketScoreWidget";
+import ScorecardModal from "../../components/CricketScore/ScorecardModal";
 
 const fallbackImages = {
   "Top Stories": "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80",
@@ -64,6 +66,7 @@ const formatTime = (value) => {
 
 const Explore = ({ profile, setProfile, setShowLogin }) => {
   const [lang, setLang] = useState("en");
+  const [selectedMatch, setSelectedMatch] = useState(null);
   const [newsData, setNewsData] = useState({
     hero: [],
     latest: [],
@@ -217,6 +220,12 @@ const Explore = ({ profile, setProfile, setShowLogin }) => {
             <p>{dateLabel}</p>
           </aside>
         </div>
+
+        <CricketScoreWidget lang={lang} onSelectMatch={(match) => setSelectedMatch(match)} />
+
+        {selectedMatch && (
+          <ScorecardModal match={selectedMatch} onClose={() => setSelectedMatch(null)} lang={lang} />
+        )}
 
         <div className="explore-topbar">
           <div className="search-wrapper">
