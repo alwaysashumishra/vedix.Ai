@@ -10,6 +10,7 @@ import {
   FiX,
   FiFileText,
   FiCompass,
+  FiLogOut,
 } from "react-icons/fi";
 import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { RiArticleLine } from "react-icons/ri";
@@ -174,36 +175,42 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
             {theme === "light" ? <MdDarkMode /> : <MdLightMode />}
           </button>
 
-          <NavLink className="Nav-explore-btn" to="/explore">
-            <FiCompass />
-            Explore
+          <NavLink className="Nav-explore-btn" to="/explore" title="Explore Topics">
+            <FiCompass className="nav-icon" />
+            <span className="nav-btn-text">Explore</span>
           </NavLink>
 
-          <NavLink to="/resume-analyzer" className="ai-nav-btn">
-            <FiFileText />
-            Resume AI
+          <NavLink to="/resume-analyzer" className="ai-nav-btn" title="Resume AI">
+            <FiFileText className="nav-icon" />
+            <span className="nav-btn-text">Resume AI</span>
           </NavLink>
 
-          <NavLink to="/paper-analyzer" className="ai-nav-btn">
-            <RiArticleLine />
-            Research AI
-          </NavLink>{!profile ? (
+          <NavLink to="/paper-analyzer" className="ai-nav-btn" title="Research AI">
+            <RiArticleLine className="nav-icon" />
+            <span className="nav-btn-text">Research AI</span>
+          </NavLink>
+
+          {!profile ? (
             <button onClick={() => setShowLogin(true)} className="Nav-login-btn">
               Sign up/Login
             </button>
           ) : (
             <div className="profile-wrapper">
-              <div className="profile-box">
+              <div className="profile-box" title={profile.username}>
                 <span className="username">{profile.username}</span>
                 <img
                   src={profile.profilePic || assets.user_icon}
                   alt="profile"
                   className="profile-picture"
+                  onError={(e) => {
+                    e.target.src = assets.user_icon;
+                  }}
                 />
               </div>
 
-              <button onClick={handleLogout} className="logout-btn">
-                Logout
+              <button onClick={handleLogout} className="logout-btn" title="Logout">
+                <FiLogOut className="logout-icon" />
+                <span className="logout-text">Logout</span>
               </button>
             </div>
           )}

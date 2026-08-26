@@ -578,11 +578,24 @@ body.dark .sidebar img{
         z-index: 1200;
     }
 
+    body.dark .sidebar .menu {
+        background: #1e293b;
+        border: 1px solid #334155;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+        filter: invert(1);
+    }
+
     .sidebar.active .menu {
         left: 204px;
         right: auto;
         top: 14px;
         background: #e6eaf1;
+    }
+
+    body.dark .sidebar.active .menu {
+        left: 204px;
+        background: #1e293b;
+        filter: invert(1);
     }
 }
 
