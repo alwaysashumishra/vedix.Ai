@@ -78,14 +78,14 @@ export const registerUser = async (req, res) => {
       }
       return res.status(400).json({
         success: false,
-        message: "Username is already taken. Please choose another.",
+        message: "Username is already taken",
       });
     }
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const user = await User.create({
+    const newUser = await User.create({
       username: cleanUsername,
       name: name || "",
       surname: surname || "",
@@ -95,23 +95,23 @@ export const registerUser = async (req, res) => {
       profilePic: profilePic || "",
     });
 
-    const token = createToken(user);
+    const token = createToken(newUser);
 
     res.status(201).json({
       success: true,
       token,
-      user,
+      user: {
+        _id: newUser._id,
+        username: newUser.username,
+        name: newUser.name,
+        surname: newUser.surname,
+        dob: newUser.dob,
+        email: newUser.email,
+        profilePic: newUser.profilePic,
+      },
     });
   } catch (error) {
-    console.error("Register Error:", error);
-
-    if (error.code === 11000) {
-      const field = Object.keys(error.keyPattern || {})[0] || "field";
-      return res.status(400).json({
-        success: false,
-        message: `This ${field} is already registered. Please use another.`,
-      });
-    }
+    console.error("Registration Error:", error);
 
     res.status(500).json({
       success: false,
@@ -173,7 +173,15 @@ export const loginUser = async (req, res) => {
     res.status(200).json({
       success: true,
       token,
-      user,
+      user: {
+        _id: user._id,
+        username: user.username,
+        name: user.name,
+        surname: user.surname,
+        dob: user.dob,
+        email: user.email,
+        profilePic: user.profilePic,
+      },
     });
   } catch (error) {
     console.error("Login Error:", error);
@@ -256,7 +264,15 @@ export const googleAuth = async (req, res) => {
     res.status(200).json({
       success: true,
       token,
-      user,
+      user: {
+        _id: user._id,
+        username: user.username,
+        name: user.name,
+        surname: user.surname,
+        dob: user.dob,
+        email: user.email,
+        profilePic: user.profilePic,
+      },
     });
   } catch (error) {
     console.error("Google Auth Error:", error);
@@ -328,6 +344,77 @@ export const resetPassword = async (req, res) => {
     res.status(500).json({
       success: false,
       message: error.message || "Failed to reset password. Please try again.",
+    });
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  try {
+    if (!isDbConnected()) {
+      return handleDbDisconnected(res);
+    }
+
+    const { userId, email, username, name, surname, dob, profilePic } = req.body;
+
+    if (!userId && !email) {
+      return res.status(400).json({
+        success: false,
+        message: "User ID or Email is required to update profile",
+      });
+    }
+
+    const query = userId ? { _id: userId } : { email: email.toLowerCase().trim() };
+    const user = await User.findOne(query);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (username && username.trim() !== user.username) {
+      const cleanUsername = username.trim();
+      const existingUser = await User.findOne({ username: cleanUsername });
+
+      if (existingUser && existingUser._id.toString() !== user._id.toString()) {
+        return res.status(400).json({
+          success: false,
+          message: "Username is already taken by another user",
+        });
+      }
+
+      user.username = cleanUsername;
+    }
+
+    if (name !== undefined) user.name = name;
+    if (surname !== undefined) user.surname = surname;
+    if (dob !== undefined) user.dob = dob;
+    if (profilePic !== undefined) user.profilePic = profilePic;
+
+    await user.save();
+
+    const updatedUser = {
+      _id: user._id,
+      username: user.username,
+      name: user.name,
+      surname: user.surname,
+      dob: user.dob,
+      email: user.email,
+      profilePic: user.profilePic,
+    };
+
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error("Update Profile Error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: error.message || "Failed to update profile",
     });
   }
 };

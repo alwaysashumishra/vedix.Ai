@@ -22,3 +22,8 @@ export const resetPasswordUser = async (data) => {
   const response = await axios.post(`${API}/reset-password`, data);
   return response.data;
 };
+
+export const updateProfileUser = async (data) => {
+  const response = await axios.put(`${API}/update-profile`, data);
+  return response.data;
+};

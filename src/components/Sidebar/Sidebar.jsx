@@ -31,7 +31,7 @@ from "react-router-dom";
 
 
 
-const Sidebar = () => {
+const Sidebar = ({ profile, setProfile }) => {
 
   const [extended,
   setextended] =
@@ -146,11 +146,10 @@ const Sidebar = () => {
       {/* SETTINGS */}
       {
         showSettings && (
-
           <SettingsModal
-            setShowSettings={
-              setShowSettings
-            }
+            setShowSettings={setShowSettings}
+            profile={profile}
+            setProfile={setProfile}
           />
         )
       }

@@ -17,7 +17,7 @@ const Home = ({
   return (
     <div className="home-layout">
 
-      <Sidebar />
+      <Sidebar profile={profile} setProfile={setProfile} />
 
       <Main
         showLogin={showLogin}
