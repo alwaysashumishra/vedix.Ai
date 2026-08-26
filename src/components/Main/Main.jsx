@@ -65,6 +65,13 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
     };
   }, []);
 
+  const getUserAvatar = () => {
+    if (profile && profile.profilePic && typeof profile.profilePic === "string" && profile.profilePic.trim() !== "") {
+      return profile.profilePic;
+    }
+    return assets.user_icon;
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
@@ -257,9 +264,12 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
                   {msg.role === "user" ? (
                     <div className="result-title">
                       <img
-                        src={profile?.profilePic || profilePic}
+                        src={getUserAvatar()}
                         alt="user"
                         className="profile-pic-small"
+                        onError={(e) => {
+                          e.currentTarget.src = assets.user_icon;
+                        }}
                       />
                       <div>
                         {msg.image && (
@@ -314,12 +324,15 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
               <>
                 <div className="result-title">
                   <img
-                    src={profile?.profilePic || profilePic}
+                    src={getUserAvatar()}
                     alt="user"
                     className="profile-pic-small"
+                    onError={(e) => {
+                      e.currentTarget.src = assets.user_icon;
+                    }}
                   />
                   <p>{recentPrompt}</p>
-                </div>
+                </div>"
 
                 <div className="result-data">
                   <img src={assets.gemini_icon} alt="" className="ai-logo" />

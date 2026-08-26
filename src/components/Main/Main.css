@@ -314,9 +314,14 @@ body.dark .result-title p
     color: #ffffff
 }
 .profile-pic-small{
-    width: 35px;
-    height: 35px;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
     border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 2px solid #2563eb;
 }
 
 .result-data{
