@@ -11,7 +11,7 @@ import {
 } from "../../config/auth";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-const ENABLE_GOOGLE_AUTH = false; // Set to true to re-enable Google Auth in future
+const ENABLE_GOOGLE_AUTH = true;
 
 const LoginPopUp = ({ setShowLogin, setProfile }) => {
   const [currstate, setcurrstate] = useState("login");
