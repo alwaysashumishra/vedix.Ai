@@ -211,13 +211,19 @@
 
 .sidebar .recent-title{
 
-    margin-top: 30px;
+    margin-top: 24px;
 
-    margin-bottom: 20px;
+    margin-bottom: 12px;
 
-    font-size: 15px;
+    font-size: 13px;
 
     font-weight: 600;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.5px;
+
+    color: #64748b;
 }
 
 

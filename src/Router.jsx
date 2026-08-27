@@ -1,4 +1,4 @@
-﻿import React, { useEffect } from "react";
+import React, { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import Home from "./Pages/Home/Home";
 import Explore from "./Pages/Explore/Explore";
@@ -6,6 +6,7 @@ import ResumeAnalyzer from "./Pages/ResumeAnalyzer/ResumeAnalyzer";
 import PaperAnalyzer from "./Pages/PaperAnalyzer/PaperAnalyzer";
 import Plans from "./Pages/Plans/Plans";
 import Admin from "./Pages/Admin/Admin";
+import Notes from "./Pages/Notes/Notes";
 
 const AccessGate = ({ setShowLogin }) => (
   <div className="access-gate">
@@ -62,6 +63,15 @@ const Router = ({ showLogin, setShowLogin, profile, setProfile }) => {
               setProfile={setProfile}
               setShowLogin={setShowLogin}
             />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/notes"
+        element={
+          <ProtectedRoute profile={profile} setShowLogin={setShowLogin}>
+            <Notes profile={profile} setProfile={setProfile} />
           </ProtectedRoute>
         }
       />

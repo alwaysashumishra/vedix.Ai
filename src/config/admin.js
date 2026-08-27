@@ -2,6 +2,7 @@ import axios from "axios";
 import { API_BASE } from "./apiConfig";
 
 const ADMIN_API = `${API_BASE}/admin`;
+const PAYMENTS_API = `${API_BASE}/payments`;
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem("token");
@@ -38,6 +39,20 @@ export const updateAdminConfig = async (config) => {
 
 export const updateAdminUser = async (userId, updates) => {
   const response = await axios.patch(`${ADMIN_API}/users/${userId}`, updates, {
+    headers: getAuthHeaders(),
+  });
+  return response.data;
+};
+
+export const getAdminPayments = async (status = "") => {
+  const response = await axios.get(`${PAYMENTS_API}/admin/all${status ? `?status=${status}` : ""}`, {
+    headers: getAuthHeaders(),
+  });
+  return response.data;
+};
+
+export const updateAdminPaymentStatus = async (paymentId, updates) => {
+  const response = await axios.patch(`${PAYMENTS_API}/admin/${paymentId}`, updates, {
     headers: getAuthHeaders(),
   });
   return response.data;

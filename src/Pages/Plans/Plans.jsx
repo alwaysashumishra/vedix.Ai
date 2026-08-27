@@ -1,8 +1,18 @@
-﻿import React, { useEffect, useMemo, useState } from "react";
-import { FiCheck, FiCreditCard, FiLock, FiStar, FiZap } from "react-icons/fi";
+import React, { useEffect, useMemo, useState } from "react";
+import { FiCheck, FiClock, FiCreditCard, FiLock, FiStar, FiZap } from "react-icons/fi";
+import axios from "axios";
 import BackHomeButton from "../../components/BackHomeButton/BackHomeButton";
-import "./Plans.css";
+import PaymentModal from "../../components/PaymentModal/PaymentModal";
+import { API_BASE } from "../../config/apiConfig";
 import { getPublicConfig } from "../../config/publicConfig";
+import "./Plans.css";
+
+const PAYMENTS_API = `${API_BASE}/payments`;
+
+const getAuthHeaders = () => {
+  const token = localStorage.getItem("token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
 
 const buildPlans = (siteConfig = {}) => [
   {
@@ -37,7 +47,7 @@ const buildPlans = (siteConfig = {}) => [
       "Research paper summaries",
       "Faster response priority",
     ],
-    cta: "Upgrade to Pro",
+    cta: "Upgrade via UPI QR",
     featured: true,
   },
   {
@@ -55,12 +65,17 @@ const buildPlans = (siteConfig = {}) => [
       "Priority AI processing",
       "Early access to new tools",
     ],
-    cta: "Go Premium",
+    cta: "Go Premium via UPI QR",
   },
 ];
 
 const Plans = ({ profile, setShowLogin }) => {
   const [siteConfig, setSiteConfig] = useState({});
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [userPayments, setUserPayments] = useState([]);
+  const [loadingPayments, setLoadingPayments] = useState(false);
+
+  const activePlan = profile?.plan || "Free";
 
   useEffect(() => {
     getPublicConfig()
@@ -68,7 +83,29 @@ const Plans = ({ profile, setShowLogin }) => {
       .catch(() => setSiteConfig({}));
   }, []);
 
+  const fetchPayments = async () => {
+    if (!profile) return;
+    setLoadingPayments(true);
+    try {
+      const response = await axios.get(`${PAYMENTS_API}/my-payments`, {
+        headers: getAuthHeaders(),
+      });
+      if (response.data.success) {
+        setUserPayments(response.data.payments || []);
+      }
+    } catch (err) {
+      console.error("Failed to load payments history", err);
+    } finally {
+      setLoadingPayments(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPayments();
+  }, [profile]);
+
   const plans = useMemo(() => buildPlans(siteConfig), [siteConfig]);
+
   const handlePlanClick = (plan) => {
     if (!profile) {
       setShowLogin(true);
@@ -76,39 +113,56 @@ const Plans = ({ profile, setShowLogin }) => {
     }
 
     if (plan.name === "Free") {
-      alert("Free plan is active for your account.");
+      alert("Free plan is currently active on your account.");
       return;
     }
 
-    alert(`${plan.name} checkout will be connected here.`);
+    if (activePlan === plan.name) {
+      alert(`You are already subscribed to the ${plan.name} plan!`);
+      return;
+    }
+
+    setSelectedPlan(plan);
+  };
+
+  const handlePaymentSubmitted = () => {
+    fetchPayments();
   };
 
   return (
     <main className="plans-page">
       <BackHomeButton className="plans-home-link" />
+      
       <section className="plans-hero">
-        <span className="plans-kicker">Subscription plans</span>
+        <span className="plans-kicker">Subscription & Payments</span>
         <h1>Choose the right Vedix AI plan</h1>
         <p>
-          Start free with limited features, then upgrade when you need more AI prompts,
-          resume analysis, research tools, and career recommendations.
+          Start free with daily limits, or upgrade instantly via UPI QR code for high limits, priority AI processing, and advanced features.
         </p>
+
+        {profile && (
+          <div className="current-plan-banner">
+            <span>Your Current Plan: <strong>{activePlan}</strong></span>
+            {activePlan !== "Free" && <span className="active-badge">Active Plan</span>}
+          </div>
+        )}
       </section>
 
       <section className="plans-grid">
         {plans.map((plan) => {
           const Icon = plan.icon;
+          const isCurrent = activePlan === plan.name;
 
           return (
             <article
               key={plan.name}
-              className={`plan-card ${plan.featured ? "featured" : ""}`}
+              className={`plan-card ${plan.featured ? "featured" : ""} ${isCurrent ? "current" : ""}`}
             >
               <div className="plan-topline">
                 <div className={`plan-icon ${plan.tone}`}>
                   <Icon />
                 </div>
-                <span>{plan.badge}</span>
+                <span>{isCurrent ? "Active Plan" : plan.badge}</span>
               </div>
 
               <div className="plan-heading">
@@ -123,11 +177,18 @@ const Plans = ({ profile, setShowLogin }) => {
 
               <button
                 type="button"
-                className="plan-cta"
+                className={`plan-cta ${isCurrent ? "btn-current" : ""}`}
                 onClick={() => handlePlanClick(plan)}
+                disabled={isCurrent}
               >
-                <FiCreditCard />
-                {plan.cta}
+                {plan.name === "Free" ? (
+                  <FiLock />
+                ) : isCurrent ? (
+                  <FiCheck />
+                ) : (
+                  <FiCreditCard />
+                )}
+                {isCurrent ? "Current Plan" : plan.cta}
               </button>
 
               <ul className="plan-features">
@@ -143,18 +204,52 @@ const Plans = ({ profile, setShowLogin }) => {
         })}
       </section>
 
+      {/* User Payments History Section */}
+      {profile && userPayments.length > 0 && (
+        <section className="user-payments-history">
+          <h2><FiClock /> Payment Requests & History</h2>
+          <div className="payments-history-table">
+            <div className="table-header">
+              <span>Plan</span>
+              <span>Amount</span>
+              <span>Transaction ID / UTR</span>
+              <span>Date</span>
+              <span>Status</span>
+            </div>
+            {userPayments.map((pmt) => (
+              <div key={pmt._id} className="table-row">
+                <strong className="pmt-plan">{pmt.plan} Plan</strong>
+                <span>₹{pmt.amount}</span>
+                <span className="pmt-txid">{pmt.transactionId}</span>
+                <span>{new Date(pmt.createdAt).toLocaleDateString()}</span>
+                <span className={`status-badge ${pmt.status}`}>
+                  {pmt.status}
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       <section className="plans-note">
-        <h2>Free users get started instantly</h2>
+        <h2>Instant UPI QR Payments</h2>
         <p>
-          Paid checkout is ready to connect with Razorpay, Stripe, or any payment gateway
-          when you want to enable real purchases.
+          Pay securely using Google Pay, PhonePe, Paytm, BHIM, or any UPI app by scanning the payment QR code and submitting your 12-digit UTR transaction ID.
         </p>
       </section>
+
+      {/* Payment Modal */}
+      {selectedPlan && (
+        <PaymentModal
+          plan={selectedPlan}
+          profile={profile}
+          siteConfig={siteConfig}
+          onClose={() => setSelectedPlan(null)}
+          onPaymentSubmitted={handlePaymentSubmitted}
+        />
+      )}
     </main>
   );
 };
 
 export default Plans;
-
-
-

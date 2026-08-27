@@ -12,6 +12,8 @@ import adminRoutes from "./routes/adminRoutes.js";
 import cricketRoutes from "./routes/cricketRoutes.js";
 import { trackUsage } from "./middleware/trackUsage.js";
 
+import paymentRoutes from "./routes/paymentRoutes.js";
+
 dotenv.config();
 
 const app = express();
@@ -35,6 +37,7 @@ app.use("/api/analyze", analyzeRoutes);
 app.use("/api/news", newsRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/cricket", cricketRoutes);
+app.use("/api/payments", paymentRoutes);
 
 app.get("/", (_req, res) => {
   res.send("Vedix AI Backend Running");

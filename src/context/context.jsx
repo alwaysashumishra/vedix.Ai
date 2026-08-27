@@ -61,11 +61,19 @@ const ContextProvider = (props) => {
   };
 
   /* SEND PROMPT */
-  const onSent = async (prompt, image) => {
+  const onSent = async (prompt, images) => {
     const finalPrompt = prompt || input;
 
-    if (!finalPrompt?.trim() && !image) {
-      setResultData("⚠ Please enter a prompt");
+    // Normalize images to array
+    let imagesList = [];
+    if (Array.isArray(images)) {
+      imagesList = images;
+    } else if (images) {
+      imagesList = [images];
+    }
+
+    if (!finalPrompt?.trim() && imagesList.length === 0) {
+      setResultData("⚠ Please enter a prompt or select an image");
       return;
     }
 
@@ -76,7 +84,7 @@ const ContextProvider = (props) => {
       setRecentPrompt(finalPrompt);
 
       /* SAVE PROMPT IN SIDEBAR RECENT */
-      if (!prevPrompts.includes(finalPrompt)) {
+      if (finalPrompt && !prevPrompts.includes(finalPrompt)) {
         const updatedPrompts = [...prevPrompts, finalPrompt];
         setprevPrompts(updatedPrompts);
         localStorage.setItem("prevPrompts", JSON.stringify(updatedPrompts));
@@ -84,17 +92,22 @@ const ContextProvider = (props) => {
 
       /* CREATE USER MESSAGE IN UI THREAD */
       const userMsgId = Date.now();
+      const imageUrls = imagesList.map((img) =>
+        typeof img === "string" ? img : URL.createObjectURL(img)
+      );
+
       const userMessage = {
         id: userMsgId,
         role: "user",
         text: finalPrompt,
-        image: image ? URL.createObjectURL(image) : null,
+        images: imageUrls,
+        image: imageUrls.length > 0 ? imageUrls[0] : null,
       };
 
       setMessages((prev) => [...prev, userMessage]);
 
       /* CALL GEMINI WITH CONVERSATION HISTORY */
-      const response = await runChat(finalPrompt, image, chatHistory);
+      const response = await runChat(finalPrompt, imagesList, chatHistory);
 
       if (!response) {
         setResultData("⚠ No response from Gemini");
@@ -132,6 +145,70 @@ const ContextProvider = (props) => {
     }
   };
 
+  /* NOTES */
+  const [notes, setNotes] = useState(() => {
+    try {
+      const saved = localStorage.getItem("lexi_notes");
+      return saved ? JSON.parse(saved) : [];
+    } catch (err) {
+      console.error("Error loading notes from localStorage", err);
+      return [];
+    }
+  });
+
+  const saveNote = (noteData) => {
+    const newNote = {
+      id: noteData.id || `note_${Date.now()}`,
+      title: noteData.title || "Untitled Note",
+      content: noteData.content || "",
+      question: noteData.question || "",
+      answer: noteData.answer || "",
+      type: noteData.type || "manual", // "chat" | "manual"
+      tags: noteData.tags || (noteData.type === "chat" ? ["Chat Q&A"] : ["General"]),
+      createdAt: noteData.createdAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    setNotes((prev) => {
+      const existingIndex = prev.findIndex((n) => n.id === newNote.id);
+      let updated;
+      if (existingIndex >= 0) {
+        updated = [...prev];
+        updated[existingIndex] = { ...updated[existingIndex], ...newNote };
+      } else {
+        updated = [newNote, ...prev];
+      }
+      localStorage.setItem("lexi_notes", JSON.stringify(updated));
+      return updated;
+    });
+    return newNote;
+  };
+
+  const deleteNote = (id) => {
+    setNotes((prev) => {
+      const updated = prev.filter((n) => n.id !== id);
+      localStorage.setItem("lexi_notes", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const updateNote = (id, updatedFields) => {
+    setNotes((prev) => {
+      const updated = prev.map((note) => {
+        if (note.id === id) {
+          return {
+            ...note,
+            ...updatedFields,
+            updatedAt: new Date().toISOString(),
+          };
+        }
+        return note;
+      });
+      localStorage.setItem("lexi_notes", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
   /* CONTEXT VALUE */
   const contextValue = {
     prevPrompts,
@@ -148,6 +225,10 @@ const ContextProvider = (props) => {
     setInput,
     chatHistory,
     messages,
+    notes,
+    saveNote,
+    deleteNote,
+    updateNote,
   };
 
   return (

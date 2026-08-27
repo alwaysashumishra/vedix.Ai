@@ -11,6 +11,8 @@ import {
   FiFileText,
   FiCompass,
   FiLogOut,
+  FiBookmark,
+  FiCheck,
 } from "react-icons/fi";
 import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { RiArticleLine } from "react-icons/ri";
@@ -33,18 +35,35 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
     setInput,
     input,
     messages,
+    saveNote,
   } = useContext(Context);
 
   const { theme, toggleTheme } = useContext(ThemeContext);
 
   const [profilePic] = useState(assets.user_icon);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedImages, setSelectedImages] = useState([]);
   const [listening, setListening] = useState(false);
   const [voiceError, setVoiceError] = useState("");
   const [speaking, setSpeaking] = useState(false);
   const [siteConfig, setSiteConfig] = useState({});
+  const [savedNoteIds, setSavedNoteIds] = useState({});
   const recognitionRef = useRef(null);
   const resultRef = useRef(null);
+
+  const handleSaveToNotes = (question, answerHtml, msgId) => {
+    const qText = question || recentPrompt || "Chat Q&A Note";
+    const cleanAnswer = stripHtml(answerHtml);
+    saveNote({
+      id: `chat_note_${msgId || Date.now()}`,
+      title: qText.length > 60 ? `${qText.slice(0, 60)}...` : qText,
+      question: qText,
+      answer: cleanAnswer,
+      content: `Q: ${qText}\n\nA: ${cleanAnswer}`,
+      type: "chat",
+      tags: ["Chat Q&A"],
+    });
+    setSavedNoteIds((prev) => ({ ...prev, [msgId || "default"]: true }));
+  };
 
   useEffect(() => {
     getPublicConfig()
@@ -80,11 +99,24 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
   };
 
   const handleImageUpload = (event) => {
-    const file = event.target.files?.[0];
+    const files = Array.from(event.target.files || []);
+    if (files.length === 0) return;
 
-    if (file) {
-      setSelectedImage(file);
-    }
+    setSelectedImages((prev) => {
+      const combined = [...prev, ...files];
+      if (combined.length > 5) {
+        setVoiceError("Maximum 5 images allowed at a time.");
+        setTimeout(() => setVoiceError(""), 3500);
+        return combined.slice(0, 5);
+      }
+      return combined;
+    });
+
+    event.target.value = "";
+  };
+
+  const removeImage = (indexToRemove) => {
+    setSelectedImages((prev) => prev.filter((_, idx) => idx !== indexToRemove));
   };
 
   const sendMessage = async () => {
@@ -93,8 +125,13 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
       return;
     }
 
-    await onSent(input, selectedImage);
-    setSelectedImage(null);
+    if (!input.trim() && selectedImages.length === 0) {
+      return;
+    }
+
+    const imagesToSend = [...selectedImages];
+    setSelectedImages([]);
+    await onSent(input, imagesToSend);
   };
 
   const toggleListening = () => {
@@ -259,7 +296,7 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
         ) : (
           <div className="result" ref={resultRef}>
             {messages && messages.length > 0 ? (
-              messages.map((msg) => (
+              messages.map((msg, msgIndex) => (
                 <div key={msg.id} className="chat-thread-item" style={{ marginBottom: "24px" }}>
                   {msg.role === "user" ? (
                     <div className="result-title">
@@ -272,13 +309,24 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
                         }}
                       />
                       <div>
-                        {msg.image && (
+                        {msg.images && msg.images.length > 0 ? (
+                          <div className="chat-images-grid">
+                            {msg.images.map((imgUrl, idx) => (
+                              <img
+                                key={idx}
+                                src={imgUrl}
+                                alt={`attached-${idx}`}
+                                className="chat-attached-img"
+                              />
+                            ))}
+                          </div>
+                        ) : msg.image ? (
                           <img
                             src={msg.image}
                             alt="preview"
                             style={{ maxWidth: "220px", borderRadius: "12px", marginBottom: "8px" }}
                           />
-                        )}
+                        ) : null}
                         <p>{msg.text}</p>
                       </div>
                     </div>
@@ -314,6 +362,21 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
                             {speaking ? <FiVolumeX /> : <FiVolume2 />}
                             {speaking ? "Stop" : "Speak"}
                           </button>
+
+                          <button
+                            className={`save-note-btn ${savedNoteIds[msg.id] ? "saved" : ""}`}
+                            onClick={() => {
+                              const prevUserMsg = messages
+                                .slice(0, msgIndex)
+                                .reverse()
+                                .find((m) => m.role === "user");
+                              handleSaveToNotes(prevUserMsg?.text || recentPrompt, msg.text, msg.id);
+                            }}
+                            title={savedNoteIds[msg.id] ? "Saved to Notes" : "Save Q&A to Notes"}
+                          >
+                            {savedNoteIds[msg.id] ? <FiCheck /> : <FiBookmark />}
+                            {savedNoteIds[msg.id] ? "Saved" : "Save Note"}
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -332,7 +395,7 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
                     }}
                   />
                   <p>{recentPrompt}</p>
-                </div>"
+                </div>
 
                 <div className="result-data">
                   <img src={assets.gemini_icon} alt="" className="ai-logo" />
@@ -343,6 +406,37 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
                         __html: resultData,
                       }}
                     ></div>
+
+                    <div className="response-actions">
+                      <button
+                        className="copy-btn"
+                        onClick={() => {
+                          navigator.clipboard.writeText(stripHtml(resultData));
+                        }}
+                        title="Copy response"
+                      >
+                        <FiCopy />
+                        Copy
+                      </button>
+
+                      <button
+                        className={`voice-action-btn ${speaking ? "active" : ""}`}
+                        onClick={() => toggleSpeech(resultData)}
+                        title={speaking ? "Stop speaking" : "Read response aloud"}
+                      >
+                        {speaking ? <FiVolumeX /> : <FiVolume2 />}
+                        {speaking ? "Stop" : "Speak"}
+                      </button>
+
+                      <button
+                        className={`save-note-btn ${savedNoteIds["single_res"] ? "saved" : ""}`}
+                        onClick={() => handleSaveToNotes(recentPrompt, resultData, "single_res")}
+                        title={savedNoteIds["single_res"] ? "Saved to Notes" : "Save Q&A to Notes"}
+                      >
+                        {savedNoteIds["single_res"] ? <FiCheck /> : <FiBookmark />}
+                        {savedNoteIds["single_res"] ? "Saved" : "Save Note"}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </>
@@ -367,21 +461,28 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
           {voiceError && <p className="voice-error">{voiceError}</p>}
 
           <div className={`search-box ${listening ? "is-listening" : ""}`}>
-            {selectedImage && (
-              <div className="preview-container">
-                <img
-                  src={URL.createObjectURL(selectedImage)}
-                  alt="preview"
-                  className="preview-image"
-                />
-
-                <button
-                  className="remove-preview"
-                  onClick={() => setSelectedImage(null)}
-                  title="Remove image"
-                >
-                  <FiX />
-                </button>
+            {selectedImages && selectedImages.length > 0 && (
+              <div className="multi-image-preview-bar">
+                <div className="preview-thumbs-row">
+                  {selectedImages.map((imgFile, index) => (
+                    <div key={index} className="preview-thumb-item">
+                      <img
+                        src={URL.createObjectURL(imgFile)}
+                        alt={`thumb-${index}`}
+                        className="preview-thumb-img"
+                      />
+                      <button
+                        type="button"
+                        className="remove-thumb-btn"
+                        onClick={() => removeImage(index)}
+                        title="Remove image"
+                      >
+                        <FiX />
+                      </button>
+                    </div>
+                  ))}
+                  <span className="images-count-badge">({selectedImages.length}/5)</span>
+                </div>
               </div>
             )}
 
@@ -398,7 +499,7 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
             />
 
             <div className="chat-actions">
-              <label htmlFor="imageUpload" className="chat-icon-btn" title="Upload image">
+              <label htmlFor="imageUpload" className="chat-icon-btn" title="Upload images (Up to 5)">
                 <FiImage />
               </label>
 
@@ -407,6 +508,7 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
                 id="imageUpload"
                 hidden
                 accept="image/*"
+                multiple
                 onChange={handleImageUpload}
               />
 

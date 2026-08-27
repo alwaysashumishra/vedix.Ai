@@ -20,7 +20,7 @@ from "../HelpModel/HelpModal";
 import SettingsModal
 from "../SettingsModal/SettingsModal";
 
-import { FiCompass, FiCreditCard, FiFileText, FiShield } from "react-icons/fi";
+import { FiCompass, FiCreditCard, FiFileText, FiShield, FiBookmark } from "react-icons/fi";
 
 import { MdOutlineArticle } from "react-icons/md";
 
@@ -256,6 +256,25 @@ const Sidebar = ({ profile, setProfile }) => {
 
                   <p>
                     Explore
+                  </p>
+
+                </NavLink>
+
+                {/* NOTES */}
+                <NavLink
+
+                  to="/notes"
+
+                  className="
+                  recent-entry
+                  ai-tool-link
+                  "
+                >
+
+                  <FiBookmark />
+
+                  <p>
+                    Notes
                   </p>
 
                 </NavLink>

@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   FiActivity,
   FiBarChart2,
@@ -34,9 +34,11 @@ import {
 import BackHomeButton from "../../components/BackHomeButton/BackHomeButton";
 import {
   getAdminConfig,
+  getAdminPayments,
   getAdminSummary,
   getAdminUsers,
   updateAdminConfig,
+  updateAdminPaymentStatus,
   updateAdminUser,
 } from "../../config/admin";
 import "./Admin.css";
@@ -56,8 +58,8 @@ const initialConfig = {
 const modules = [
   { id: "dashboard", label: "Dashboard", icon: FiGrid, status: "Live" },
   { id: "users", label: "Users", icon: FiUsers, status: "Live" },
-  { id: "subscriptions", label: "Subscriptions", icon: FiCreditCard, status: "Planned" },
-  { id: "payments", label: "Payments", icon: FiDollarSign, status: "Planned" },
+  { id: "subscriptions", label: "Subscriptions", icon: FiCreditCard, status: "Live" },
+  { id: "payments", label: "Payments", icon: FiDollarSign, status: "Live" },
   { id: "ai-models", label: "AI Models", icon: FiCpu, status: "Config" },
   { id: "prompt-studio", label: "Prompt Studio", icon: FiEdit3, status: "Draft" },
   { id: "knowledge-base", label: "Knowledge Base", icon: FiBookOpen, status: "Draft" },
@@ -154,6 +156,8 @@ const Admin = () => {
   const [topPaths, setTopPaths] = useState([]);
   const [recentEvents, setRecentEvents] = useState([]);
   const [users, setUsers] = useState([]);
+  const [payments, setPayments] = useState([]);
+  const [updatingPaymentId, setUpdatingPaymentId] = useState("");
   const [config, setConfig] = useState(initialConfig);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -182,10 +186,11 @@ const Admin = () => {
     setSaved(false);
 
     try {
-      const [summaryData, usersData, configData] = await Promise.all([
+      const [summaryData, usersData, configData, paymentsData] = await Promise.all([
         getAdminSummary(),
         getAdminUsers(),
         getAdminConfig(),
+        getAdminPayments().catch(() => ({ payments: [] })),
       ]);
 
       setSummary(summaryData.summary);
@@ -193,6 +198,7 @@ const Admin = () => {
       setTopPaths(summaryData.topPaths || []);
       setRecentEvents(summaryData.recentEvents || []);
       setUsers(usersData.users || []);
+      setPayments(paymentsData.payments || []);
       setConfig({ ...initialConfig, ...(configData.config || {}) });
     } catch (err) {
       setError(
@@ -273,6 +279,133 @@ const Admin = () => {
     } finally {
       setSavingUserId("");
     }
+  };
+
+  const handlePaymentStatusUpdate = async (paymentId, status) => {
+    setUpdatingPaymentId(paymentId);
+    setError("");
+
+    try {
+      const data = await updateAdminPaymentStatus(paymentId, { status });
+      if (data.success) {
+        setPayments((prev) =>
+          prev.map((pmt) => (pmt._id === paymentId ? data.payment : pmt))
+        );
+        const usersData = await getAdminUsers();
+        setUsers(usersData.users || []);
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to update payment status");
+    } finally {
+      setUpdatingPaymentId("");
+    }
+  };
+
+  const renderPaymentsPanel = () => {
+    const pendingPayments = payments.filter((p) => p.status === "pending");
+
+    return (
+      <section className="admin-panel payments-panel">
+        <div className="admin-panel-head">
+          <div>
+            <p><FiDollarSign /> UPI QR Payments</p>
+            <h2>Payment Requests ({payments.length})</h2>
+          </div>
+          <span>{pendingPayments.length} Pending Approval</span>
+        </div>
+
+        {pendingPayments.length > 0 && (
+          <div style={{ marginBottom: "20px", background: "rgba(245, 158, 11, 0.08)", border: "1px solid rgba(245, 158, 11, 0.3)", borderRadius: "12px", padding: "16px" }}>
+            <h3 style={{ margin: "0 0 12px 0", color: "#fbbf24", fontSize: "16px" }}>Pending Payment Approvals ({pendingPayments.length})</h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              {pendingPayments.map((pmt) => (
+                <div key={pmt._id} style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(245, 158, 11, 0.4)", borderRadius: "10px", padding: "14px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                    <div>
+                      <strong style={{ fontSize: "15px", color: "#ffffff" }}>{pmt.username}</strong> ({pmt.userEmail})
+                      <span className="status-badge pending" style={{ marginLeft: "10px" }}>{pmt.plan} Plan Upgrade</span>
+                    </div>
+                    <div style={{ fontSize: "18px", fontWeight: "800", color: "#34d399" }}>₹{pmt.amount}</div>
+                  </div>
+
+                  <div style={{ fontSize: "13px", color: "#cbd5e1", display: "flex", flexDirection: "column", gap: "4px", margin: "8px 0" }}>
+                    <div>UTR / Transaction ID: <strong className="pmt-txid" style={{ color: "#38bdf8", fontFamily: "monospace" }}>{pmt.transactionId}</strong></div>
+                    <div>Submitted: <span>{new Date(pmt.createdAt).toLocaleString()}</span></div>
+                    {pmt.note && <div>Note: <em>"{pmt.note}"</em></div>}
+                  </div>
+
+                  <div style={{ display: "flex", gap: "10px", marginTop: "12px" }}>
+                    <button
+                      type="button"
+                      className="unblock"
+                      style={{ background: "#10b981", color: "#ffffff", padding: "8px 16px", borderRadius: "8px", border: "none", cursor: "pointer", fontWeight: "700" }}
+                      disabled={updatingPaymentId === pmt._id}
+                      onClick={() => handlePaymentStatusUpdate(pmt._id, "approved")}
+                    >
+                      {updatingPaymentId === pmt._id ? "Updating..." : "Approve & Upgrade User"}
+                    </button>
+                    <button
+                      type="button"
+                      className="block"
+                      style={{ background: "#f43f5e", color: "#ffffff", padding: "8px 16px", borderRadius: "8px", border: "none", cursor: "pointer", fontWeight: "700" }}
+                      disabled={updatingPaymentId === pmt._id}
+                      onClick={() => handlePaymentStatusUpdate(pmt._id, "rejected")}
+                    >
+                      Reject
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="all-payments-section">
+          <h3 style={{ margin: "0 0 12px 0", color: "#ffffff", fontSize: "16px" }}>All Payment Records</h3>
+          <div className="admin-users-list">
+            {payments.map((pmt) => (
+              <div key={pmt._id} className={`admin-user-row ${pmt.status}`}>
+                <div className="admin-user-main">
+                  <strong>{pmt.username} &bull; {pmt.plan} Plan (₹{pmt.amount})</strong>
+                  <p>Email: {pmt.userEmail} | UTR: <span className="pmt-txid" style={{ color: "#38bdf8", fontFamily: "monospace" }}>{pmt.transactionId}</span></p>
+                  <div className="admin-user-meta">
+                    <span>{new Date(pmt.createdAt).toLocaleString()}</span>
+                    <b className={`status-badge ${pmt.status}`}>{pmt.status}</b>
+                  </div>
+                </div>
+
+                <div className="admin-user-controls">
+                  {pmt.status !== "approved" && (
+                    <button
+                      type="button"
+                      className="unblock"
+                      disabled={updatingPaymentId === pmt._id}
+                      onClick={() => handlePaymentStatusUpdate(pmt._id, "approved")}
+                    >
+                      Approve
+                    </button>
+                  )}
+                  {pmt.status !== "rejected" && (
+                    <button
+                      type="button"
+                      className="block"
+                      disabled={updatingPaymentId === pmt._id}
+                      onClick={() => handlePaymentStatusUpdate(pmt._id, "rejected")}
+                    >
+                      Reject
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+
+            {payments.length === 0 && (
+              <p className="empty-state">No payment requests submitted yet.</p>
+            )}
+          </div>
+        </div>
+      </section>
+    );
   };
   const statCards = [
     { label: "Total users", value: summary?.totalUsers ?? 0, icon: FiUsers, tone: "green" },
@@ -689,6 +822,7 @@ const Admin = () => {
     }
 
     if (activeModule === "users") return renderUsersPanel(true);
+    if (activeModule === "payments" || activeModule === "subscriptions") return renderPaymentsPanel();
     if (activeModule === "analytics" || activeModule === "logs") return <>{renderUsagePanel()}{renderActivityPanel()}{renderTopRoutes()}</>;
     if (activeModule === "cms" || activeModule === "settings" || activeModule === "feature-flags") return renderSettingsForm();
     if (activeModule === "security") {
