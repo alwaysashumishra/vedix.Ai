@@ -20,6 +20,7 @@ import { assets } from "../../assets/assets";
 import { Context } from "../../context/context";
 import { ThemeContext } from "../../context/ThemeContext";
 import { getPublicConfig } from "../../config/publicConfig";
+import FormattedResponse from "../FormattedResponse/FormattedResponse";
 import "./Main.css";
 
 const stripHtml = (html) =>
@@ -335,12 +336,7 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
                       <img src={assets.gemini_icon} alt="" className="ai-logo" />
 
                       <div className="response-box">
-                        <div
-                          className="formatted-response"
-                          dangerouslySetInnerHTML={{
-                            __html: msg.text,
-                          }}
-                        ></div>
+                        <FormattedResponse content={msg.rawText || msg.text} />
 
                         <div className="response-actions">
                           <button
@@ -400,12 +396,7 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
                 <div className="result-data">
                   <img src={assets.gemini_icon} alt="" className="ai-logo" />
                   <div className="response-box">
-                    <div
-                      className="formatted-response"
-                      dangerouslySetInnerHTML={{
-                        __html: resultData,
-                      }}
-                    ></div>
+                    <FormattedResponse content={resultData} />
 
                     <div className="response-actions">
                       <button

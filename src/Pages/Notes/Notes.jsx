@@ -24,6 +24,7 @@ import {
   FiBookOpen,
 } from "react-icons/fi";
 import { NavLink } from "react-router-dom";
+import FormattedResponse from "../../components/FormattedResponse/FormattedResponse";
 import "./Notes.css";
 
 const Notes = ({ profile, setProfile }) => {
@@ -220,7 +221,9 @@ const Notes = ({ profile, setProfile }) => {
         {/* Controls Bar: Search & Filter Tabs */}
         <div className="notes-controls">
           <div className="notes-search-box">
-            <FiSearch className="search-icon" />
+            <div className="search-icon-badge">
+              <FiSearch />
+            </div>
             <input
               type="text"
               placeholder="Search by title, question, or text..."
@@ -228,7 +231,7 @@ const Notes = ({ profile, setProfile }) => {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
             {searchQuery && (
-              <button className="clear-search" onClick={() => setSearchQuery("")}>
+              <button className="clear-search" onClick={() => setSearchQuery("")} title="Clear search">
                 <FiX />
               </button>
             )}
@@ -513,7 +516,7 @@ const Notes = ({ profile, setProfile }) => {
               <div className="a-section">
                 {activeNoteModal.question && <h4><FiStar /> AI Response / Content:</h4>}
                 <div className="note-text-body">
-                  {activeNoteModal.content || activeNoteModal.answer}
+                  <FormattedResponse content={activeNoteModal.content || activeNoteModal.answer} />
                 </div>
               </div>
             </div>
