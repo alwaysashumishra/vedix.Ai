@@ -7,23 +7,26 @@ import {
   FiDownload,
   FiMessageCircle,
   FiMail,
-  FiShare2,
+  FiZap,
 } from "react-icons/fi";
-import { RiQrCodeLine } from "react-icons/ri";
+import { RiQrCodeLine, RiAndroidFill, RiAppleFill } from "react-icons/ri";
+import { assets } from "../../assets/assets";
 import "./DownloadAppModal.css";
 
 const DownloadAppModal = ({ isOpen, onClose }) => {
   const [copied, setCopied] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [installed, setInstalled] = useState(false);
+  const [qrColor, setQrColor] = useState("4f46e5"); // default indigo
+  const [activeTheme, setActiveTheme] = useState("indigo");
 
   // App URL to embed in QR Code
   const appUrl = window.location.origin;
 
-  // QR Code Image API URL
-  const qrCodeApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(
+  // Dynamic QR Code Image API URL
+  const qrCodeApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(
     appUrl
-  )}&format=png&margin=10&color=4f46e5&bgcolor=ffffff`;
+  )}&format=png&margin=12&color=${qrColor}&bgcolor=ffffff`;
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (e) => {
@@ -50,7 +53,7 @@ const DownloadAppModal = ({ isOpen, onClose }) => {
   const handleCopyLink = () => {
     navigator.clipboard.writeText(appUrl);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setTimeout(() => setCopied(false), 2200);
   };
 
   const handleInstallPWA = async () => {
@@ -63,13 +66,13 @@ const DownloadAppModal = ({ isOpen, onClose }) => {
       setDeferredPrompt(null);
     } else {
       alert(
-        "To install lexi.AI on your device:\n\n1. On Mobile: Tap your browser menu (⋮ or share) -> 'Add to Home Screen'.\n2. On Desktop: Click the install icon in your browser address bar."
+        "To install Vedix.Ai on your device:\n\n1. On Mobile: Tap your browser menu (⋮ or share) -> 'Add to Home Screen'.\n2. On Desktop: Click the install icon in your browser address bar."
       );
     }
   };
 
   const handleWhatsAppShare = () => {
-    const text = `🚀 Try lexi.AI - Next-Gen AI Workspace & Companion!\nOpen & Install App: ${appUrl}`;
+    const text = `✨ Try Vedix.Ai - Next-Gen AI Workspace & Smart Assistant!\nOpen & Install App: ${appUrl}`;
     window.open(
       `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`,
       "_blank"
@@ -77,14 +80,19 @@ const DownloadAppModal = ({ isOpen, onClose }) => {
   };
 
   const handleEmailShare = () => {
-    const subject = "Install lexi.AI - AI Companion App";
-    const body = `Hi,\n\nCheck out lexi.AI! You can use it on web or install it on your mobile device:\n\n${appUrl}`;
+    const subject = "Install Vedix.Ai - AI Workspace App";
+    const body = `Hi,\n\nCheck out Vedix.Ai! You can use it on web or scan & install it on your mobile phone:\n\n${appUrl}`;
     window.open(
       `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
         body
       )}`,
       "_blank"
     );
+  };
+
+  const handleThemeChange = (themeName, hexColor) => {
+    setActiveTheme(themeName);
+    setQrColor(hexColor);
   };
 
   return (
@@ -97,29 +105,84 @@ const DownloadAppModal = ({ isOpen, onClose }) => {
         {/* Modal Header */}
         <div className="qr-modal-header">
           <div className="qr-header-icon-box">
-            <RiQrCodeLine />
+            <img src={assets.gemini_icon} alt="Vedix.Ai" className="qr-brand-logo" />
           </div>
           <div>
-            <h2>Get lexi.AI App</h2>
-            <p>Scan QR code to install on Android & iOS</p>
+            <div className="qr-title-row">
+              <h2>Get Vedix.Ai App</h2>
+              <span className="sparkle-pill">✨ Official</span>
+            </div>
+            <p>Scan QR code with your mobile camera to install Vedix.Ai instantly!</p>
           </div>
         </div>
 
-        {/* QR Code Container */}
+        {/* Color Theme Selector Pills */}
+        <div className="qr-theme-picker">
+          <span className="picker-label">QR Style:</span>
+          <button
+            className={`theme-pill indigo ${activeTheme === "indigo" ? "active" : ""}`}
+            onClick={() => handleThemeChange("indigo", "4f46e5")}
+            title="Indigo Neon"
+          >
+            💜 Indigo
+          </button>
+          <button
+            className={`theme-pill pink ${activeTheme === "pink" ? "active" : ""}`}
+            onClick={() => handleThemeChange("pink", "ec4899")}
+            title="Cyber Pink"
+          >
+            💖 Pink
+          </button>
+          <button
+            className={`theme-pill emerald ${activeTheme === "emerald" ? "active" : ""}`}
+            onClick={() => handleThemeChange("emerald", "10b981")}
+            title="Emerald Spark"
+          >
+            💚 Emerald
+          </button>
+          <button
+            className={`theme-pill dark ${activeTheme === "dark" ? "active" : ""}`}
+            onClick={() => handleThemeChange("dark", "0f172a")}
+            title="Midnight Dark"
+          >
+            🖤 Dark
+          </button>
+        </div>
+
+        {/* Stunning Animated QR Code Container */}
         <div className="qr-code-section">
-          <div className="qr-image-wrapper">
+          <div className={`qr-image-wrapper theme-${activeTheme}`}>
             <img
               src={qrCodeApiUrl}
-              alt="Scan QR Code to Download App"
+              alt="Scan QR Code to Download Vedix.Ai App"
               className="qr-code-img"
             />
+            {/* Center Brand Overlay Icon */}
+            <div className="qr-center-logo">
+              <img src={assets.gemini_icon} alt="Vedix.Ai Logo" />
+            </div>
+
+            {/* Live Laser Scanner Line Animation */}
+            <div className="qr-scan-line"></div>
+
             <div className="qr-badge">
-              <FiSmartphone /> Scan Me
+              <FiSmartphone /> Scan with Phone
             </div>
           </div>
+
           <p className="qr-instructions">
-            Point your smartphone camera at the QR code to open & install <strong>lexi.AI</strong>.
+            Point your smartphone camera at the QR code to open & install <strong>Vedix.Ai</strong>.
           </p>
+
+          {/* Platform Badges */}
+          <div className="platform-badges">
+            <span className="plat-badge android">
+              <RiAndroidFill /> Android
+            </span>
+            <span className="plat-badge ios">
+              <RiAppleFill /> iPhone & iPad
+            </span>
+          </div>
         </div>
 
         {/* Action Controls */}
@@ -130,7 +193,7 @@ const DownloadAppModal = ({ isOpen, onClose }) => {
             onClick={handleInstallPWA}
           >
             <FiDownload />
-            {installed ? "App Installed ✓" : "Install Web App (PWA)"}
+            {installed ? "Vedix.Ai Installed ✓" : "Install Web App (PWA)"}
           </button>
 
           {/* Copy Link Row */}
@@ -141,6 +204,13 @@ const DownloadAppModal = ({ isOpen, onClose }) => {
               <span>{copied ? "Copied!" : "Copy"}</span>
             </button>
           </div>
+
+          {/* Toast Notification on Copy */}
+          {copied && (
+            <div className="copy-toast">
+              ✨ Vedix.Ai link copied to clipboard! 🎉
+            </div>
+          )}
 
           {/* External Share Row */}
           <div className="qr-share-row">

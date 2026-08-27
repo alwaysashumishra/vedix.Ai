@@ -1,10 +1,10 @@
-/* ================= DOWNLOAD APP & QR CODE MODAL ================= */
+/* ================= DOWNLOAD APP & CUTE QR CODE MODAL ================= */
 
 .qr-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(6px);
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(8px);
   z-index: 2500;
   display: flex;
   align-items: center;
@@ -25,22 +25,23 @@
 .qr-modal-card {
   position: relative;
   background: #ffffff;
-  border-radius: 24px;
+  border-radius: 28px;
   width: 100%;
-  max-width: 440px;
-  padding: 30px;
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.25);
+  max-width: 450px;
+  padding: 30px 28px;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.28);
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  animation: slideUpModal 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  animation: slideUpModal 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  overflow: hidden;
 }
 
 @keyframes slideUpModal {
   from {
-    transform: translateY(20px) scale(0.96);
+    transform: translateY(24px) scale(0.95);
     opacity: 0;
   }
   to {
@@ -56,8 +57,8 @@
   background: #f1f5f9;
   border: none;
   color: #64748b;
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -65,11 +66,13 @@
   font-size: 18px;
   cursor: pointer;
   transition: all 0.2s ease;
+  z-index: 10;
 }
 
 .qr-close-btn:hover {
   background: #e2e8f0;
   color: #0f172a;
+  transform: rotate(90deg);
 }
 
 /* Header */
@@ -79,35 +82,109 @@
   gap: 14px;
   text-align: left;
   width: 100%;
-  margin-bottom: 22px;
+  margin-bottom: 18px;
 }
 
 .qr-header-icon-box {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
   background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
-  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
-  box-shadow: 0 8px 18px rgba(79, 70, 229, 0.3);
+  box-shadow: 0 8px 20px rgba(79, 70, 229, 0.35);
   flex-shrink: 0;
+  padding: 8px;
+}
+
+.qr-brand-logo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  animation: pulseLogo 3s infinite ease-in-out;
+}
+
+@keyframes pulseLogo {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.qr-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .qr-modal-header h2 {
-  font-size: 20px;
+  font-size: 21px;
   font-weight: 800;
   color: #0f172a;
   margin: 0;
+  letter-spacing: -0.4px;
+}
+
+.sparkle-pill {
+  font-size: 11px;
+  font-weight: 700;
+  background: #eef2ff;
+  color: #4f46e5;
+  padding: 2px 8px;
+  border-radius: 12px;
+  border: 1px solid #c7d2fe;
 }
 
 .qr-modal-header p {
   font-size: 12.5px;
   color: #64748b;
-  margin: 2px 0 0 0;
+  margin: 3px 0 0 0;
+  line-height: 1.4;
 }
+
+/* Theme Picker */
+.qr-theme-picker {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 20px;
+  background: #f8fafc;
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+}
+
+.picker-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #64748b;
+  margin-right: 4px;
+}
+
+.theme-pill {
+  border: none;
+  background: transparent;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #475569;
+}
+
+.theme-pill:hover {
+  background: #ffffff;
+}
+
+.theme-pill.active {
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.theme-pill.indigo.active { color: #4f46e5; }
+.theme-pill.pink.active { color: #ec4899; }
+.theme-pill.emerald.active { color: #10b981; }
+.theme-pill.dark.active { color: #0f172a; }
 
 /* QR Code Section */
 .qr-code-section {
@@ -116,30 +193,89 @@
   align-items: center;
   gap: 14px;
   width: 100%;
-  margin-bottom: 22px;
+  margin-bottom: 20px;
 }
 
 .qr-image-wrapper {
   position: relative;
-  padding: 14px;
+  padding: 16px;
   background: #ffffff;
-  border-radius: 20px;
+  border-radius: 24px;
   border: 2px solid #e0e7ff;
-  box-shadow: 0 10px 28px rgba(79, 70, 229, 0.12);
+  box-shadow: 0 12px 32px rgba(79, 70, 229, 0.15);
   transition: all 0.3s ease;
+  overflow: hidden;
 }
 
-.qr-image-wrapper:hover {
-  transform: scale(1.02);
-  border-color: #6366f1;
-  box-shadow: 0 14px 34px rgba(79, 70, 229, 0.2);
+/* Dynamic Border Glow Per Theme */
+.qr-image-wrapper.theme-indigo {
+  border-color: #818cf8;
+  box-shadow: 0 12px 32px rgba(79, 70, 229, 0.25);
+}
+
+.qr-image-wrapper.theme-pink {
+  border-color: #f472b6;
+  box-shadow: 0 12px 32px rgba(236, 72, 153, 0.25);
+}
+
+.qr-image-wrapper.theme-emerald {
+  border-color: #34d399;
+  box-shadow: 0 12px 32px rgba(16, 185, 129, 0.25);
+}
+
+.qr-image-wrapper.theme-dark {
+  border-color: #475569;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.25);
 }
 
 .qr-code-img {
-  width: 200px;
-  height: 200px;
-  border-radius: 12px;
+  width: 210px;
+  height: 210px;
+  border-radius: 14px;
   display: block;
+}
+
+/* Center Logo Overlay */
+.qr-center-logo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 44px;
+  height: 44px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #ffffff;
+  z-index: 5;
+}
+
+.qr-center-logo img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+/* Laser Scan Line Animation */
+.qr-scan-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, #4f46e5, #ec4899, transparent);
+  box-shadow: 0 0 10px #4f46e5;
+  animation: laserScan 3s ease-in-out infinite;
+  opacity: 0.85;
+}
+
+@keyframes laserScan {
+  0% { top: 10px; }
+  50% { top: 220px; }
+  100% { top: 10px; }
 }
 
 .qr-badge {
@@ -149,14 +285,15 @@
   transform: translateX(-50%);
   background: linear-gradient(135deg, #4f46e5, #3b82f6);
   color: #ffffff;
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 700;
-  padding: 4px 12px;
+  padding: 5px 14px;
   border-radius: 20px;
   display: flex;
   align-items: center;
-  gap: 5px;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+  gap: 6px;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+  white-space: nowrap;
 }
 
 .qr-instructions {
@@ -164,14 +301,38 @@
   color: #475569;
   line-height: 1.5;
   margin: 6px 0 0 0;
-  max-width: 320px;
+  max-width: 330px;
 }
+
+/* Platform Badges */
+.platform-badges {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.plat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+}
+
+.plat-badge.android { color: #16a34a; background: #f0fdf4; border-color: #bbf7d0; }
+.plat-badge.ios { color: #0284c7; background: #f0f9ff; border-color: #bae6fd; }
 
 /* Actions Section */
 .qr-modal-actions {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
   width: 100%;
 }
 
@@ -185,7 +346,7 @@
   background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
   color: #ffffff;
   border: none;
-  border-radius: 12px;
+  border-radius: 14px;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
@@ -247,6 +408,22 @@
   color: #10b981;
 }
 
+.copy-toast {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 12.5px;
+  font-weight: 700;
+  animation: fadeInToast 0.2s ease;
+}
+
+@keyframes fadeInToast {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* External Share Row */
 .qr-share-row {
   display: flex;
@@ -300,7 +477,7 @@
 body.dark .qr-modal-card {
   background: #1e293b;
   border-color: #334155;
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.55);
 }
 
 body.dark .qr-close-btn {
@@ -321,6 +498,19 @@ body.dark .qr-modal-header p,
 body.dark .qr-instructions,
 body.dark .qr-share-row {
   color: #cbd5e1;
+}
+
+body.dark .qr-theme-picker {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+body.dark .theme-pill {
+  color: #94a3b8;
+}
+
+body.dark .theme-pill.active {
+  background: #1e293b;
 }
 
 body.dark .copy-link-box {
