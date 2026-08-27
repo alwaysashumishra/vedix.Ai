@@ -7,6 +7,7 @@ import PaperAnalyzer from "./Pages/PaperAnalyzer/PaperAnalyzer";
 import Plans from "./Pages/Plans/Plans";
 import Admin from "./Pages/Admin/Admin";
 import Notes from "./Pages/Notes/Notes";
+import Groups from "./Pages/Groups/Groups";
 
 const AccessGate = ({ setShowLogin }) => (
   <div className="access-gate">
@@ -100,6 +101,15 @@ const Router = ({ showLogin, setShowLogin, profile, setProfile }) => {
         element={
           <ProtectedRoute profile={profile} setShowLogin={setShowLogin}>
             <Notes profile={profile} setProfile={setProfile} />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/groups"
+        element={
+          <ProtectedRoute profile={profile} setShowLogin={setShowLogin}>
+            <Groups profile={profile} setProfile={setProfile} />
           </ProtectedRoute>
         }
       />

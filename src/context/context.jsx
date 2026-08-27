@@ -209,6 +209,112 @@ const ContextProvider = (props) => {
     });
   };
 
+  /* GROUPS & TEAM SHARING */
+  const [groups, setGroups] = useState(() => {
+    try {
+      const saved = localStorage.getItem("lexi_groups");
+      return saved
+        ? JSON.parse(saved)
+        : [
+            {
+              id: "group_default_1",
+              name: "AI Innovators Team",
+              description: "Collaborative team space for AI research, prompts, and Q&A sharing.",
+              category: "Team",
+              members: [
+                { id: "m1", name: "Ashutosh", email: "ashutoshmmishra15@gmail.com", phone: "+919876543210", role: "Admin" },
+                { id: "m2", name: "Sheryansh", email: "sheryansh@lexi.ai", phone: "+919876543211", role: "Member" },
+              ],
+              sharedChats: [],
+              createdAt: new Date().toISOString(),
+            },
+          ];
+    } catch (err) {
+      console.error("Error loading groups from localStorage", err);
+      return [];
+    }
+  });
+
+  const createGroup = (groupData) => {
+    const newGroup = {
+      id: `group_${Date.now()}`,
+      name: groupData.name || "Untitled Group",
+      description: groupData.description || "",
+      category: groupData.category || "Team",
+      members: groupData.members || [],
+      sharedChats: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    setGroups((prev) => {
+      const updated = [newGroup, ...prev];
+      localStorage.setItem("lexi_groups", JSON.stringify(updated));
+      return updated;
+    });
+    return newGroup;
+  };
+
+  const deleteGroup = (groupId) => {
+    setGroups((prev) => {
+      const updated = prev.filter((g) => g.id !== groupId);
+      localStorage.setItem("lexi_groups", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const addMemberToGroup = (groupId, memberData) => {
+    setGroups((prev) => {
+      const updated = prev.map((g) => {
+        if (g.id === groupId) {
+          const newMember = {
+            id: `m_${Date.now()}`,
+            name: memberData.name || memberData.email?.split("@")[0] || memberData.phone || "Collaborator",
+            email: memberData.email || "",
+            phone: memberData.phone || "",
+            role: memberData.role || "Member",
+            addedAt: new Date().toISOString(),
+          };
+          return {
+            ...g,
+            members: [...(g.members || []), newMember],
+            updatedAt: new Date().toISOString(),
+          };
+        }
+        return g;
+      });
+      localStorage.setItem("lexi_groups", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const shareChatToGroup = (groupId, chatData) => {
+    const sharedItem = {
+      id: `shared_${Date.now()}`,
+      title: chatData.title || chatData.question || "Shared Chat",
+      question: chatData.question || "",
+      answer: chatData.answer || "",
+      sharedBy: chatData.sharedBy || "You",
+      sharedAt: new Date().toISOString(),
+    };
+
+    setGroups((prev) => {
+      const updated = prev.map((g) => {
+        if (g.id === groupId) {
+          return {
+            ...g,
+            sharedChats: [sharedItem, ...(g.sharedChats || [])],
+            updatedAt: new Date().toISOString(),
+          };
+        }
+        return g;
+      });
+      localStorage.setItem("lexi_groups", JSON.stringify(updated));
+      return updated;
+    });
+    return sharedItem;
+  };
+
   /* CONTEXT VALUE */
   const contextValue = {
     prevPrompts,
@@ -229,6 +335,11 @@ const ContextProvider = (props) => {
     saveNote,
     deleteNote,
     updateNote,
+    groups,
+    createGroup,
+    deleteGroup,
+    addMemberToGroup,
+    shareChatToGroup,
   };
 
   return (

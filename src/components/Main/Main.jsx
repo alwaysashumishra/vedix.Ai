@@ -13,6 +13,10 @@ import {
   FiLogOut,
   FiBookmark,
   FiCheck,
+  FiShare2,
+  FiUsers,
+  FiMail,
+  FiMessageCircle,
 } from "react-icons/fi";
 import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { RiArticleLine } from "react-icons/ri";
@@ -37,6 +41,8 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
     input,
     messages,
     saveNote,
+    groups,
+    shareChatToGroup,
   } = useContext(Context);
 
   const { theme, toggleTheme } = useContext(ThemeContext);
@@ -64,6 +70,54 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
       tags: ["Chat Q&A"],
     });
     setSavedNoteIds((prev) => ({ ...prev, [msgId || "default"]: true }));
+  };
+
+  const [shareModalData, setShareModalData] = useState(null);
+  const [sharedGroupSuccess, setSharedGroupSuccess] = useState(null);
+  const [copiedShare, setCopiedShare] = useState(false);
+
+  const openShareModal = (question, answerHtml, msgId) => {
+    const qText = question || recentPrompt || "Chat Q&A";
+    const cleanAnswer = stripHtml(answerHtml);
+    setShareModalData({
+      id: msgId || Date.now(),
+      question: qText,
+      answer: cleanAnswer,
+    });
+    setSharedGroupSuccess(null);
+    setCopiedShare(false);
+  };
+
+  const handleShareToGroup = (groupId) => {
+    if (!shareModalData) return;
+    shareChatToGroup(groupId, {
+      title: shareModalData.question.slice(0, 60),
+      question: shareModalData.question,
+      answer: shareModalData.answer,
+    });
+    setSharedGroupSuccess(groupId);
+    setTimeout(() => setSharedGroupSuccess(null), 2500);
+  };
+
+  const handleWhatsAppShare = () => {
+    if (!shareModalData) return;
+    const text = `*Q:* ${shareModalData.question}\n\n*A:* ${shareModalData.answer.slice(0, 400)}...\n\nShared via lexi.AI`;
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, "_blank");
+  };
+
+  const handleEmailShare = () => {
+    if (!shareModalData) return;
+    const subject = `AI Q&A: ${shareModalData.question.slice(0, 50)}`;
+    const body = `Question: ${shareModalData.question}\n\nAnswer:\n${shareModalData.answer}\n\nShared via lexi.AI`;
+    window.open(`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, "_blank");
+  };
+
+  const handleCopyShare = () => {
+    if (!shareModalData) return;
+    const text = `Q: ${shareModalData.question}\n\nA: ${shareModalData.answer}`;
+    navigator.clipboard.writeText(text);
+    setCopiedShare(true);
+    setTimeout(() => setCopiedShare(false), 2000);
   };
 
   useEffect(() => {
@@ -373,6 +427,21 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
                             {savedNoteIds[msg.id] ? <FiCheck /> : <FiBookmark />}
                             {savedNoteIds[msg.id] ? "Saved" : "Save Note"}
                           </button>
+
+                          <button
+                            className="share-action-btn"
+                            onClick={() => {
+                              const prevUserMsg = messages
+                                .slice(0, msgIndex)
+                                .reverse()
+                                .find((m) => m.role === "user");
+                              openShareModal(prevUserMsg?.text || recentPrompt, msg.text, msg.id);
+                            }}
+                            title="Share Chat / Send to Group"
+                          >
+                            <FiShare2 />
+                            Share
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -426,6 +495,15 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
                       >
                         {savedNoteIds["single_res"] ? <FiCheck /> : <FiBookmark />}
                         {savedNoteIds["single_res"] ? "Saved" : "Save Note"}
+                      </button>
+
+                      <button
+                        className="share-action-btn"
+                        onClick={() => openShareModal(recentPrompt, resultData, "single_res")}
+                        title="Share Chat / Send to Group"
+                      >
+                        <FiShare2 />
+                        Share
                       </button>
                     </div>
                   </div>
@@ -529,6 +607,69 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
           </p>
         </div>
       </div>
+
+      {/* SHARE CHAT MODAL */}
+      {shareModalData && (
+        <div className="share-modal-overlay" onClick={() => setShareModalData(null)}>
+          <div className="share-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="share-modal-header">
+              <h2>Share Conversation</h2>
+              <button className="close-modal-btn" onClick={() => setShareModalData(null)}>
+                <FiX />
+              </button>
+            </div>
+
+            <div className="share-modal-body">
+              <div className="share-preview-box">
+                <strong>Q: {shareModalData.question.slice(0, 70)}...</strong>
+              </div>
+
+              {/* Option 1: Share to Team Group */}
+              <div className="share-section">
+                <h3><FiUsers /> Share to Team Group</h3>
+                {groups && groups.length > 0 ? (
+                  <div className="share-groups-list">
+                    {groups.map((group) => (
+                      <div key={group.id} className="share-group-item">
+                        <div>
+                          <strong>{group.name}</strong>
+                          <p>{group.members?.length || 0} Members</p>
+                        </div>
+                        <button
+                          className={`group-share-btn ${sharedGroupSuccess === group.id ? "success" : ""}`}
+                          onClick={() => handleShareToGroup(group.id)}
+                        >
+                          {sharedGroupSuccess === group.id ? <FiCheck /> : <FiShare2 />}
+                          {sharedGroupSuccess === group.id ? "Shared!" : "Share to Group"}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="no-groups-hint">No team groups created yet. Create a group on the Groups page!</p>
+                )}
+              </div>
+
+              {/* Option 2: External Sharing (WhatsApp & Email & Copy) */}
+              <div className="share-section">
+                <h3>External Collaborators</h3>
+                <div className="external-share-btns">
+                  <button className="ext-share-btn whatsapp" onClick={handleWhatsAppShare}>
+                    <FiMessageCircle /> WhatsApp
+                  </button>
+                  <button className="ext-share-btn email" onClick={handleEmailShare}>
+                    <FiMail /> Email
+                  </button>
+                  <button className="ext-share-btn copy" onClick={handleCopyShare}>
+                    {copiedShare ? <FiCheck /> : <FiCopy />}
+                    {copiedShare ? "Copied!" : "Copy Text"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
