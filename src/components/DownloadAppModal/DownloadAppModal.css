@@ -1,0 +1,347 @@
+/* ================= DOWNLOAD APP & QR CODE MODAL ================= */
+
+.qr-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(6px);
+  z-index: 2500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeInModal 0.25s ease;
+}
+
+@keyframes fadeInModal {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.qr-modal-card {
+  position: relative;
+  background: #ffffff;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 440px;
+  padding: 30px;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: slideUpModal 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+@keyframes slideUpModal {
+  from {
+    transform: translateY(20px) scale(0.96);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.qr-close-btn {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: #f1f5f9;
+  border: none;
+  color: #64748b;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.qr-close-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+/* Header */
+.qr-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+  width: 100%;
+  margin-bottom: 22px;
+}
+
+.qr-header-icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 8px 18px rgba(79, 70, 229, 0.3);
+  flex-shrink: 0;
+}
+
+.qr-modal-header h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+
+.qr-modal-header p {
+  font-size: 12.5px;
+  color: #64748b;
+  margin: 2px 0 0 0;
+}
+
+/* QR Code Section */
+.qr-code-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  margin-bottom: 22px;
+}
+
+.qr-image-wrapper {
+  position: relative;
+  padding: 14px;
+  background: #ffffff;
+  border-radius: 20px;
+  border: 2px solid #e0e7ff;
+  box-shadow: 0 10px 28px rgba(79, 70, 229, 0.12);
+  transition: all 0.3s ease;
+}
+
+.qr-image-wrapper:hover {
+  transform: scale(1.02);
+  border-color: #6366f1;
+  box-shadow: 0 14px 34px rgba(79, 70, 229, 0.2);
+}
+
+.qr-code-img {
+  width: 200px;
+  height: 200px;
+  border-radius: 12px;
+  display: block;
+}
+
+.qr-badge {
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #4f46e5, #3b82f6);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+
+.qr-instructions {
+  font-size: 13px;
+  color: #475569;
+  line-height: 1.5;
+  margin: 6px 0 0 0;
+  max-width: 320px;
+}
+
+/* Actions Section */
+.qr-modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+.pwa-install-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
+  transition: all 0.25s ease;
+}
+
+.pwa-install-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(79, 70, 229, 0.4);
+}
+
+.pwa-install-btn.installed {
+  background: #10b981;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+}
+
+/* Copy Link Box */
+.copy-link-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f1f5f9;
+  padding: 4px 6px 4px 14px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.copy-link-box input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  color: #334155;
+  outline: none;
+}
+
+.copy-link-box button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #1e293b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.copy-link-box button:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+}
+
+.copied-icon {
+  color: #10b981;
+}
+
+/* External Share Row */
+.qr-share-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px solid #f1f5f9;
+  font-size: 12.5px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.qr-share-btns {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.qr-share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.qr-share-btn.whatsapp {
+  background: #25d366;
+  color: #ffffff;
+}
+
+.qr-share-btn.whatsapp:hover {
+  background: #1eaf53;
+}
+
+.qr-share-btn.email {
+  background: #ea4335;
+  color: #ffffff;
+}
+
+.qr-share-btn.email:hover {
+  background: #c53326;
+}
+
+/* Dark Mode Overrides */
+body.dark .qr-modal-card {
+  background: #1e293b;
+  border-color: #334155;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5);
+}
+
+body.dark .qr-close-btn {
+  background: #0f172a;
+  color: #cbd5e1;
+}
+
+body.dark .qr-close-btn:hover {
+  background: #334155;
+  color: #ffffff;
+}
+
+body.dark .qr-modal-header h2 {
+  color: #f8fafc;
+}
+
+body.dark .qr-modal-header p,
+body.dark .qr-instructions,
+body.dark .qr-share-row {
+  color: #cbd5e1;
+}
+
+body.dark .copy-link-box {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+body.dark .copy-link-box input {
+  color: #f8fafc;
+}
+
+body.dark .copy-link-box button {
+  background: #1e293b;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+body.dark .copy-link-box button:hover {
+  background: #334155;
+}
+
+body.dark .qr-share-row {
+  border-top-color: #334155;
+}

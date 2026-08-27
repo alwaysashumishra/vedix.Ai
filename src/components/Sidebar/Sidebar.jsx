@@ -20,7 +20,10 @@ from "../HelpModel/HelpModal";
 import SettingsModal
 from "../SettingsModal/SettingsModal";
 
-import { FiCompass, FiCreditCard, FiFileText, FiShield, FiBookmark, FiUsers } from "react-icons/fi";
+import DownloadAppModal
+from "../DownloadAppModal/DownloadAppModal";
+
+import { FiCompass, FiCreditCard, FiFileText, FiShield, FiBookmark, FiUsers, FiSmartphone } from "react-icons/fi";
 
 import { MdOutlineArticle } from "react-icons/md";
 
@@ -36,6 +39,8 @@ const Sidebar = ({ profile, setProfile }) => {
 
   const location = useLocation();
   const isNotesPage = location.pathname === "/notes";
+
+  const [showQRModal, setShowQRModal] = useState(false);
 
   const [extended,
   setextended] =
@@ -626,9 +631,36 @@ const Sidebar = ({ profile, setProfile }) => {
 
           </div>
 
+          {/* GET APP / SCAN QR */}
+          <div
+
+            className="
+            bottom-item
+            recent-entry
+            "
+
+            onClick={() =>
+              setShowQRModal(true)
+            }
+            title="Download App / Scan QR"
+          >
+
+            <FiSmartphone style={{ fontSize: "20px", color: "#4f46e5" }} />
+
+            {
+              extended &&
+              <p style={{ fontWeight: 600, color: "#4f46e5" }}>
+                Get App (QR)
+              </p>
+            }
+
+          </div>
+
         </div>
 
       </div>
+
+      <DownloadAppModal isOpen={showQRModal} onClose={() => setShowQRModal(false)} />
 
     </>
   );
