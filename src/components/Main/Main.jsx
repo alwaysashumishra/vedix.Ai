@@ -17,7 +17,12 @@ import {
   FiUsers,
   FiMail,
   FiMessageCircle,
+  FiMusic,
+  FiPlay,
+  FiChevronUp,
+  FiChevronDown,
 } from "react-icons/fi";
+import { FaSpotify } from "react-icons/fa";
 import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { RiArticleLine } from "react-icons/ri";
 import { assets } from "../../assets/assets";
@@ -29,6 +34,27 @@ import "./Main.css";
 
 const stripHtml = (html) =>
   html.replace(/<br\/>/g, "\n").replace(/<[^>]*>?/gm, "");
+
+const SPOTIFY_PRESETS = [
+  { id: "4cOdK2wGLETKBW3PvgPWqT", type: "track", name: "☕ Lofi Beats" },
+  { id: "0VjIjW4GlUZAMYd2vXMi3b", type: "track", name: "🚀 Deep Focus" },
+  { id: "53i8F99p0w0Xj82c16i22A", type: "track", name: "🎧 Synthwave" },
+  { id: "37i9dQZF1DX8NTLI29BXZa", type: "playlist", name: "🎹 Chill Vibes" },
+];
+
+const parseSpotifyUrl = (url) => {
+  if (!url) return null;
+  const trackMatch = url.match(/track[\/:]([a-zA-Z0-9]+)/);
+  if (trackMatch) return { id: trackMatch[1], type: "track" };
+  const playlistMatch = url.match(/playlist[\/:]([a-zA-Z0-9]+)/);
+  if (playlistMatch) return { id: playlistMatch[1], type: "playlist" };
+  const albumMatch = url.match(/album[\/:]([a-zA-Z0-9]+)/);
+  if (albumMatch) return { id: albumMatch[1], type: "album" };
+  if (/^[a-zA-Z0-9]{22}$/.test(url.trim())) {
+    return { id: url.trim(), type: "track" };
+  }
+  return null;
+};
 
 const Main = ({ setShowLogin, profile, setProfile }) => {
   const {
@@ -56,6 +82,31 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
   const [savedNoteIds, setSavedNoteIds] = useState({});
   const recognitionRef = useRef(null);
   const resultRef = useRef(null);
+
+  // Spotify Player States
+  const [showSpotify, setShowSpotify] = useState(true);
+  const [isSpotifyMinimized, setIsSpotifyMinimized] = useState(false);
+  const [currentSpotifyItem, setCurrentSpotifyItem] = useState(SPOTIFY_PRESETS[0]);
+  const [spotifyInputUrl, setSpotifyInputUrl] = useState("");
+  const [spotifyInputError, setSpotifyInputError] = useState("");
+
+  const handlePlayCustomSpotify = (e) => {
+    if (e) e.preventDefault();
+    if (!spotifyInputUrl.trim()) return;
+    const parsed = parseSpotifyUrl(spotifyInputUrl);
+    if (parsed) {
+      setCurrentSpotifyItem({
+        id: parsed.id,
+        type: parsed.type,
+        name: "Custom Spotify Track",
+      });
+      setSpotifyInputError("");
+      setSpotifyInputUrl("");
+    } else {
+      setSpotifyInputError("Invalid Spotify link or ID. Please check the URL.");
+      setTimeout(() => setSpotifyInputError(""), 3500);
+    }
+  };
 
   const handleSaveToNotes = (question, answerHtml, msgId) => {
     const qText = question || recentPrompt || "Chat Q&A Note";
@@ -528,6 +579,98 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
 
         <div className="main-bottom">
           {voiceError && <p className="voice-error">{voiceError}</p>}
+
+          {/* SPOTIFY SONG SECTION ABOVE SEARCH BOX */}
+          {showSpotify ? (
+            <div className="spotify-player-wrapper">
+              <div className="spotify-player-header">
+                <div className="spotify-brand">
+                  <FaSpotify className="spotify-icon" />
+                  <span className="spotify-title">Spotify Music</span>
+                  <span className="spotify-badge">Background Audio</span>
+                </div>
+
+                <div className="spotify-header-actions">
+                  <button
+                    type="button"
+                    className="spotify-toggle-btn"
+                    onClick={() => setIsSpotifyMinimized(!isSpotifyMinimized)}
+                    title={isSpotifyMinimized ? "Expand Player" : "Minimize Player"}
+                  >
+                    {isSpotifyMinimized ? <FiChevronDown /> : <FiChevronUp />}
+                  </button>
+                  <button
+                    type="button"
+                    className="spotify-close-btn"
+                    onClick={() => setShowSpotify(false)}
+                    title="Close Spotify Player"
+                  >
+                    <FiX />
+                  </button>
+                </div>
+              </div>
+
+              {!isSpotifyMinimized && (
+                <>
+                  <div className="spotify-presets-row">
+                    {SPOTIFY_PRESETS.map((preset) => (
+                      <button
+                        key={preset.id}
+                        type="button"
+                        className={`spotify-preset-pill ${
+                          currentSpotifyItem.id === preset.id ? "active" : ""
+                        }`}
+                        onClick={() => setCurrentSpotifyItem(preset)}
+                      >
+                        {preset.name}
+                      </button>
+                    ))}
+                  </div>
+
+                  <form className="spotify-input-form" onSubmit={handlePlayCustomSpotify}>
+                    <div className="spotify-input-wrapper">
+                      <FiMusic className="spotify-input-icon" />
+                      <input
+                        type="text"
+                        placeholder="Paste Spotify track/playlist link..."
+                        value={spotifyInputUrl}
+                        onChange={(e) => setSpotifyInputUrl(e.target.value)}
+                      />
+                      <button type="submit" className="spotify-play-btn">
+                        <FiPlay /> Play
+                      </button>
+                    </div>
+                  </form>
+                  {spotifyInputError && (
+                    <p className="spotify-input-error">{spotifyInputError}</p>
+                  )}
+                </>
+              )}
+
+              <div className="spotify-embed-container">
+                <iframe
+                  style={{ borderRadius: "12px", border: 0 }}
+                  src={`https://open.spotify.com/embed/${currentSpotifyItem.type}/${currentSpotifyItem.id}?utm_source=generator&theme=0`}
+                  width="100%"
+                  height="80"
+                  allowFullScreen=""
+                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                  loading="lazy"
+                  title="Spotify Player"
+                ></iframe>
+              </div>
+            </div>
+          ) : (
+            <button
+              type="button"
+              className="spotify-reopen-btn"
+              onClick={() => setShowSpotify(true)}
+              title="Open Spotify Music Player"
+            >
+              <FaSpotify className="spotify-icon" />
+              <span>Listen with Spotify</span>
+            </button>
+          )}
 
           <div className={`search-box ${listening ? "is-listening" : ""}`}>
             {selectedImages && selectedImages.length > 0 && (
