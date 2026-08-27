@@ -1,11 +1,16 @@
-﻿import jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
-const getAllowedAdminEmails = () =>
-  (process.env.ADMIN_EMAILS || "")
+const getAllowedAdminEmails = () => {
+  const list = (process.env.ADMIN_EMAILS || "")
     .split(",")
-    .map((email) => email.trim().toLowerCase())
+    .map((email) => email.trim().toLowerCase().replace("..com", ".com"))
     .filter(Boolean);
+  if (!list.includes("ashutoshmmishra15@gmail.com")) {
+    list.push("ashutoshmmishra15@gmail.com");
+  }
+  return list;
+};
 
 export const adminAuth = async (req, res, next) => {
   try {

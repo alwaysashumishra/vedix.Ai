@@ -2,7 +2,9 @@
     flex: 1;
     width: 100%;
     min-width: 0;
-    min-height: 100vh;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
     position: relative;
     overflow: hidden;
 
@@ -164,11 +166,13 @@
 
 .main-container{
     width: min(950px, 100%);
-    margin: auto;
-    padding: 20px;
+    margin: 0 auto;
+    padding: 10px 20px 20px 20px;
     display: flex;
     flex-direction: column;
-    min-height: calc(100vh - 100px);
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
 }
 
 /* ================= GREETING ================= */
@@ -289,13 +293,20 @@
 /* ================= RESULT ================= */
 
 .result{
-    padding: 0px 5%;
-    overflow-y: scroll;
-    max-height: 70vh;
+    flex: 1;
+    min-height: 0;
+    padding: 0px 15px;
+    overflow-y: auto;
+    scrollbar-width: thin;
 }
 
 .result::-webkit-scrollbar{
-    display: none;
+    width: 6px;
+}
+
+.result::-webkit-scrollbar-thumb{
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
 }
 
 .result-title{
@@ -450,9 +461,10 @@ body.dark .result-title p
 /* ================= BOTTOM ================= */
 
 .main-bottom{
+    flex-shrink: 0;
     margin-top: auto;
     width: 100%;
-    padding-top: 30px;
+    padding-top: 15px;
 }
 
 .search-box{

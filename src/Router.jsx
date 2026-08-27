@@ -34,6 +34,34 @@ const ProtectedRoute = ({ profile, setShowLogin, children }) => {
   return children;
 };
 
+const AdminRoute = ({ profile, setShowLogin, children }) => {
+  useEffect(() => {
+    if (!profile) {
+      setShowLogin(true);
+    }
+  }, [profile, setShowLogin]);
+
+  if (!profile) {
+    return <AccessGate setShowLogin={setShowLogin} />;
+  }
+
+  const userEmail = (profile.email || "").trim().toLowerCase().replace("..com", ".com");
+  const isAdmin = userEmail === "ashutoshmmishra15@gmail.com" || profile.isAdmin === true;
+
+  if (!isAdmin) {
+    return (
+      <div className="access-gate">
+        <div className="access-gate-card">
+          <h1>Access Restricted</h1>
+          <p>Admin section is strictly restricted to ashutoshmmishra15@gmail.com</p>
+        </div>
+      </div>
+    );
+  }
+
+  return children;
+};
+
 const Router = ({ showLogin, setShowLogin, profile, setProfile }) => {
   return (
     <Routes>
@@ -97,9 +125,9 @@ const Router = ({ showLogin, setShowLogin, profile, setProfile }) => {
       <Route
         path="/admin"
         element={
-          <ProtectedRoute profile={profile} setShowLogin={setShowLogin}>
+          <AdminRoute profile={profile} setShowLogin={setShowLogin}>
             <Admin />
-          </ProtectedRoute>
+          </AdminRoute>
         }
       />
     </Routes>

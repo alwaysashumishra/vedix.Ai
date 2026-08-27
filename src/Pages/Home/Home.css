@@ -1,13 +1,16 @@
 .home-layout {
   width: 100%;
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   align-items: stretch;
   background: #ffffff;
+  overflow: hidden;
 }
 
 @media (max-width: 768px) {
   .home-layout {
     display: block;
+    height: auto;
+    overflow: auto;
   }
 }

@@ -57,6 +57,12 @@ const Sidebar = ({ profile, setProfile }) => {
     setShowResult,
   } = useContext(Context);
 
+  const isAdminUser = () => {
+    if (!profile || !profile.email) return false;
+    const email = profile.email.trim().toLowerCase().replace("..com", ".com");
+    return email === "ashutoshmmishra15@gmail.com" || profile.isAdmin === true;
+  };
+
   /* LOAD OLD CHAT */
   const loadPrompt = async (prompt) => {
     setRecentPrompt(prompt);
@@ -353,23 +359,25 @@ const Sidebar = ({ profile, setProfile }) => {
 
 
                 {/* ADMIN */}
-                <NavLink
+                {isAdminUser() && (
+                  <NavLink
 
-                  to="/admin"
+                    to="/admin"
 
-                  className="
-                  recent-entry
-                  ai-tool-link
-                  "
-                >
+                    className="
+                    recent-entry
+                    ai-tool-link
+                    "
+                  >
 
-                  <FiShield />
+                    <FiShield />
 
-                  <p>
-                    Admin
-                  </p>
+                    <p>
+                      Admin
+                    </p>
 
-                </NavLink>
+                  </NavLink>
+                )}
 
               </div>
             )
