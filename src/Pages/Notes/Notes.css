@@ -1,9 +1,9 @@
-/* ================= NOTES PAGE STYLING ================= */
+/* ================= PREMIUM NOTES PAGE STYLING ================= */
 
 .notes-page-container {
   flex: 1;
   min-height: 100vh;
-  padding: 36px 40px;
+  padding: 32px 40px;
   background: #f8fafc;
   overflow-y: auto;
   transition: background 0.3s ease;
@@ -14,7 +14,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
   gap: 20px;
   flex-wrap: wrap;
 }
@@ -23,6 +23,25 @@
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+.title-with-sparkle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sparkle-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(168, 85, 247, 0.12));
+  color: #6366f1;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid rgba(99, 102, 241, 0.2);
 }
 
 .back-link {
@@ -48,7 +67,7 @@
 
 .notes-title-group h1 {
   font-size: 28px;
-  font-weight: 700;
+  font-weight: 800;
   color: #0f172a;
   margin: 0;
   letter-spacing: -0.5px;
@@ -70,15 +89,83 @@
   border: none;
   border-radius: 12px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
 }
 
 .create-note-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+  box-shadow: 0 8px 22px rgba(79, 70, 229, 0.4);
+}
+
+/* Stats Strip */
+.notes-stats-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  border-color: #cbd5e1;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.stat-icon-box {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+
+.stat-icon-box.total {
+  background: #eef2ff;
+  color: #4f46e5;
+}
+
+.stat-icon-box.chat {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.stat-icon-box.personal {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.stat-info h3 {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+
+.stat-info p {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  margin: 2px 0 0 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 /* Controls (Search & Filters) */
@@ -100,7 +187,7 @@
 
 .notes-search-box .search-icon {
   position: absolute;
-  left: 14px;
+  left: 16px;
   top: 50%;
   transform: translateY(-50%);
   color: #94a3b8;
@@ -109,7 +196,7 @@
 
 .notes-search-box input {
   width: 100%;
-  padding: 12px 40px 12px 44px;
+  padding: 12px 40px 12px 46px;
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
@@ -121,8 +208,8 @@
 }
 
 .notes-search-box input:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
 }
 
 .clear-search {
@@ -146,10 +233,11 @@
 .notes-filter-tabs {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   background: #e2e8f0;
   padding: 4px;
   border-radius: 12px;
+  overflow-x: auto;
 }
 
 .filter-tab {
@@ -164,6 +252,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .filter-tab.active {
@@ -188,14 +277,14 @@
   flex-direction: column;
   justify-content: space-between;
   gap: 14px;
-  transition: all 0.25 ease;
+  transition: all 0.25s ease;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
   position: relative;
 }
 
 .note-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.08);
   border-color: #cbd5e1;
 }
 
@@ -213,7 +302,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 10px;
+  padding: 4px 11px;
   border-radius: 20px;
   font-size: 11px;
   font-weight: 700;
@@ -231,10 +320,25 @@
   color: #16a34a;
 }
 
+.badge-work {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.badge-study {
+  background: #faf5ff;
+  color: #9333ea;
+}
+
+.badge-idea {
+  background: #fffbeb;
+  color: #d97706;
+}
+
 .note-card-actions {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   opacity: 0.85;
 }
 
@@ -242,9 +346,9 @@
   background: transparent;
   border: none;
   color: #64748b;
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -280,6 +384,26 @@
   overflow: hidden;
 }
 
+.note-question-preview {
+  background: #f8fafc;
+  border-left: 3px solid #6366f1;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #334155;
+  font-weight: 500;
+  cursor: pointer;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.note-question-preview strong {
+  color: #6366f1;
+}
+
 .note-snippet {
   font-size: 13.5px;
   color: #475569;
@@ -287,7 +411,7 @@
   margin: 0;
   cursor: pointer;
   display: -webkit-box;
-  -webkit-line-clamp: 4;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   white-space: pre-wrap;
@@ -308,6 +432,18 @@
   display: flex;
   align-items: center;
   gap: 5px;
+}
+
+.read-more-link {
+  font-size: 12px;
+  font-weight: 700;
+  color: #4f46e5;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.read-more-link:hover {
+  color: #3730a3;
 }
 
 /* Empty State */
@@ -356,7 +492,7 @@
 .notes-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.55);
+  background: rgba(15, 23, 42, 0.6);
   backdrop-filter: blur(4px);
   z-index: 2000;
   display: flex;
@@ -515,7 +651,7 @@
   border: 1px solid #c7d2fe;
   border-radius: 10px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -547,25 +683,28 @@
 }
 
 .q-section {
-  background: #f1f5f9;
-  padding: 12px 16px;
+  background: #f8fafc;
+  padding: 14px 16px;
   border-radius: 12px;
-  border-left: 3px solid #3b82f6;
+  border-left: 4px solid #6366f1;
 }
 
 .q-section h4 {
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
-  color: #3b82f6;
-  margin: 0 0 4px 0;
+  color: #6366f1;
+  margin: 0 0 6px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .q-section p {
   margin: 0;
   font-size: 14px;
   color: #1e293b;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .a-section h4 {
@@ -574,11 +713,14 @@
   text-transform: uppercase;
   color: #64748b;
   margin: 10px 0 6px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .note-text-body {
   font-size: 14.5px;
-  line-height: 1.6;
+  line-height: 1.65;
   color: #334155;
   white-space: pre-wrap;
 }
@@ -604,6 +746,19 @@ body.dark .notes-title-group h1 {
 }
 
 body.dark .notes-title-group p {
+  color: #94a3b8;
+}
+
+body.dark .stat-card {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+body.dark .stat-info h3 {
+  color: #f8fafc;
+}
+
+body.dark .stat-info p {
   color: #94a3b8;
 }
 
@@ -645,6 +800,21 @@ body.dark .badge-personal {
   color: #6ee7b7;
 }
 
+body.dark .badge-work {
+  background: #1e3a8a;
+  color: #93c5fd;
+}
+
+body.dark .badge-study {
+  background: #581c87;
+  color: #e9d5ff;
+}
+
+body.dark .badge-idea {
+  background: #78350f;
+  color: #fde68a;
+}
+
 body.dark .note-action-icon {
   color: #94a3b8;
 }
@@ -661,6 +831,11 @@ body.dark .note-action-icon.delete:hover {
 
 body.dark .note-title {
   color: #f8fafc;
+}
+
+body.dark .note-question-preview {
+  background: #0f172a;
+  color: #cbd5e1;
 }
 
 body.dark .note-snippet {
@@ -777,6 +952,12 @@ body.dark .copy-note-full-btn:hover {
   }
 
   .notes-filter-tabs {
-    justify-content: center;
+    justify-content: flex-start;
+    padding: 6px;
+  }
+
+  .notes-stats-strip {
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
 }

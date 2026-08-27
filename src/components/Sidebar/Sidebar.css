@@ -625,3 +625,9 @@ body.dark .sidebar img{
         right: auto;
     }
 }
+
+@media (max-width: 768px) {
+    .sidebar .menu.hide-mobile-menu {
+        display: none !important;
+    }
+}

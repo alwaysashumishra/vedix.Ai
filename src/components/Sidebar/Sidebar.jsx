@@ -25,13 +25,17 @@ import { FiCompass, FiCreditCard, FiFileText, FiShield, FiBookmark } from "react
 import { MdOutlineArticle } from "react-icons/md";
 
 import {
-  NavLink
+  NavLink,
+  useLocation
 }
 from "react-router-dom";
 
 
 
 const Sidebar = ({ profile, setProfile }) => {
+
+  const location = useLocation();
+  const isNotesPage = location.pathname === "/notes";
 
   const [extended,
   setextended] =
@@ -184,7 +188,7 @@ const Sidebar = ({ profile, setProfile }) => {
           {/* MENU */}
           <img
 
-            className="menu"
+            className={`menu ${isNotesPage && !extended ? "hide-mobile-menu" : ""}`}
 
             onClick={() =>
               setextended(

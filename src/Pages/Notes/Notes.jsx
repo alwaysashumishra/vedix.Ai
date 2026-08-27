@@ -15,6 +15,13 @@ import {
   FiTag,
   FiClock,
   FiArrowLeft,
+  FiFileText,
+  FiMessageSquare,
+  FiFolder,
+  FiStar,
+  FiZap,
+  FiBriefcase,
+  FiBookOpen,
 } from "react-icons/fi";
 import { NavLink } from "react-router-dom";
 import "./Notes.css";
@@ -40,6 +47,7 @@ const Notes = ({ profile, setProfile }) => {
   const [copiedId, setCopiedId] = useState(null);
 
   const handleCopy = (text, id) => {
+    if (!text) return;
     navigator.clipboard.writeText(text);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
@@ -79,14 +87,23 @@ const Notes = ({ profile, setProfile }) => {
   const filteredNotes = notes.filter((note) => {
     const matchesSearch =
       note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      note.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (note.content && note.content.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (note.answer && note.answer.toLowerCase().includes(searchQuery.toLowerCase())) ||
       (note.question && note.question.toLowerCase().includes(searchQuery.toLowerCase()));
 
     if (filterTag === "All") return matchesSearch;
     if (filterTag === "Chat Q&A") return matchesSearch && note.type === "chat";
-    if (filterTag === "Personal") return matchesSearch && note.type !== "chat";
+    if (filterTag === "Personal") return matchesSearch && note.type !== "chat" && (note.tags?.[0] === "Personal" || !note.tags?.[0]);
+    if (filterTag === "Work") return matchesSearch && note.tags?.[0] === "Work";
+    if (filterTag === "Study") return matchesSearch && note.tags?.[0] === "Study";
+    if (filterTag === "Idea") return matchesSearch && note.tags?.[0] === "Idea";
     return matchesSearch;
   });
+
+  // Calculate Statistics
+  const totalNotesCount = notes.length;
+  const chatNotesCount = notes.filter((n) => n.type === "chat").length;
+  const customNotesCount = totalNotesCount - chatNotesCount;
 
   const formatDate = (isoString) => {
     if (!isoString) return "";
@@ -100,20 +117,62 @@ const Notes = ({ profile, setProfile }) => {
     });
   };
 
+  const getCategoryBadge = (note) => {
+    if (note.type === "chat") {
+      return (
+        <span className="note-type-badge badge-chat">
+          <FiMessageSquare /> Chat Q&A
+        </span>
+      );
+    }
+    const cat = note.tags?.[0] || "Personal";
+    switch (cat) {
+      case "Work":
+        return (
+          <span className="note-type-badge badge-work">
+            <FiBriefcase /> Work
+          </span>
+        );
+      case "Study":
+        return (
+          <span className="note-type-badge badge-study">
+            <FiBookOpen /> Study
+          </span>
+        );
+      case "Idea":
+        return (
+          <span className="note-type-badge badge-idea">
+            <FiZap /> Idea
+          </span>
+        );
+      default:
+        return (
+          <span className="note-type-badge badge-personal">
+            <FiTag /> Personal
+          </span>
+        );
+    }
+  };
+
   return (
     <div className="home-layout">
       <Sidebar profile={profile} setProfile={setProfile} />
 
       <div className="notes-page-container">
-        {/* Header Bar */}
+        {/* Top Header Bar */}
         <div className="notes-header">
           <div className="notes-title-group">
-            <NavLink to="/" className="back-link" title="Back to Chat">
+            <NavLink to="/" className="back-link" title="Back to Main Chat">
               <FiArrowLeft />
             </NavLink>
             <div>
-              <h1>My Notes</h1>
-              <p>Save chat answers, organize ideas, and keep track of important Q&As.</p>
+              <div className="title-with-sparkle">
+                <h1>My Smart Notes</h1>
+                <span className="sparkle-badge">
+                  <FiStar /> Organizer
+                </span>
+              </div>
+              <p>Keep track of AI Q&As, research notes, and personal thoughts in one place.</p>
             </div>
           </div>
 
@@ -121,8 +180,41 @@ const Notes = ({ profile, setProfile }) => {
             className="create-note-btn"
             onClick={() => setShowCreateModal(true)}
           >
-            <FiPlus /> New Note
+            <FiPlus /> Create New Note
           </button>
+        </div>
+
+        {/* Overview Stats Strip */}
+        <div className="notes-stats-strip">
+          <div className="stat-card" onClick={() => setFilterTag("All")}>
+            <div className="stat-icon-box total">
+              <FiFolder />
+            </div>
+            <div className="stat-info">
+              <h3>{totalNotesCount}</h3>
+              <p>Total Notes</p>
+            </div>
+          </div>
+
+          <div className="stat-card" onClick={() => setFilterTag("Chat Q&A")}>
+            <div className="stat-icon-box chat">
+              <FiBookmark />
+            </div>
+            <div className="stat-info">
+              <h3>{chatNotesCount}</h3>
+              <p>Chat Q&As</p>
+            </div>
+          </div>
+
+          <div className="stat-card" onClick={() => setFilterTag("Personal")}>
+            <div className="stat-icon-box personal">
+              <FiFileText />
+            </div>
+            <div className="stat-info">
+              <h3>{customNotesCount}</h3>
+              <p>Custom Notes</p>
+            </div>
+          </div>
         </div>
 
         {/* Controls Bar: Search & Filter Tabs */}
@@ -131,7 +223,7 @@ const Notes = ({ profile, setProfile }) => {
             <FiSearch className="search-icon" />
             <input
               type="text"
-              placeholder="Search your notes..."
+              placeholder="Search by title, question, or text..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -143,14 +235,17 @@ const Notes = ({ profile, setProfile }) => {
           </div>
 
           <div className="notes-filter-tabs">
-            {["All", "Chat Q&A", "Personal"].map((tag) => (
+            {["All", "Chat Q&A", "Personal", "Work", "Study", "Idea"].map((tag) => (
               <button
                 key={tag}
                 className={`filter-tab ${filterTag === tag ? "active" : ""}`}
                 onClick={() => setFilterTag(tag)}
               >
-                {tag === "Chat Q&A" && <FiBookmark style={{ marginRight: 6 }} />}
-                {tag === "Personal" && <FiEdit3 style={{ marginRight: 6 }} />}
+                {tag === "Chat Q&A" && <FiBookmark style={{ marginRight: 5 }} />}
+                {tag === "Personal" && <FiEdit3 style={{ marginRight: 5 }} />}
+                {tag === "Work" && <FiBriefcase style={{ marginRight: 5 }} />}
+                {tag === "Study" && <FiBookOpen style={{ marginRight: 5 }} />}
+                {tag === "Idea" && <FiZap style={{ marginRight: 5 }} />}
                 {tag}
               </button>
             ))}
@@ -163,15 +258,12 @@ const Notes = ({ profile, setProfile }) => {
             {filteredNotes.map((note) => (
               <div key={note.id} className={`note-card ${note.type === "chat" ? "chat-type" : ""}`}>
                 <div className="note-card-header">
-                  <span className={`note-type-badge ${note.type === "chat" ? "badge-chat" : "badge-personal"}`}>
-                    {note.type === "chat" ? <FiBookmark /> : <FiTag />}
-                    {note.type === "chat" ? "Chat Q&A" : note.tags?.[0] || "Personal"}
-                  </span>
+                  {getCategoryBadge(note)}
 
                   <div className="note-card-actions">
                     <button
                       className="note-action-icon"
-                      title="View Details"
+                      title="View Full Note"
                       onClick={() => setActiveNoteModal(note)}
                     >
                       <FiEye />
@@ -179,7 +271,7 @@ const Notes = ({ profile, setProfile }) => {
 
                     <button
                       className="note-action-icon"
-                      title="Copy Note"
+                      title="Copy Content"
                       onClick={() => handleCopy(note.content || note.answer, note.id)}
                     >
                       {copiedId === note.id ? <FiCheck className="copied" /> : <FiCopy />}
@@ -216,6 +308,13 @@ const Notes = ({ profile, setProfile }) => {
                   {note.title}
                 </h3>
 
+                {/* If Chat Note, show question box snippet */}
+                {note.type === "chat" && note.question && (
+                  <div className="note-question-preview" onClick={() => setActiveNoteModal(note)}>
+                    <strong>Q:</strong> {note.question}
+                  </div>
+                )}
+
                 <p className="note-snippet" onClick={() => setActiveNoteModal(note)}>
                   {note.content ? note.content.slice(0, 140) : note.answer?.slice(0, 140)}
                   {(note.content?.length > 140 || note.answer?.length > 140) ? "..." : ""}
@@ -224,6 +323,9 @@ const Notes = ({ profile, setProfile }) => {
                 <div className="note-footer">
                   <span className="note-date">
                     <FiClock /> {formatDate(note.updatedAt || note.createdAt)}
+                  </span>
+                  <span className="read-more-link" onClick={() => setActiveNoteModal(note)}>
+                    View details &rarr;
                   </span>
                 </div>
               </div>
@@ -234,18 +336,18 @@ const Notes = ({ profile, setProfile }) => {
             <div className="empty-icon-wrapper">
               <FiBookmark />
             </div>
-            <h3>{searchQuery ? "No matching notes found" : "No notes saved yet"}</h3>
+            <h3>{searchQuery ? "No notes matching search" : "Your Notes collection is empty"}</h3>
             <p>
               {searchQuery
-                ? "Try searching with a different term."
-                : "You can save chat answers directly while chatting or create custom notes here!"}
+                ? `No notes found matching "${searchQuery}". Try clearing filters.`
+                : "Save responses directly while chatting or click below to create your first note!"}
             </p>
             {!searchQuery && (
               <button
                 className="create-note-btn"
                 onClick={() => setShowCreateModal(true)}
               >
-                <FiPlus /> Create Your First Note
+                <FiPlus /> Create Note Now
               </button>
             )}
           </div>
@@ -265,10 +367,10 @@ const Notes = ({ profile, setProfile }) => {
 
             <form onSubmit={handleCreateNote} className="notes-form">
               <div className="form-group">
-                <label>Title</label>
+                <label>Note Title</label>
                 <input
                   type="text"
-                  placeholder="Enter note title..."
+                  placeholder="Enter a catchy title..."
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   required
@@ -276,7 +378,7 @@ const Notes = ({ profile, setProfile }) => {
               </div>
 
               <div className="form-group">
-                <label>Category</label>
+                <label>Category Tag</label>
                 <select
                   value={newCategory}
                   onChange={(e) => setNewCategory(e.target.value)}
@@ -289,10 +391,10 @@ const Notes = ({ profile, setProfile }) => {
               </div>
 
               <div className="form-group">
-                <label>Note Content</label>
+                <label>Note Body</label>
                 <textarea
                   rows="6"
-                  placeholder="Write your note content here..."
+                  placeholder="Write your note content, thoughts, or copy-pasted info..."
                   value={newContent}
                   onChange={(e) => setNewContent(e.target.value)}
                   required
@@ -329,7 +431,7 @@ const Notes = ({ profile, setProfile }) => {
 
             <form onSubmit={handleUpdateNote} className="notes-form">
               <div className="form-group">
-                <label>Title</label>
+                <label>Note Title</label>
                 <input
                   type="text"
                   value={editingNote.title}
@@ -341,7 +443,7 @@ const Notes = ({ profile, setProfile }) => {
               </div>
 
               <div className="form-group">
-                <label>Category</label>
+                <label>Category Tag</label>
                 <select
                   value={editingNote.category}
                   onChange={(e) =>
@@ -356,7 +458,7 @@ const Notes = ({ profile, setProfile }) => {
               </div>
 
               <div className="form-group">
-                <label>Note Content</label>
+                <label>Note Body</label>
                 <textarea
                   rows="6"
                   value={editingNote.content}
@@ -389,10 +491,7 @@ const Notes = ({ profile, setProfile }) => {
         <div className="notes-modal-overlay" onClick={() => setActiveNoteModal(null)}>
           <div className="notes-modal-card view-modal" onClick={(e) => e.stopPropagation()}>
             <div className="notes-modal-header">
-              <span className={`note-type-badge ${activeNoteModal.type === "chat" ? "badge-chat" : "badge-personal"}`}>
-                {activeNoteModal.type === "chat" ? <FiBookmark /> : <FiTag />}
-                {activeNoteModal.type === "chat" ? "Chat Q&A" : activeNoteModal.tags?.[0] || "Personal"}
-              </span>
+              {getCategoryBadge(activeNoteModal)}
               <button className="close-modal-btn" onClick={() => setActiveNoteModal(null)}>
                 <FiX />
               </button>
@@ -406,14 +505,16 @@ const Notes = ({ profile, setProfile }) => {
 
               {activeNoteModal.question && (
                 <div className="q-section">
-                  <h4>Question:</h4>
+                  <h4><FiMessageSquare /> Prompt / Question:</h4>
                   <p>{activeNoteModal.question}</p>
                 </div>
               )}
 
               <div className="a-section">
-                {activeNoteModal.question && <h4>Answer / Content:</h4>}
-                <div className="note-text-body">{activeNoteModal.content || activeNoteModal.answer}</div>
+                {activeNoteModal.question && <h4><FiStar /> AI Response / Content:</h4>}
+                <div className="note-text-body">
+                  {activeNoteModal.content || activeNoteModal.answer}
+                </div>
               </div>
             </div>
 
@@ -428,7 +529,7 @@ const Notes = ({ profile, setProfile }) => {
                 }
               >
                 {copiedId === "modal_copy" ? <FiCheck /> : <FiCopy />}
-                {copiedId === "modal_copy" ? "Copied to Clipboard!" : "Copy Full Content"}
+                {copiedId === "modal_copy" ? "Copied to Clipboard!" : "Copy Full Note Content"}
               </button>
             </div>
           </div>
