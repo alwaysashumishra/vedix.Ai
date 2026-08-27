@@ -1,16 +1,16 @@
-/* ================= DOWNLOAD APP & CUTE QR CODE MODAL ================= */
+/* ================= DECENT & CLEAN QR CODE MODAL ================= */
 
 .qr-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.7);
-  backdrop-filter: blur(8px);
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
   z-index: 2500;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
-  animation: fadeInModal 0.25s ease;
+  animation: fadeInModal 0.2s ease;
 }
 
 @keyframes fadeInModal {
@@ -25,213 +25,118 @@
 .qr-modal-card {
   position: relative;
   background: #ffffff;
-  border-radius: 28px;
+  border-radius: 20px;
   width: 100%;
-  max-width: 450px;
-  padding: 30px 28px;
-  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.28);
+  max-width: 420px;
+  padding: 26px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  animation: slideUpModal 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  animation: slideUpModal 0.25s ease-out;
 }
 
 @keyframes slideUpModal {
   from {
-    transform: translateY(24px) scale(0.95);
+    transform: translateY(12px);
     opacity: 0;
   }
   to {
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
     opacity: 1;
   }
 }
 
 .qr-close-btn {
   position: absolute;
-  top: 18px;
-  right: 18px;
+  top: 16px;
+  right: 16px;
   background: #f1f5f9;
   border: none;
   color: #64748b;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: 16px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  z-index: 10;
+  transition: all 0.15s ease;
 }
 
 .qr-close-btn:hover {
   background: #e2e8f0;
   color: #0f172a;
-  transform: rotate(90deg);
 }
 
 /* Header */
 .qr-modal-header {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   text-align: left;
   width: 100%;
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
 
 .qr-header-icon-box {
-  width: 52px;
-  height: 52px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #4f46e5;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 20px rgba(79, 70, 229, 0.35);
   flex-shrink: 0;
   padding: 8px;
 }
 
 .qr-brand-logo {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   object-fit: contain;
-  animation: pulseLogo 3s infinite ease-in-out;
-}
-
-@keyframes pulseLogo {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-}
-
-.qr-title-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
 .qr-modal-header h2 {
-  font-size: 21px;
-  font-weight: 800;
+  font-size: 19px;
+  font-weight: 700;
   color: #0f172a;
   margin: 0;
-  letter-spacing: -0.4px;
-}
-
-.sparkle-pill {
-  font-size: 11px;
-  font-weight: 700;
-  background: #eef2ff;
-  color: #4f46e5;
-  padding: 2px 8px;
-  border-radius: 12px;
-  border: 1px solid #c7d2fe;
 }
 
 .qr-modal-header p {
   font-size: 12.5px;
   color: #64748b;
-  margin: 3px 0 0 0;
+  margin: 2px 0 0 0;
   line-height: 1.4;
 }
-
-/* Theme Picker */
-.qr-theme-picker {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 20px;
-  background: #f8fafc;
-  padding: 6px 12px;
-  border-radius: 20px;
-  border: 1px solid #e2e8f0;
-}
-
-.picker-label {
-  font-size: 11.5px;
-  font-weight: 700;
-  color: #64748b;
-  margin-right: 4px;
-}
-
-.theme-pill {
-  border: none;
-  background: transparent;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 11.5px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  color: #475569;
-}
-
-.theme-pill:hover {
-  background: #ffffff;
-}
-
-.theme-pill.active {
-  background: #ffffff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.theme-pill.indigo.active { color: #4f46e5; }
-.theme-pill.pink.active { color: #ec4899; }
-.theme-pill.emerald.active { color: #10b981; }
-.theme-pill.dark.active { color: #0f172a; }
 
 /* QR Code Section */
 .qr-code-section {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   width: 100%;
   margin-bottom: 20px;
 }
 
 .qr-image-wrapper {
   position: relative;
-  padding: 16px;
+  padding: 14px;
   background: #ffffff;
-  border-radius: 24px;
-  border: 2px solid #e0e7ff;
-  box-shadow: 0 12px 32px rgba(79, 70, 229, 0.15);
-  transition: all 0.3s ease;
-  overflow: hidden;
-}
-
-/* Dynamic Border Glow Per Theme */
-.qr-image-wrapper.theme-indigo {
-  border-color: #818cf8;
-  box-shadow: 0 12px 32px rgba(79, 70, 229, 0.25);
-}
-
-.qr-image-wrapper.theme-pink {
-  border-color: #f472b6;
-  box-shadow: 0 12px 32px rgba(236, 72, 153, 0.25);
-}
-
-.qr-image-wrapper.theme-emerald {
-  border-color: #34d399;
-  box-shadow: 0 12px 32px rgba(16, 185, 129, 0.25);
-}
-
-.qr-image-wrapper.theme-dark {
-  border-color: #475569;
-  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.25);
+  border-radius: 18px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
 }
 
 .qr-code-img {
-  width: 210px;
-  height: 210px;
-  border-radius: 14px;
+  width: 200px;
+  height: 200px;
+  border-radius: 10px;
   display: block;
 }
 
@@ -241,11 +146,11 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -254,45 +159,25 @@
 }
 
 .qr-center-logo img {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   object-fit: contain;
-}
-
-/* Laser Scan Line Animation */
-.qr-scan-line {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, transparent, #4f46e5, #ec4899, transparent);
-  box-shadow: 0 0 10px #4f46e5;
-  animation: laserScan 3s ease-in-out infinite;
-  opacity: 0.85;
-}
-
-@keyframes laserScan {
-  0% { top: 10px; }
-  50% { top: 220px; }
-  100% { top: 10px; }
 }
 
 .qr-badge {
   position: absolute;
-  bottom: -12px;
+  bottom: -10px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, #4f46e5, #3b82f6);
+  background: #4f46e5;
   color: #ffffff;
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 700;
-  padding: 5px 14px;
-  border-radius: 20px;
+  padding: 3px 12px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
-  gap: 6px;
-  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+  gap: 5px;
   white-space: nowrap;
 }
 
@@ -301,15 +186,15 @@
   color: #475569;
   line-height: 1.5;
   margin: 6px 0 0 0;
-  max-width: 330px;
+  max-width: 320px;
 }
 
 /* Platform Badges */
 .platform-badges {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-top: 4px;
+  gap: 8px;
+  margin-top: 2px;
 }
 
 .plat-badge {
@@ -317,16 +202,12 @@
   align-items: center;
   gap: 5px;
   padding: 4px 10px;
-  border-radius: 12px;
+  border-radius: 8px;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   background: #f1f5f9;
-  color: #334155;
-  border: 1px solid #e2e8f0;
+  color: #475569;
 }
-
-.plat-badge.android { color: #16a34a; background: #f0fdf4; border-color: #bbf7d0; }
-.plat-badge.ios { color: #0284c7; background: #f0f9ff; border-color: #bae6fd; }
 
 /* Actions Section */
 .qr-modal-actions {
@@ -342,26 +223,23 @@
   justify-content: center;
   gap: 8px;
   width: 100%;
-  padding: 12px;
-  background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+  padding: 11px;
+  background: #4f46e5;
   color: #ffffff;
   border: none;
-  border-radius: 14px;
-  font-size: 14px;
+  border-radius: 12px;
+  font-size: 13.5px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
-  transition: all 0.25s ease;
+  transition: all 0.15s ease;
 }
 
 .pwa-install-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 22px rgba(79, 70, 229, 0.4);
+  background: #4338ca;
 }
 
 .pwa-install-btn.installed {
   background: #10b981;
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
 }
 
 /* Copy Link Box */
@@ -369,9 +247,9 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  background: #f1f5f9;
-  padding: 4px 6px 4px 14px;
-  border-radius: 12px;
+  background: #f8fafc;
+  padding: 4px 6px 4px 12px;
+  border-radius: 10px;
   border: 1px solid #e2e8f0;
 }
 
@@ -379,7 +257,7 @@
   flex: 1;
   border: none;
   background: transparent;
-  font-size: 13px;
+  font-size: 12.5px;
   color: #334155;
   outline: none;
 }
@@ -387,41 +265,24 @@
 .copy-link-box button {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
+  gap: 5px;
+  padding: 7px 12px;
   background: #ffffff;
   border: 1px solid #cbd5e1;
-  border-radius: 8px;
+  border-radius: 7px;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   color: #1e293b;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .copy-link-box button:hover {
-  background: #f8fafc;
-  border-color: #94a3b8;
+  background: #f1f5f9;
 }
 
 .copied-icon {
   color: #10b981;
-}
-
-.copy-toast {
-  background: #ecfdf5;
-  color: #047857;
-  border: 1px solid #a7f3d0;
-  padding: 8px 12px;
-  border-radius: 10px;
-  font-size: 12.5px;
-  font-weight: 700;
-  animation: fadeInToast 0.2s ease;
-}
-
-@keyframes fadeInToast {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 /* External Share Row */
@@ -431,7 +292,7 @@
   justify-content: space-between;
   padding-top: 10px;
   border-top: 1px solid #f1f5f9;
-  font-size: 12.5px;
+  font-size: 12px;
   color: #64748b;
   font-weight: 600;
 }
@@ -445,14 +306,14 @@
 .qr-share-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   padding: 6px 12px;
   border-radius: 8px;
   border: none;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .qr-share-btn.whatsapp {
@@ -477,7 +338,7 @@
 body.dark .qr-modal-card {
   background: #1e293b;
   border-color: #334155;
-  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
 }
 
 body.dark .qr-close-btn {
@@ -498,19 +359,6 @@ body.dark .qr-modal-header p,
 body.dark .qr-instructions,
 body.dark .qr-share-row {
   color: #cbd5e1;
-}
-
-body.dark .qr-theme-picker {
-  background: #0f172a;
-  border-color: #334155;
-}
-
-body.dark .theme-pill {
-  color: #94a3b8;
-}
-
-body.dark .theme-pill.active {
-  background: #1e293b;
 }
 
 body.dark .copy-link-box {
