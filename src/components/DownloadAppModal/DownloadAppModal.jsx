@@ -113,10 +113,6 @@ const DownloadAppModal = ({ isOpen, onClose }) => {
               alt="Scan QR Code to Download Vedix.Ai App"
               className="qr-code-img"
             />
-            {/* Center Brand Overlay Icon */}
-            <div className="qr-center-logo">
-              <img src={assets.gemini_icon} alt="Vedix.Ai Logo" />
-            </div>
             <div className="qr-badge">
               <FiSmartphone /> Scan to Open
             </div>

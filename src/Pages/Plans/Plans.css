@@ -1,11 +1,13 @@
+/* ================= LIGHT THEME PLANS PAGE ================= */
+
 .plans-page {
   min-height: 100vh;
   padding: 34px;
   background:
-    radial-gradient(circle at 12% 10%, rgba(99, 102, 241, 0.15), transparent 30%),
-    radial-gradient(circle at 88% 8%, rgba(168, 85, 247, 0.15), transparent 28%),
-    #0d1322;
-  color: #f8fafc;
+    radial-gradient(circle at 12% 10%, rgba(99, 102, 241, 0.08), transparent 30%),
+    radial-gradient(circle at 88% 8%, rgba(59, 130, 246, 0.08), transparent 28%),
+    #f8fafc;
+  color: #1e293b;
 }
 
 .plans-hero {
@@ -16,7 +18,7 @@
 .plans-kicker {
   display: inline-flex;
   margin-bottom: 14px;
-  color: #a5b4fc;
+  color: #4f46e5;
   font-size: 13px;
   font-weight: 800;
   text-transform: uppercase;
@@ -26,16 +28,17 @@
 .plans-hero h1 {
   max-width: 760px;
   margin: 0 0 12px;
-  color: #ffffff;
-  font-size: 46px;
-  line-height: 1.05;
+  color: #0f172a;
+  font-size: 44px;
+  line-height: 1.1;
   letter-spacing: -0.02em;
+  font-weight: 800;
 }
 
 .plans-hero p {
   max-width: 760px;
   margin: 0;
-  color: #94a3b8;
+  color: #475569;
   font-size: 16px;
   line-height: 1.75;
 }
@@ -45,16 +48,16 @@
   align-items: center;
   gap: 12px;
   margin-top: 16px;
-  background: rgba(99, 102, 241, 0.12);
-  border: 1px solid rgba(99, 102, 241, 0.3);
-  padding: 8px 16px;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  padding: 8px 18px;
   border-radius: 999px;
   font-size: 14px;
-  color: #c7d2fe;
+  color: #4338ca;
 }
 
 .current-plan-banner strong {
-  color: #ffffff;
+  color: #1e1b4b;
 }
 
 .active-badge {
@@ -79,11 +82,10 @@
 .plan-card,
 .plans-note,
 .user-payments-history {
-  border-radius: 16px;
-  background: rgba(18, 24, 38, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(8px);
+  border-radius: 20px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
 }
 
 .plan-card {
@@ -91,18 +93,23 @@
   display: flex;
   flex-direction: column;
   min-height: 560px;
-  transition: border-color 0.25s, transform 0.25s;
+  transition: all 0.25s ease;
+}
+
+.plan-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
 }
 
 .plan-card.featured {
-  border-color: rgba(99, 102, 241, 0.6);
-  box-shadow: 0 28px 70px rgba(99, 102, 241, 0.25);
-  transform: translateY(-8px);
+  border-color: #6366f1;
+  box-shadow: 0 16px 36px rgba(99, 102, 241, 0.15);
+  transform: translateY(-6px);
 }
 
 .plan-card.current {
-  border-color: rgba(16, 185, 129, 0.6);
-  box-shadow: 0 0 25px rgba(16, 185, 129, 0.2);
+  border-color: #10b981;
+  box-shadow: 0 0 25px rgba(16, 185, 129, 0.15);
 }
 
 .plan-topline {
@@ -116,10 +123,15 @@
 .plan-topline span {
   padding: 6px 12px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  color: #cbd5e1;
+  background: #f1f5f9;
+  color: #475569;
   font-size: 12px;
   font-weight: 700;
+}
+
+.plan-card.featured .plan-topline span {
+  background: #eef2ff;
+  color: #4f46e5;
 }
 
 .plan-icon {
@@ -133,31 +145,33 @@
 }
 
 .plan-icon.free {
-  background: rgba(148, 163, 184, 0.15);
-  color: #94a3b8;
+  background: #f1f5f9;
+  color: #64748b;
 }
 
 .plan-icon.pro {
-  background: rgba(99, 102, 241, 0.2);
-  color: #818cf8;
+  background: #eef2ff;
+  color: #4f46e5;
 }
 
 .plan-icon.premium {
-  background: rgba(168, 85, 247, 0.2);
-  color: #c084fc;
+  background: #fae8ff;
+  color: #a855f7;
 }
 
 .plan-heading h2 {
   margin: 0 0 10px;
-  color: #ffffff;
+  color: #0f172a;
   font-size: 28px;
+  font-weight: 800;
 }
 
 .plan-heading p {
   min-height: 54px;
   margin: 0;
-  color: #94a3b8;
+  color: #64748b;
   line-height: 1.65;
+  font-size: 14px;
 }
 
 .plan-price {
@@ -168,22 +182,23 @@
 }
 
 .plan-price strong {
-  color: #ffffff;
+  color: #0f172a;
   font-size: 42px;
   line-height: 1;
+  font-weight: 800;
 }
 
 .plan-price span {
-  color: #94a3b8;
+  color: #64748b;
   font-weight: 700;
 }
 
 .plan-cta {
   width: 100%;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 14px 16px;
-  background: linear-gradient(135deg, #334155, #1e293b);
+  background: #1e293b;
   color: #ffffff;
   display: inline-flex;
   align-items: center;
@@ -195,19 +210,24 @@
 }
 
 .plan-card.featured .plan-cta {
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
-  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+  background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+  box-shadow: 0 4px 16px rgba(79, 70, 229, 0.3);
 }
 
 .plan-cta:hover:not(:disabled) {
   transform: translateY(-2px);
-  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  background: #0f172a;
+}
+
+.plan-card.featured .plan-cta:hover:not(:disabled) {
+  background: linear-gradient(135deg, #4338ca 0%, #2563eb 100%);
+  box-shadow: 0 6px 22px rgba(79, 70, 229, 0.4);
 }
 
 .plan-cta.btn-current {
-  background: rgba(16, 185, 129, 0.2);
-  border: 1px solid rgba(16, 185, 129, 0.4);
-  color: #34d399;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #059669;
   cursor: default;
 }
 
@@ -223,8 +243,9 @@
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  color: #cbd5e1;
+  color: #334155;
   line-height: 1.55;
+  font-size: 14px;
 }
 
 .plan-features svg {
@@ -242,7 +263,7 @@
 .user-payments-history h2 {
   margin: 0 0 16px;
   font-size: 20px;
-  color: #ffffff;
+  color: #0f172a;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -265,26 +286,26 @@
 }
 
 .table-header {
-  background: rgba(255, 255, 255, 0.04);
-  color: #94a3b8;
+  background: #f1f5f9;
+  color: #475569;
   font-weight: 700;
   text-transform: uppercase;
   font-size: 12px;
 }
 
 .table-row {
-  background: rgba(15, 23, 42, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  color: #e2e8f0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #1e293b;
 }
 
 .pmt-plan {
-  color: #818cf8;
+  color: #4f46e5;
 }
 
 .pmt-txid {
   font-family: monospace;
-  color: #38bdf8;
+  color: #0284c7;
 }
 
 .status-badge {
@@ -298,21 +319,21 @@
 }
 
 .status-badge.pending {
-  background: rgba(245, 158, 11, 0.2);
-  color: #fbbf24;
-  border: 1px solid rgba(245, 158, 11, 0.4);
+  background: #fef3c7;
+  color: #d97706;
+  border: 1px solid #fde68a;
 }
 
 .status-badge.approved {
-  background: rgba(16, 185, 129, 0.2);
-  color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.4);
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
 }
 
 .status-badge.rejected {
-  background: rgba(244, 63, 94, 0.2);
-  color: #fb7185;
-  border: 1px solid rgba(244, 63, 94, 0.4);
+  background: #ffe4e6;
+  color: #e11d48;
+  border: 1px solid #fecdd3;
 }
 
 .plans-note {
@@ -323,13 +344,13 @@
 
 .plans-note h2 {
   margin: 0 0 8px;
-  color: #ffffff;
+  color: #0f172a;
   font-size: 22px;
 }
 
 .plans-note p {
   margin: 0;
-  color: #94a3b8;
+  color: #475569;
   line-height: 1.7;
 }
 
