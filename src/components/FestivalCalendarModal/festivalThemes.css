@@ -1,102 +1,188 @@
 /* ==========================================================================
-   DYNAMIC FESTIVAL & SPECIAL DAY THEMES (Raksha Bandhan & Global Holidays)
+   ULTRA-PREMIUM DYNAMIC FESTIVAL & SPECIAL DAY THEMES
    ========================================================================== */
 
-/* --- RAKSHA BANDHAN THEME (Primary Highlight) --- */
+/* --------------------------------------------------------------------------
+   1. RAKSHA BANDHAN THEME (Primary Highlight - Silk Threads & Gold Glow)
+   -------------------------------------------------------------------------- */
 body[data-festival-theme="raksha_bandhan"] {
   --festival-primary: #dc2626;
   --festival-accent: #f59e0b;
-  --festival-bg-glow: rgba(220, 38, 38, 0.08);
-  --festival-border: rgba(245, 158, 11, 0.35);
-  background-color: #faf5f0 !important;
+  --festival-glow: rgba(245, 158, 11, 0.4);
 }
 
 body[data-festival-theme="raksha_bandhan"] .main {
   background:
-    radial-gradient(circle at 10% 15%, rgba(220, 38, 38, 0.12), transparent 40%),
-    radial-gradient(circle at 90% 20%, rgba(245, 158, 11, 0.18), transparent 45%),
-    radial-gradient(circle at 50% 85%, rgba(124, 45, 18, 0.10), transparent 50%),
+    radial-gradient(circle at 12% 18%, rgba(220, 38, 38, 0.16), transparent 45%),
+    radial-gradient(circle at 88% 22%, rgba(245, 158, 11, 0.22), transparent 50%),
+    radial-gradient(circle at 50% 85%, rgba(124, 45, 18, 0.14), transparent 55%),
     #fffcf8 !important;
 }
 
 body[data-festival-theme="raksha_bandhan"].dark .main {
   background:
-    radial-gradient(circle at 10% 15%, rgba(220, 38, 38, 0.25), transparent 40%),
-    radial-gradient(circle at 90% 20%, rgba(245, 158, 11, 0.20), transparent 45%),
-    radial-gradient(circle at 50% 85%, rgba(124, 45, 18, 0.30), transparent 50%),
+    radial-gradient(circle at 12% 18%, rgba(220, 38, 38, 0.32), transparent 45%),
+    radial-gradient(circle at 88% 22%, rgba(245, 158, 11, 0.28), transparent 50%),
+    radial-gradient(circle at 50% 85%, rgba(124, 45, 18, 0.40), transparent 55%),
     #170c0c !important;
 }
 
-/* Silk Thread Border Glow for Raksha Bandhan */
-body[data-festival-theme="raksha_bandhan"] .sidebar {
-  border-right: 2px solid rgba(245, 158, 11, 0.4) !important;
-  box-shadow: 4px 0 25px rgba(220, 38, 38, 0.08) !important;
+/* Raksha Bandhan Logo Accent */
+body[data-festival-theme="raksha_bandhan"] .vedix-logo,
+body[data-festival-theme="raksha_bandhan"] .Lexi {
+  background: linear-gradient(135deg, #b91c1c, #dc2626, #f59e0b) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  font-weight: 900 !important;
+  filter: drop-shadow(0 2px 8px rgba(245, 158, 11, 0.3));
 }
 
-/* --- INDEPENDENCE DAY THEME --- */
+/* Silk Thread Accent Borders & Glows */
+body[data-festival-theme="raksha_bandhan"] .sidebar {
+  border-right: 2px solid rgba(245, 158, 11, 0.5) !important;
+  box-shadow: 4px 0 30px rgba(220, 38, 38, 0.12) !important;
+}
+
+body[data-festival-theme="raksha_bandhan"] .main .search-box {
+  border: 1.5px solid rgba(245, 158, 11, 0.5) !important;
+  box-shadow: 0 8px 30px rgba(220, 38, 38, 0.12), 0 0 0 3px rgba(245, 158, 11, 0.15) !important;
+  background: rgba(255, 252, 248, 0.95) !important;
+}
+
+body[data-festival-theme="raksha_bandhan"].dark .main .search-box {
+  background: rgba(30, 16, 16, 0.95) !important;
+  border-color: rgba(245, 158, 11, 0.6) !important;
+  box-shadow: 0 8px 35px rgba(220, 38, 38, 0.25), 0 0 0 3px rgba(245, 158, 11, 0.2) !important;
+}
+
+body[data-festival-theme="raksha_bandhan"] .main .greet span {
+  background: linear-gradient(135deg, #dc2626, #ea580c, #f59e0b) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+body[data-festival-theme="raksha_bandhan"] .main .card {
+  border: 1px solid rgba(245, 158, 11, 0.3) !important;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(254, 243, 199, 0.5)) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+body[data-festival-theme="raksha_bandhan"].dark .main .card {
+  background: linear-gradient(145deg, rgba(35, 18, 18, 0.9), rgba(69, 26, 3, 0.6)) !important;
+  border-color: rgba(245, 158, 11, 0.35) !important;
+}
+
+body[data-festival-theme="raksha_bandhan"] .main .card:hover {
+  transform: translateY(-4px) scale(1.02) !important;
+  border-color: #f59e0b !important;
+  box-shadow: 0 12px 30px rgba(220, 38, 38, 0.2) !important;
+}
+
+
+/* --------------------------------------------------------------------------
+   2. INDEPENDENCE DAY THEME (Patriotic Tricolor Ambient Vibe)
+   -------------------------------------------------------------------------- */
 body[data-festival-theme="independence_day"] .main {
   background:
-    radial-gradient(circle at 15% 15%, rgba(249, 115, 22, 0.15), transparent 40%),
-    radial-gradient(circle at 85% 20%, rgba(22, 163, 74, 0.15), transparent 40%),
-    radial-gradient(circle at 50% 50%, rgba(30, 58, 138, 0.08), transparent 50%),
+    radial-gradient(circle at 15% 15%, rgba(249, 115, 22, 0.2), transparent 45%),
+    radial-gradient(circle at 85% 20%, rgba(22, 163, 74, 0.2), transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(30, 58, 138, 0.12), transparent 50%),
     #f8fafc !important;
 }
+body[data-festival-theme="independence_day"].dark .main {
+  background:
+    radial-gradient(circle at 15% 15%, rgba(249, 115, 22, 0.3), transparent 45%),
+    radial-gradient(circle at 85% 20%, rgba(22, 163, 74, 0.3), transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(30, 58, 138, 0.25), transparent 50%),
+    #0b1329 !important;
+}
 
-/* --- DIWALI THEME --- */
+body[data-festival-theme="independence_day"] .vedix-logo,
+body[data-festival-theme="independence_day"] .Lexi {
+  background: linear-gradient(135deg, #f97316, #2563eb, #16a34a) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  font-weight: 900 !important;
+}
+
+
+/* --------------------------------------------------------------------------
+   3. DIWALI THEME (Diya & Warm Golden Oil Lamp Glow)
+   -------------------------------------------------------------------------- */
 body[data-festival-theme="diwali"] .main {
   background:
-    radial-gradient(circle at 20% 20%, rgba(234, 88, 12, 0.18), transparent 40%),
-    radial-gradient(circle at 80% 80%, rgba(234, 179, 8, 0.22), transparent 45%),
+    radial-gradient(circle at 20% 20%, rgba(234, 88, 12, 0.22), transparent 45%),
+    radial-gradient(circle at 80% 80%, rgba(234, 179, 8, 0.26), transparent 50%),
     #fffdfa !important;
 }
 body[data-festival-theme="diwali"].dark .main {
   background:
-    radial-gradient(circle at 20% 20%, rgba(234, 88, 12, 0.35), transparent 45%),
-    radial-gradient(circle at 80% 80%, rgba(234, 179, 8, 0.28), transparent 50%),
+    radial-gradient(circle at 20% 20%, rgba(234, 88, 12, 0.4), transparent 45%),
+    radial-gradient(circle at 80% 80%, rgba(234, 179, 8, 0.32), transparent 50%),
     #140a02 !important;
 }
 
-/* --- HOLI THEME --- */
+body[data-festival-theme="diwali"] .main .search-box {
+  border: 1.5px solid rgba(234, 179, 8, 0.6) !important;
+  box-shadow: 0 8px 30px rgba(234, 88, 12, 0.2) !important;
+}
+
+
+/* --------------------------------------------------------------------------
+   4. HOLI THEME (Splash Gulal Colors)
+   -------------------------------------------------------------------------- */
 body[data-festival-theme="holi"] .main {
   background:
-    radial-gradient(circle at 15% 15%, rgba(236, 72, 153, 0.16), transparent 35%),
-    radial-gradient(circle at 85% 25%, rgba(139, 92, 246, 0.16), transparent 35%),
-    radial-gradient(circle at 50% 85%, rgba(6, 182, 212, 0.16), transparent 40%),
+    radial-gradient(circle at 15% 15%, rgba(236, 72, 153, 0.22), transparent 40%),
+    radial-gradient(circle at 85% 25%, rgba(139, 92, 246, 0.22), transparent 40%),
+    radial-gradient(circle at 50% 85%, rgba(6, 182, 212, 0.22), transparent 45%),
     #faf5ff !important;
 }
+body[data-festival-theme="holi"].dark .main {
+  background:
+    radial-gradient(circle at 15% 15%, rgba(236, 72, 153, 0.35), transparent 40%),
+    radial-gradient(circle at 85% 25%, rgba(139, 92, 246, 0.35), transparent 40%),
+    radial-gradient(circle at 50% 85%, rgba(6, 182, 212, 0.35), transparent 45%),
+    #170b22 !important;
+}
 
-/* --- CHRISTMAS THEME --- */
+
+/* --------------------------------------------------------------------------
+   5. CHRISTMAS THEME (Winter Pine & Ruby Cheer)
+   -------------------------------------------------------------------------- */
 body[data-festival-theme="christmas"] .main {
   background:
-    radial-gradient(circle at 10% 10%, rgba(21, 128, 61, 0.15), transparent 40%),
-    radial-gradient(circle at 90% 15%, rgba(185, 28, 28, 0.15), transparent 40%),
+    radial-gradient(circle at 10% 10%, rgba(21, 128, 61, 0.2), transparent 45%),
+    radial-gradient(circle at 90% 15%, rgba(185, 28, 28, 0.2), transparent 45%),
     #fcfdfd !important;
 }
-
-/* --- NEW YEAR THEME --- */
-body[data-festival-theme="new_year"] .main {
+body[data-festival-theme="christmas"].dark .main {
   background:
-    radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.18), transparent 40%),
-    radial-gradient(circle at 80% 30%, rgba(236, 72, 153, 0.18), transparent 40%),
-    #f8fafc !important;
+    radial-gradient(circle at 10% 10%, rgba(21, 128, 61, 0.35), transparent 45%),
+    radial-gradient(circle at 90% 15%, rgba(185, 28, 28, 0.35), transparent 45%),
+    #0b1a10 !important;
 }
 
-/* --- TOP FESTIVAL GREETING BANNER BAR --- */
+
+/* --------------------------------------------------------------------------
+   6. TOP FESTIVAL GREETING BANNER BAR
+   -------------------------------------------------------------------------- */
 .festival-top-banner {
   width: 100%;
-  padding: 10px 20px;
+  padding: 12px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  background: linear-gradient(90deg, #7c2d12 0%, #dc2626 45%, #f59e0b 100%);
+  gap: 16px;
+  background: linear-gradient(90deg, #7c2d12 0%, #dc2626 40%, #f59e0b 100%);
   color: #ffffff;
   font-size: 14px;
   font-weight: 600;
-  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.25);
+  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3);
   animation: festivalBannerSlideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   z-index: 90;
   position: relative;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
 }
 
 @keyframes festivalBannerSlideDown {
@@ -113,22 +199,23 @@ body[data-festival-theme="new_year"] .main {
 .festival-banner-content {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
 .festival-banner-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  background: rgba(255, 255, 255, 0.22);
-  backdrop-filter: blur(8px);
-  padding: 4px 12px;
-  border-radius: 20px;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  padding: 5px 14px;
+  border-radius: 30px;
   font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.3px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .festival-banner-text {
@@ -137,15 +224,15 @@ body[data-festival-theme="new_year"] .main {
 }
 
 .festival-banner-text span.festival-tagline {
-  opacity: 0.9;
+  opacity: 0.92;
   font-weight: 400;
-  margin-left: 6px;
+  margin-left: 8px;
 }
 
 .festival-banner-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex-shrink: 0;
 }
 
@@ -154,66 +241,67 @@ body[data-festival-theme="new_year"] .main {
   align-items: center;
   gap: 6px;
   background: #ffffff;
-  color: #991b1b;
+  color: #7c2d12;
   border: none;
-  padding: 5px 12px;
-  border-radius: 20px;
-  font-size: 12px;
+  padding: 6px 16px;
+  border-radius: 30px;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
 }
 
 .festival-calendar-btn-link:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px) scale(1.03);
   background: #fffbeb;
-  color: #7c2d12;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  color: #991b1b;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
 }
 
 .festival-dismiss-btn {
-  background: transparent;
-  border: none;
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 18px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  font-size: 16px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .festival-dismiss-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  color: #ffffff;
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(1.1);
 }
 
-/* Pulsing Badge Indicator for Sidebar & Navbar */
+/* Pulsing Badge Indicator */
 .festival-pulse-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 2px 8px;
-  border-radius: 12px;
+  padding: 3px 10px;
+  border-radius: 14px;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 800;
   background: linear-gradient(135deg, #ef4444, #f59e0b);
   color: #ffffff;
-  box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
   animation: festivalPulse 2s infinite ease-in-out;
 }
 
 @keyframes festivalPulse {
   0%, 100% {
-    box-shadow: 0 0 5px rgba(239, 68, 68, 0.4);
+    box-shadow: 0 0 6px rgba(239, 68, 68, 0.4);
     transform: scale(1);
   }
   50% {
-    box-shadow: 0 0 15px rgba(245, 158, 11, 0.8);
-    transform: scale(1.05);
+    box-shadow: 0 0 16px rgba(245, 158, 11, 0.85);
+    transform: scale(1.06);
   }
 }
 
@@ -223,7 +311,7 @@ body[data-festival-theme="new_year"] .main {
     display: none;
   }
   .festival-top-banner {
-    padding: 8px 12px;
+    padding: 10px 14px;
     font-size: 13px;
   }
 }

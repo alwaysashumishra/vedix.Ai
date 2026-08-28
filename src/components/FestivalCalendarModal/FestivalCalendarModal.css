@@ -1,18 +1,18 @@
 /* ==========================================================================
-   FESTIVAL CALENDAR MODAL STYLES
+   STUNNING GLASSMORPHIC FESTIVAL CALENDAR MODAL STYLES
    ========================================================================== */
 
 .festival-modal-overlay {
   position: fixed;
   inset: 0;
   z-index: 99999;
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(8px);
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 16px;
-  animation: modalOverlayFade 0.25s ease-out;
+  animation: modalOverlayFade 0.3s ease-out;
 }
 
 @keyframes modalOverlayFade {
@@ -21,27 +21,29 @@
 }
 
 .festival-modal-box {
-  width: min(880px, 100%);
-  max-height: 90vh;
-  background: #ffffff;
-  border-radius: 20px;
-  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.3);
+  width: min(920px, 100%);
+  max-height: 92vh;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  box-shadow: 0 30px 70px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.6) inset;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border: 1px solid rgba(226, 232, 240, 0.8);
-  animation: modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  animation: modalSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 body.dark .festival-modal-box {
-  background: #18181b;
-  border-color: rgba(63, 63, 70, 0.8);
+  background: rgba(24, 24, 27, 0.96);
+  border-color: rgba(63, 63, 70, 0.9);
   color: #f4f4f5;
+  box-shadow: 0 30px 70px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
 }
 
 @keyframes modalSlideUp {
   from {
-    transform: translateY(20px) scale(0.97);
+    transform: translateY(28px) scale(0.96);
     opacity: 0;
   }
   to {
@@ -52,45 +54,77 @@ body.dark .festival-modal-box {
 
 /* Header */
 .festival-modal-header {
-  padding: 20px 24px;
+  padding: 22px 28px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+  background: linear-gradient(180deg, rgba(248, 250, 252, 0.8) 0%, transparent 100%);
 }
 body.dark .festival-modal-header {
-  border-bottom-color: #27272a;
+  border-bottom-color: rgba(39, 39, 42, 0.8);
+  background: linear-gradient(180deg, rgba(32, 32, 35, 0.8) 0%, transparent 100%);
 }
 
 .festival-header-title {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
 }
 
-.festival-icon-badge {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #ef4444, #f59e0b);
+.festival-icon-badge.animated-halo {
+  width: 50px;
+  height: 50px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #dc2626 0%, #ea580c 50%, #f59e0b 100%);
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  font-size: 24px;
+  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+  position: relative;
+}
+
+.festival-icon-badge.animated-halo::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #dc2626, #f59e0b);
+  z-index: -1;
+  opacity: 0.5;
+  filter: blur(6px);
+}
+
+.title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .festival-header-title h2 {
-  font-size: 20px;
-  font-weight: 700;
+  font-size: 22px;
+  font-weight: 800;
   margin: 0;
+  letter-spacing: -0.3px;
+}
+
+.today-live-badge {
+  font-size: 12px;
+  font-weight: 800;
+  padding: 3px 12px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #dc2626, #f59e0b);
+  color: #ffffff;
+  box-shadow: 0 2px 10px rgba(220, 38, 38, 0.3);
 }
 
 .festival-header-title p {
   font-size: 13px;
   color: #64748b;
-  margin: 2px 0 0;
+  margin: 4px 0 0;
 }
 body.dark .festival-header-title p {
   color: #a1a1aa;
@@ -99,16 +133,16 @@ body.dark .festival-header-title p {
 .festival-close-btn {
   background: #f1f5f9;
   border: none;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   color: #64748b;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 18px;
-  transition: all 0.2s ease;
+  font-size: 20px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 body.dark .festival-close-btn {
   background: #27272a;
@@ -118,12 +152,13 @@ body.dark .festival-close-btn {
 .festival-close-btn:hover {
   background: #ef4444;
   color: #ffffff;
+  transform: rotate(90deg) scale(1.05);
 }
 
 /* Top Controls */
 .festival-top-controls {
-  padding: 12px 24px;
-  background: #f8fafc;
+  padding: 14px 28px;
+  background: rgba(248, 250, 252, 0.9);
   border-bottom: 1px solid #e2e8f0;
   display: flex;
   align-items: center;
@@ -132,25 +167,29 @@ body.dark .festival-close-btn {
   flex-wrap: wrap;
 }
 body.dark .festival-top-controls {
-  background: #202023;
+  background: rgba(32, 32, 35, 0.9);
   border-bottom-color: #27272a;
 }
 
 .festival-auto-toggle {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   cursor: pointer;
   user-select: none;
 }
 
 .toggle-label-text {
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
+  color: #334155;
+}
+body.dark .toggle-label-text {
+  color: #e4e4e7;
 }
 
 .toggle-icon {
-  font-size: 24px;
+  font-size: 26px;
   color: #94a3b8;
   transition: color 0.2s ease;
 }
@@ -160,16 +199,16 @@ body.dark .festival-top-controls {
 
 .toggle-status-badge {
   font-size: 11px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 10px;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 12px;
 }
 .toggle-status-badge.on {
-  background: rgba(16, 185, 129, 0.15);
+  background: rgba(16, 185, 129, 0.18);
   color: #059669;
 }
 .toggle-status-badge.off {
-  background: rgba(239, 68, 68, 0.15);
+  background: rgba(239, 68, 68, 0.18);
   color: #dc2626;
 }
 
@@ -177,9 +216,9 @@ body.dark .festival-top-controls {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: #e2e8f0;
-  padding: 3px;
-  border-radius: 12px;
+  background: #cbd5e1;
+  padding: 4px;
+  border-radius: 14px;
 }
 body.dark .festival-tab-pills {
   background: #27272a;
@@ -188,15 +227,15 @@ body.dark .festival-tab-pills {
 .festival-tab-btn {
   border: none;
   background: transparent;
-  padding: 6px 14px;
-  border-radius: 9px;
+  padding: 8px 16px;
+  border-radius: 11px;
   font-size: 13px;
-  font-weight: 600;
-  color: #64748b;
+  font-weight: 700;
+  color: #475569;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   transition: all 0.2s ease;
 }
 body.dark .festival-tab-btn {
@@ -206,7 +245,7 @@ body.dark .festival-tab-btn {
 .festival-tab-btn.active {
   background: #ffffff;
   color: #1e293b;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 body.dark .festival-tab-btn.active {
   background: #3f3f46;
@@ -215,29 +254,30 @@ body.dark .festival-tab-btn.active {
 
 /* Modal Body */
 .festival-modal-body {
-  padding: 20px 24px;
+  padding: 24px 28px;
   overflow-y: auto;
   flex: 1;
 }
 
 .festival-calendar-layout {
   display: grid;
-  grid-template-columns: 1fr 300px;
-  gap: 20px;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 840px) {
   .festival-calendar-layout {
     grid-template-columns: 1fr;
   }
 }
 
-/* Calendar Card */
+/* Calendar Grid Card */
 .festival-calendar-grid-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 16px;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
 }
 body.dark .festival-calendar-grid-card {
   background: #202023;
@@ -248,26 +288,42 @@ body.dark .festival-calendar-grid-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+}
+
+.month-label-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .month-year-label {
-  font-size: 16px;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.fest-count-chip {
+  font-size: 11px;
   font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 12px;
+  background: rgba(245, 158, 11, 0.15);
+  color: #d97706;
 }
 
 .month-nav-btn {
   border: 1px solid #e2e8f0;
   background: #ffffff;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 16px;
-  color: #475569;
+  font-size: 18px;
+  color: #334155;
+  transition: all 0.2s ease;
 }
 body.dark .month-nav-btn {
   background: #27272a;
@@ -275,25 +331,32 @@ body.dark .month-nav-btn {
   color: #e4e4e7;
 }
 
+.month-nav-btn:hover {
+  background: #f1f5f9;
+  transform: scale(1.08);
+}
+
 .calendar-days-header {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   text-align: center;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
   color: #94a3b8;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .calendar-days-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 6px;
+  gap: 8px;
 }
 
 .day-cell {
   aspect-ratio: 1;
-  border-radius: 10px;
+  border-radius: 14px;
   border: 1px solid transparent;
   display: flex;
   flex-direction: column;
@@ -301,13 +364,14 @@ body.dark .month-nav-btn {
   justify-content: center;
   cursor: pointer;
   position: relative;
-  font-size: 13px;
-  font-weight: 600;
-  transition: all 0.15s ease;
+  font-size: 14px;
+  font-weight: 700;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .day-cell:hover:not(.empty) {
   background: #f1f5f9;
+  transform: translateY(-2px);
 }
 body.dark .day-cell:hover:not(.empty) {
   background: #27272a;
@@ -315,36 +379,58 @@ body.dark .day-cell:hover:not(.empty) {
 
 .day-cell.today {
   border-color: #3b82f6;
-  font-weight: 800;
+  font-weight: 900;
   color: #2563eb;
+  background: rgba(59, 130, 246, 0.08);
 }
 
 .day-cell.selected {
-  background: #3b82f6 !important;
+  background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
   color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
 }
 
 .day-cell.has-festival {
-  background: rgba(245, 158, 11, 0.12);
-  border-color: rgba(245, 158, 11, 0.4);
+  background: linear-gradient(135deg, rgba(254, 243, 199, 0.6), rgba(254, 215, 170, 0.6));
+  border-color: rgba(245, 158, 11, 0.5);
+  color: #7c2d12;
+}
+body.dark .day-cell.has-festival {
+  background: linear-gradient(135deg, rgba(69, 26, 3, 0.6), rgba(124, 45, 18, 0.6));
+  border-color: rgba(245, 158, 11, 0.6);
+  color: #fef08a;
 }
 
-.calendar-fest-icon {
-  font-size: 14px;
+/* Raksha Bandhan Custom Cell Glow */
+.day-cell.raksha-bandhan-cell {
+  background: linear-gradient(135deg, rgba(254, 226, 226, 0.8), rgba(254, 243, 199, 0.8)) !important;
+  border: 2px solid #dc2626 !important;
+  box-shadow: 0 0 12px rgba(220, 38, 38, 0.3) !important;
+  animation: rakshaCellGlow 2s infinite ease-in-out;
+}
+
+@keyframes rakshaCellGlow {
+  0%, 100% { box-shadow: 0 0 8px rgba(220, 38, 38, 0.3); }
+  50% { box-shadow: 0 0 16px rgba(245, 158, 11, 0.6); }
+}
+
+.calendar-fest-badge {
+  font-size: 15px;
   margin-top: 2px;
   line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
 }
 
 .today-dot {
-  width: 4px;
-  height: 4px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: #2563eb;
   position: absolute;
   bottom: 4px;
 }
 
-/* Info Card */
+/* Info Card / Hero Detail Box */
 .festival-info-card {
   display: flex;
   flex-direction: column;
@@ -353,123 +439,178 @@ body.dark .day-cell:hover:not(.empty) {
 .festival-detail-box {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 16px;
+  border-radius: 20px;
   overflow: hidden;
   height: 100%;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
 }
 body.dark .festival-detail-box {
   background: #202023;
   border-color: #27272a;
 }
 
-.detail-banner {
-  padding: 20px 16px;
+.detail-banner-hero {
+  padding: 24px 20px;
   color: #ffffff;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.hero-badge-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .detail-hero-icon {
-  font-size: 36px;
+  font-size: 34px;
 }
 
-.detail-banner h3 {
-  font-size: 18px;
+.hero-title-group h3 {
+  font-size: 20px;
+  font-weight: 800;
   margin: 0;
   line-height: 1.2;
+  color: #ffffff;
 }
 
 .hindi-badge {
   font-size: 12px;
-  opacity: 0.9;
-  background: rgba(0, 0, 0, 0.2);
-  padding: 2px 8px;
-  border-radius: 10px;
+  font-weight: 700;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 3px 10px;
+  border-radius: 12px;
   display: inline-block;
-  margin-top: 4px;
+  margin-top: 6px;
 }
 
 .detail-body {
-  padding: 16px;
+  padding: 20px;
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 12px;
+  gap: 16px;
+}
+
+.detail-quote-box {
+  background: #fffbeb;
+  border-left: 3px solid #f59e0b;
+  padding: 12px 14px;
+  border-radius: 0 12px 12px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+body.dark .detail-quote-box {
+  background: rgba(69, 26, 3, 0.4);
+}
+
+.quote-icon {
+  font-size: 16px;
 }
 
 .detail-tagline {
   font-size: 13px;
-  font-weight: 600;
-  color: #d97706;
+  font-weight: 700;
+  color: #b45309;
+  line-height: 1.4;
+  margin: 0;
+}
+body.dark .detail-tagline {
+  color: #fde047;
 }
 
 .detail-description {
   font-size: 13px;
   color: #475569;
-  line-height: 1.5;
+  line-height: 1.6;
+  margin: 0;
 }
 body.dark .detail-description {
   color: #a1a1aa;
 }
 
-.detail-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+.detail-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
 
-.meta-pill {
-  font-size: 12px;
-  padding: 4px 10px;
+.meta-item {
+  background: #f8fafc;
+  padding: 10px;
   border-radius: 12px;
-  background: #f1f5f9;
-  color: #475569;
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 10px;
+  border: 1px solid #e2e8f0;
 }
-body.dark .meta-pill {
+body.dark .meta-item {
   background: #27272a;
-  color: #e4e4e7;
+  border-color: #3f3f46;
 }
 
-.meta-pill.active-pill {
-  background: rgba(16, 185, 129, 0.15);
-  color: #059669;
+.meta-icon {
+  font-size: 18px;
+  color: #2563eb;
+}
+
+.meta-label {
+  display: block;
+  font-size: 10px;
+  color: #94a3b8;
   font-weight: 700;
+  text-transform: uppercase;
+}
+
+.meta-val {
+  font-size: 12px;
+  font-weight: 800;
+  color: #1e293b;
+}
+body.dark .meta-val {
+  color: #ffffff;
 }
 
 .apply-theme-btn {
   width: 100%;
   border: none;
   color: #ffffff;
-  padding: 12px;
-  border-radius: 12px;
+  padding: 14px;
+  border-radius: 14px;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transition: transform 0.2s ease;
+  gap: 10px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .apply-theme-btn:hover {
-  transform: translateY(-2px);
+  transform: translateY(-2px) scale(1.01);
 }
 
 .no-festival-card {
-  padding: 30px 20px;
+  padding: 36px 24px;
   text-align: center;
   background: #f8fafc;
-  border: 1px dashed #cbd5e1;
-  border-radius: 16px;
+  border: 2px dashed #cbd5e1;
+  border-radius: 20px;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -482,30 +623,64 @@ body.dark .no-festival-card {
 }
 
 .no-fest-icon {
-  font-size: 40px;
+  font-size: 44px;
+  margin-bottom: 10px;
+}
+
+.preset-quick-list {
+  margin-top: 16px;
+  width: 100%;
+}
+
+.quick-label {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 700;
   margin-bottom: 8px;
 }
 
-.sub-hint {
-  font-size: 12px;
-  color: #94a3b8;
-  margin-top: 10px;
+.quick-chips {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-/* Preset Themes Grid */
+.quick-chip-btn {
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+body.dark .quick-chip-btn {
+  background: #27272a;
+  border-color: #3f3f46;
+  color: #ffffff;
+}
+
+.quick-chip-btn:hover {
+  border-color: #3b82f6;
+  color: #2563eb;
+}
+
+/* Presets Grid */
 .festival-presets-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 18px;
 }
 
 .fest-preset-card {
   background: #ffffff;
   border: 2px solid #e2e8f0;
-  border-radius: 16px;
+  border-radius: 18px;
   overflow: hidden;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
 }
@@ -515,18 +690,18 @@ body.dark .fest-preset-card {
 }
 
 .fest-preset-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+  transform: translateY(-4px);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.1);
 }
 
 .fest-preset-card.active {
   border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
 }
 
 .preset-preview-header {
-  padding: 16px;
-  height: 70px;
+  padding: 18px;
+  height: 75px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -534,49 +709,71 @@ body.dark .fest-preset-card {
 }
 
 .preset-icon {
-  font-size: 32px;
+  font-size: 36px;
 }
 
-.active-check-icon {
-  font-size: 20px;
-  background: #ffffff;
-  color: #10b981;
-  border-radius: 50%;
-  padding: 2px;
+.active-badge-pill {
+  font-size: 11px;
+  font-weight: 800;
+  background: rgba(255, 255, 255, 0.9);
+  color: #059669;
+  padding: 4px 10px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .preset-card-body {
-  padding: 12px;
+  padding: 14px;
   flex: 1;
 }
 
+.preset-header-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .preset-card-body h4 {
-  font-size: 15px;
-  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.preset-hindi {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 700;
 }
 
 .preset-date {
-  font-size: 11px;
-  color: #64748b;
-  font-weight: 600;
+  display: block;
+  font-size: 12px;
+  color: #2563eb;
+  font-weight: 700;
+  margin-top: 4px;
 }
 
 .preset-tagline {
   font-size: 12px;
-  color: #94a3b8;
-  margin: 6px 0 0;
-  line-height: 1.3;
+  color: #64748b;
+  margin: 8px 0 0;
+  line-height: 1.4;
+}
+body.dark .preset-tagline {
+  color: #a1a1aa;
 }
 
 .preset-apply-btn {
-  margin: 12px;
-  padding: 8px;
+  margin: 14px;
+  padding: 10px;
   border: 1px solid #e2e8f0;
   background: #f8fafc;
   color: #334155;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 700;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 800;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -586,16 +783,10 @@ body.dark .preset-apply-btn {
   color: #e4e4e7;
 }
 
-.preset-apply-btn.applied {
-  background: rgba(16, 185, 129, 0.15);
-  color: #059669;
-  border-color: rgba(16, 185, 129, 0.3);
-}
-
 /* Modal Footer */
 .festival-modal-footer {
-  padding: 16px 24px;
-  background: #f8fafc;
+  padding: 18px 28px;
+  background: rgba(248, 250, 252, 0.9);
   border-top: 1px solid #e2e8f0;
   display: flex;
   align-items: center;
@@ -604,36 +795,45 @@ body.dark .preset-apply-btn {
   flex-wrap: wrap;
 }
 body.dark .festival-modal-footer {
-  background: #202023;
+  background: rgba(32, 32, 35, 0.9);
   border-top-color: #27272a;
 }
 
 .active-theme-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 13px;
   color: #64748b;
 }
-body.dark .active-theme-indicator {
-  color: #a1a1aa;
+
+.indicator-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
 }
 
 .footer-btn-group {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .reset-theme-btn {
-  border: 1px solid #e2e8f0;
+  border: 1px solid #cbd5e1;
   background: #ffffff;
-  color: #64748b;
-  padding: 8px 14px;
-  border-radius: 10px;
+  color: #475569;
+  padding: 9px 16px;
+  border-radius: 12px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  transition: all 0.2s ease;
 }
 body.dark .reset-theme-btn {
   background: #27272a;
@@ -645,9 +845,10 @@ body.dark .reset-theme-btn {
   background: #2563eb;
   color: #ffffff;
   border: none;
-  padding: 8px 20px;
-  border-radius: 10px;
+  padding: 9px 24px;
+  border-radius: 12px;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }

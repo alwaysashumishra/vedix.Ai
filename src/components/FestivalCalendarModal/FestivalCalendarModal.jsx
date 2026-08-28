@@ -13,6 +13,9 @@ import {
   FiToggleLeft,
   FiToggleRight,
   FiRotateCcw,
+  FiClock,
+  FiLayers,
+  FiGift,
 } from "react-icons/fi";
 
 const MONTH_NAMES = [
@@ -41,10 +44,12 @@ const FestivalCalendarModal = ({ isOpen, onClose }) => {
   } = useContext(ThemeContext);
 
   const today = new Date();
+  const todayFestival = getFestivalForDate(today);
+
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
   const [currentMonth, setCurrentMonth] = useState(today.getMonth()); // 0-11
   const [selectedDateObj, setSelectedDateObj] = useState(today);
-  const [selectedFestival, setSelectedFestival] = useState(() => getFestivalForDate(today));
+  const [selectedFestival, setSelectedFestival] = useState(() => todayFestival || FESTIVALS[0]);
   const [activeTab, setActiveTab] = useState("calendar"); // 'calendar' | 'presets'
 
   // Handle ESC key
@@ -86,7 +91,11 @@ const FestivalCalendarModal = ({ isOpen, onClose }) => {
     const date = new Date(currentYear, currentMonth, day);
     setSelectedDateObj(date);
     const fest = getFestivalForDate(date);
-    setSelectedFestival(fest);
+    if (fest) {
+      setSelectedFestival(fest);
+    } else {
+      setSelectedFestival(null);
+    }
   };
 
   const isToday = (day) => {
@@ -115,16 +124,24 @@ const FestivalCalendarModal = ({ isOpen, onClose }) => {
 
   return (
     <div className="festival-modal-overlay" onClick={onClose}>
-      <div className="festival-modal-box" onClick={(e) => e.stopPropagation()}>
+      <div className="festival-modal-box glassmorphism" onClick={(e) => e.stopPropagation()}>
+        
         {/* Modal Header */}
         <div className="festival-modal-header">
           <div className="festival-header-title">
-            <div className="festival-icon-badge">
+            <div className="festival-icon-badge animated-halo">
               <FiCalendar />
             </div>
             <div>
-              <h2>Special Days & Festival Themes</h2>
-              <p>Explore cultural events, holidays, and dynamic celebration themes</p>
+              <div className="title-row">
+                <h2>Special Days & Cultural Calendar</h2>
+                {todayFestival && (
+                  <span className="today-live-badge">
+                    {todayFestival.icon} Today: {todayFestival.name}
+                  </span>
+                )}
+              </div>
+              <p>Explore cultural festivals, national holidays, and active visual celebration themes</p>
             </div>
           </div>
 
@@ -133,11 +150,11 @@ const FestivalCalendarModal = ({ isOpen, onClose }) => {
           </button>
         </div>
 
-        {/* Top Controls Bar */}
+        {/* Top Control Bar */}
         <div className="festival-top-controls">
           <div className="festival-auto-toggle" onClick={toggleAutoFestivalMode}>
             <span className="toggle-label-text">
-              Auto-Detect Festival Themes:
+              Auto Special Day Theme Switcher:
             </span>
             {autoFestivalMode ? (
               <FiToggleRight className="toggle-icon active" />
@@ -145,7 +162,7 @@ const FestivalCalendarModal = ({ isOpen, onClose }) => {
               <FiToggleLeft className="toggle-icon" />
             )}
             <span className={`toggle-status-badge ${autoFestivalMode ? "on" : "off"}`}>
-              {autoFestivalMode ? "ENABLED (Auto)" : "DISABLED (Manual)"}
+              {autoFestivalMode ? "AUTO DETECT ON" : "MANUAL MODE"}
             </span>
           </div>
 
@@ -154,31 +171,38 @@ const FestivalCalendarModal = ({ isOpen, onClose }) => {
               className={`festival-tab-btn ${activeTab === "calendar" ? "active" : ""}`}
               onClick={() => setActiveTab("calendar")}
             >
-              <FiCalendar /> Calendar View
+              <FiCalendar /> Event Calendar
             </button>
             <button
               className={`festival-tab-btn ${activeTab === "presets" ? "active" : ""}`}
               onClick={() => setActiveTab("presets")}
             >
-              <FiStar /> All Festival Themes
+              <FiLayers /> Theme Gallery ({FESTIVALS.length})
             </button>
           </div>
         </div>
 
-        {/* Modal Body */}
+        {/* Modal Content Area */}
         <div className="festival-modal-body">
           {activeTab === "calendar" ? (
             <div className="festival-calendar-layout">
-              {/* Left Column: Calendar Grid */}
+              
+              {/* Left Column: Interactive Month Grid */}
               <div className="festival-calendar-grid-card">
-                {/* Month Navigator Header */}
+                
+                {/* Month Navigation */}
                 <div className="calendar-month-nav">
                   <button className="month-nav-btn" onClick={handlePrevMonth} title="Previous Month">
                     <FiChevronLeft />
                   </button>
-                  <span className="month-year-label">
-                    {MONTH_NAMES[currentMonth]} {currentYear}
-                  </span>
+                  <div className="month-label-group">
+                    <span className="month-year-label">
+                      {MONTH_NAMES[currentMonth]} {currentYear}
+                    </span>
+                    <span className="fest-count-chip">
+                      {FESTIVALS.filter((f) => f.dateMonth === currentMonth + 1).length} Special Event(s)
+                    </span>
+                  </div>
                   <button className="month-nav-btn" onClick={handleNextMonth} title="Next Month">
                     <FiChevronRight />
                   </button>
@@ -193,31 +217,32 @@ const FestivalCalendarModal = ({ isOpen, onClose }) => {
                   ))}
                 </div>
 
-                {/* Days Grid */}
+                {/* Grid Cells */}
                 <div className="calendar-days-grid">
-                  {/* Empty cells for offset */}
+                  {/* Empty cells for starting offset */}
                   {Array.from({ length: firstDayOfWeek }).map((_, index) => (
                     <div key={`empty-${index}`} className="day-cell empty" />
                   ))}
 
-                  {/* Month days */}
+                  {/* Days */}
                   {Array.from({ length: daysInMonth }).map((_, idx) => {
                     const day = idx + 1;
                     const festival = getFestivalForCalendarDay(day);
                     const todayCell = isToday(day);
                     const selectedCell = isSelectedDay(day);
+                    const isRakshaBandhan = festival && festival.id === "raksha_bandhan";
 
                     return (
                       <div
                         key={day}
                         className={`day-cell ${todayCell ? "today" : ""} ${
                           selectedCell ? "selected" : ""
-                        } ${festival ? "has-festival" : ""}`}
+                        } ${festival ? "has-festival" : ""} ${isRakshaBandhan ? "raksha-bandhan-cell" : ""}`}
                         onClick={() => handleSelectDay(day)}
                       >
                         <span className="day-number">{day}</span>
                         {festival && (
-                          <span className="calendar-fest-icon" title={festival.name}>
+                          <span className="calendar-fest-badge" title={festival.name}>
                             {festival.icon}
                           </span>
                         )}
@@ -228,7 +253,7 @@ const FestivalCalendarModal = ({ isOpen, onClose }) => {
                 </div>
               </div>
 
-              {/* Right Column: Selected Festival Info */}
+              {/* Right Column: Hero Festival Card */}
               <div className="festival-info-card">
                 {selectedFestival ? (
                   <div
@@ -238,40 +263,55 @@ const FestivalCalendarModal = ({ isOpen, onClose }) => {
                       "--fest-accent": selectedFestival.accentColor,
                     }}
                   >
-                    <div className="detail-banner" style={{ background: selectedFestival.gradient }}>
-                      <span className="detail-hero-icon">{selectedFestival.icon}</span>
-                      <div>
+                    <div className="detail-banner-hero" style={{ background: selectedFestival.gradient }}>
+                      <div className="hero-badge-circle">
+                        <span className="detail-hero-icon">{selectedFestival.icon}</span>
+                      </div>
+                      <div className="hero-title-group">
                         <h3>{selectedFestival.name}</h3>
                         <span className="hindi-badge">{selectedFestival.hindiName}</span>
                       </div>
                     </div>
 
                     <div className="detail-body">
-                      <p className="detail-tagline">✨ "{selectedFestival.tagline}"</p>
+                      <div className="detail-quote-box">
+                        <span className="quote-icon">✨</span>
+                        <p className="detail-tagline">"{selectedFestival.tagline}"</p>
+                      </div>
+
                       <p className="detail-description">{selectedFestival.description}</p>
-                      
-                      <div className="detail-meta">
-                        <span className="meta-pill">
-                          <FiCalendar /> {MONTH_NAMES[selectedFestival.dateMonth - 1]} {selectedFestival.dateDay}
-                        </span>
-                        {activeFestivalTheme === selectedFestival.id && (
-                          <span className="meta-pill active-pill">
-                            <FiCheckCircle /> Active Theme
-                          </span>
-                        )}
+
+                      <div className="detail-meta-grid">
+                        <div className="meta-item">
+                          <FiClock className="meta-icon" />
+                          <div>
+                            <span className="meta-label">Event Date</span>
+                            <span className="meta-val">
+                              {MONTH_NAMES[selectedFestival.dateMonth - 1]} {selectedFestival.dateDay}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="meta-item">
+                          <FiStar className="meta-icon" />
+                          <div>
+                            <span className="meta-label">Theme Vibe</span>
+                            <span className="meta-val">{selectedFestival.id.replace("_", " ").toUpperCase()}</span>
+                          </div>
+                        </div>
                       </div>
 
                       <div className="detail-actions">
                         <button
                           type="button"
-                          className="apply-theme-btn"
+                          className="apply-theme-btn shimmer-btn"
                           style={{ background: selectedFestival.gradient }}
                           onClick={() => setFestivalTheme(selectedFestival.id)}
                         >
                           <FiStar />
                           {activeFestivalTheme === selectedFestival.id
-                            ? "Theme Active"
-                            : `Apply ${selectedFestival.name} Theme`}
+                            ? "Theme Active ✨"
+                            : `Activate ${selectedFestival.name} Theme`}
                         </button>
                       </div>
                     </div>
@@ -282,14 +322,31 @@ const FestivalCalendarModal = ({ isOpen, onClose }) => {
                     <h4>
                       {selectedDateObj.getDate()} {MONTH_NAMES[selectedDateObj.getMonth()]}
                     </h4>
-                    <p>No major festival registered for this specific date.</p>
-                    <p className="sub-hint">Click on highlighted dates with festival icons (like 🧵 Raksha Bandhan) or select from preset themes tab!</p>
+                    <p>No major festival listed on this date.</p>
+                    <div className="preset-quick-list">
+                      <p className="quick-label">Try popular themes:</p>
+                      <div className="quick-chips">
+                        {FESTIVALS.slice(0, 3).map((f) => (
+                          <button
+                            key={f.id}
+                            type="button"
+                            className="quick-chip-btn"
+                            onClick={() => {
+                              setSelectedFestival(f);
+                              setFestivalTheme(f.id);
+                            }}
+                          >
+                            {f.icon} {f.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
             </div>
           ) : (
-            /* PRESET FESTIVAL THEMES GRID */
+            /* PRESET THEME GALLERY */
             <div className="festival-presets-grid">
               {FESTIVALS.map((fest) => {
                 const isActive = activeFestivalTheme === fest.id;
@@ -304,13 +361,20 @@ const FestivalCalendarModal = ({ isOpen, onClose }) => {
                       style={{ background: fest.gradient }}
                     >
                       <span className="preset-icon">{fest.icon}</span>
-                      {isActive && <FiCheck className="active-check-icon" />}
+                      {isActive && (
+                        <span className="active-badge-pill">
+                          <FiCheck /> Active
+                        </span>
+                      )}
                     </div>
 
                     <div className="preset-card-body">
-                      <h4>{fest.name}</h4>
+                      <div className="preset-header-line">
+                        <h4>{fest.name}</h4>
+                        <span className="preset-hindi">{fest.hindiName}</span>
+                      </div>
                       <span className="preset-date">
-                        {MONTH_NAMES[fest.dateMonth - 1]} {fest.dateDay}
+                        🗓️ {MONTH_NAMES[fest.dateMonth - 1]} {fest.dateDay}
                       </span>
                       <p className="preset-tagline">{fest.tagline}</p>
                     </div>
@@ -318,8 +382,9 @@ const FestivalCalendarModal = ({ isOpen, onClose }) => {
                     <button
                       type="button"
                       className={`preset-apply-btn ${isActive ? "applied" : ""}`}
+                      style={isActive ? { background: fest.gradient, color: "#fff", borderColor: "transparent" } : {}}
                     >
-                      {isActive ? "Theme Active" : "Apply Theme"}
+                      {isActive ? "✨ Theme Applied" : "Activate Theme"}
                     </button>
                   </div>
                 );
@@ -331,7 +396,8 @@ const FestivalCalendarModal = ({ isOpen, onClose }) => {
         {/* Modal Footer */}
         <div className="festival-modal-footer">
           <div className="active-theme-indicator">
-            <span>Currently Active Special Theme: </span>
+            <span className="indicator-dot" />
+            <span>Active Festival Theme: </span>
             <strong>
               {activeFestivalTheme && activeFestivalTheme !== "none"
                 ? (FESTIVALS.find((f) => f.id === activeFestivalTheme)?.name || activeFestivalTheme)
@@ -346,7 +412,7 @@ const FestivalCalendarModal = ({ isOpen, onClose }) => {
                 className="reset-theme-btn"
                 onClick={() => setFestivalTheme("none")}
               >
-                <FiRotateCcw /> Reset to Standard Theme
+                <FiRotateCcw /> Reset Standard Theme
               </button>
             )}
             <button type="button" className="footer-close-btn" onClick={onClose}>
@@ -354,6 +420,7 @@ const FestivalCalendarModal = ({ isOpen, onClose }) => {
             </button>
           </div>
         </div>
+
       </div>
     </div>
   );
