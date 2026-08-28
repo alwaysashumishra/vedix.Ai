@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
 import "./Navbar.css";
 import { NavLink } from "react-router-dom";
 import { assets } from "../../assets/assets";
 import { FaGlobe } from "react-icons/fa";
+import { FiCalendar } from "react-icons/fi";
+import { ThemeContext } from "../../context/ThemeContext";
 
 const Navbar = ({
   profile,
@@ -14,6 +16,8 @@ const Navbar = ({
   onCategorySelect,
   categories = [],
 }) => {
+  const { activeFestivalData, openFestivalCalendar } = useContext(ThemeContext);
+
   const handleLogout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
@@ -54,6 +58,17 @@ const Navbar = ({
         </div>
 
         <div className="nav-right">
+          <button
+            type="button"
+            className="lang-toggle-btn"
+            onClick={openFestivalCalendar}
+            style={{ background: "linear-gradient(135deg, #dc2626, #f59e0b)", color: "#fff", border: "none" }}
+            title="Special Day Festival Calendar"
+          >
+            <FiCalendar />
+            <span>{activeFestivalData ? `${activeFestivalData.icon} ${activeFestivalData.name}` : "Events Calendar"}</span>
+          </button>
+
           {setLang && (
             <button
               type="button"

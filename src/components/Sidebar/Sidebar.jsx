@@ -14,6 +14,9 @@ from "../../assets/assets";
 import { Context }
 from "../../context/context";
 
+import { ThemeContext }
+from "../../context/ThemeContext";
+
 import HelpModal
 from "../HelpModel/HelpModal";
 
@@ -23,7 +26,10 @@ from "../SettingsModal/SettingsModal";
 import DownloadAppModal
 from "../DownloadAppModal/DownloadAppModal";
 
-import { FiCompass, FiCreditCard, FiFileText, FiShield, FiBookmark, FiUsers, FiSmartphone } from "react-icons/fi";
+import FestivalCalendarModal
+from "../FestivalCalendarModal/FestivalCalendarModal";
+
+import { FiCompass, FiCreditCard, FiFileText, FiShield, FiBookmark, FiUsers, FiSmartphone, FiCalendar } from "react-icons/fi";
 
 import { MdOutlineArticle } from "react-icons/md";
 
@@ -53,6 +59,13 @@ const Sidebar = ({ profile, setProfile }) => {
   const [showSettings,
   setShowSettings] =
     useState(false);
+
+  const {
+    isCalendarOpen,
+    openFestivalCalendar,
+    closeFestivalCalendar,
+    activeFestivalData,
+  } = useContext(ThemeContext);
 
 
 
@@ -604,6 +617,25 @@ const Sidebar = ({ profile, setProfile }) => {
 
 
 
+          {/* FESTIVAL CALENDAR */}
+          <div
+            className="bottom-item recent-entry"
+            onClick={openFestivalCalendar}
+            title="Festival & Event Calendar"
+          >
+            <FiCalendar style={{ fontSize: "20px", color: "#dc2626" }} />
+            {extended && (
+              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <p style={{ fontWeight: 600, color: "#dc2626" }}>Calendar</p>
+                {activeFestivalData && (
+                  <span className="festival-pulse-badge" style={{ fontSize: "10px", padding: "1px 6px" }}>
+                    {activeFestivalData.icon}
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+
           {/* SETTINGS */}
           <div
 
@@ -661,6 +693,7 @@ const Sidebar = ({ profile, setProfile }) => {
       </div>
 
       <DownloadAppModal isOpen={showQRModal} onClose={() => setShowQRModal(false)} />
+      <FestivalCalendarModal isOpen={isCalendarOpen} onClose={closeFestivalCalendar} />
 
     </>
   );

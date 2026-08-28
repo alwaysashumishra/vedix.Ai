@@ -26,10 +26,19 @@ import {
   FiRefreshCw,
   FiVolume2,
   FiVolumeX,
+  FiCalendar,
 } from "react-icons/fi";
 
 const SettingsModal = ({ setShowSettings, profile, setProfile }) => {
-  const { theme, toggleTheme } = useContext(ThemeContext);
+  const {
+    theme,
+    toggleTheme,
+    openFestivalCalendar,
+    activeFestivalData,
+    autoFestivalMode,
+    toggleAutoFestivalMode,
+    setFestivalTheme,
+  } = useContext(ThemeContext);
 
   const currentUser = profile || JSON.parse(localStorage.getItem("user")) || {};
 
@@ -431,6 +440,48 @@ const SettingsModal = ({ setShowSettings, profile, setProfile }) => {
                       </div>
                       {theme === "dark" && <FiCheck className="check-badge" />}
                     </div>
+                  </div>
+                </div>
+
+                {/* Dynamic Special Day & Festival Themes Block */}
+                <div className="section-block">
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+                    <label className="section-label" style={{ margin: 0 }}>Special Day & Festival Themes</label>
+                    <button
+                      type="button"
+                      className="pill-btn active"
+                      style={{ background: "linear-gradient(135deg, #dc2626, #f59e0b)", color: "#fff", border: "none" }}
+                      onClick={() => {
+                        setShowSettings(false);
+                        openFestivalCalendar();
+                      }}
+                    >
+                      <FiCalendar /> Open Event Calendar
+                    </button>
+                  </div>
+
+                  <div className="action-card" style={{ marginTop: "8px" }}>
+                    <div className="action-card-info">
+                      <div className="action-card-icon" style={{ background: "linear-gradient(135deg, #ef4444, #f59e0b)", color: "#fff" }}>
+                        <FiCalendar />
+                      </div>
+                      <div>
+                        <span className="action-card-title">
+                          {activeFestivalData ? `${activeFestivalData.icon} ${activeFestivalData.name} Theme Active` : "Auto Special Day Themes"}
+                        </span>
+                        <span className="action-card-desc">
+                          Automatically switch themes on special calendar days like Raksha Bandhan, Diwali, Independence Day, Christmas & more.
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      className={`toggle-switch ${autoFestivalMode ? "on" : ""}`}
+                      onClick={toggleAutoFestivalMode}
+                      title="Toggle Auto-Detect Festival Themes"
+                    >
+                      <span className="switch-thumb" />
+                    </button>
                   </div>
                 </div>
 

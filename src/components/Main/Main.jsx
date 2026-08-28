@@ -17,6 +17,7 @@ import {
   FiUsers,
   FiMail,
   FiMessageCircle,
+  FiCalendar,
 } from "react-icons/fi";
 import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { RiArticleLine } from "react-icons/ri";
@@ -45,7 +46,14 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
     shareChatToGroup,
   } = useContext(Context);
 
-  const { theme, toggleTheme } = useContext(ThemeContext);
+  const {
+    theme,
+    toggleTheme,
+    activeFestivalData,
+    bannerDismissed,
+    dismissBanner,
+    openFestivalCalendar,
+  } = useContext(ThemeContext);
 
   const [profilePic] = useState(assets.user_icon);
   const [selectedImages, setSelectedImages] = useState([]);
@@ -266,6 +274,37 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
 
   return (
     <div className="main">
+      {activeFestivalData && !bannerDismissed && (
+        <div className="festival-top-banner" style={{ background: activeFestivalData.gradient }}>
+          <div className="festival-banner-content">
+            <span className="festival-banner-badge">
+              {activeFestivalData.icon} {activeFestivalData.name}
+            </span>
+            <span className="festival-banner-text">
+              {activeFestivalData.greeting}!
+              <span className="festival-tagline">{activeFestivalData.tagline}</span>
+            </span>
+          </div>
+          <div className="festival-banner-actions">
+            <button
+              type="button"
+              className="festival-calendar-btn-link"
+              onClick={openFestivalCalendar}
+            >
+              <FiCalendar /> View Calendar
+            </button>
+            <button
+              type="button"
+              className="festival-dismiss-btn"
+              onClick={dismissBanner}
+              title="Dismiss Banner"
+            >
+              <FiX />
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="nav">
         <p className="vedix-logo">Vedix.Ai</p>
 
