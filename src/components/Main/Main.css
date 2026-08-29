@@ -182,7 +182,7 @@
     flex-direction: column;
     flex: 1;
     min-height: 0;
-    overflow: hidden;
+    overflow: visible;
 }
 
 /* ================= GREETING ================= */
@@ -217,6 +217,9 @@
     gap: 16px;
     margin-top: 15px;
     width: 100%;
+    padding: 6px 4px;
+    overflow: visible;
+    box-sizing: border-box;
 }
 
 .main .card{
@@ -1759,7 +1762,7 @@ body.dark .main {
     }
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1080px) {
     .main .cards {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -2207,29 +2210,29 @@ body.dark .main {
 }
 
 .main .card:nth-child(1) {
-    transform: translateZ(14px) rotateY(-2deg);
+    transform: translateZ(10px) rotateY(-0.5deg);
 }
 
 .main .card:nth-child(2) {
-    transform: translateZ(22px) rotateY(-0.8deg);
+    transform: translateZ(16px) rotateY(-0.2deg);
 }
 
 .main .card:nth-child(3) {
-    transform: translateZ(22px) rotateY(0.8deg);
+    transform: translateZ(16px) rotateY(0.2deg);
 }
 
 .main .card:nth-child(4) {
-    transform: translateZ(14px) rotateY(2deg);
+    transform: translateZ(10px) rotateY(0.5deg);
 }
 
 .main .card:hover {
-    transform: translateY(-12px) translateZ(46px) rotateX(4deg) rotateY(-3deg);
+    transform: translateY(-8px) translateZ(32px);
     border-color: rgba(20, 184, 166, 0.36);
     background:
       linear-gradient(145deg, rgba(255,255,255,0.98), rgba(240,253,250,0.84));
     box-shadow:
-      0 34px 70px rgba(15, 23, 42, 0.16),
-      0 12px 24px rgba(20, 184, 166, 0.10),
+      0 26px 54px rgba(15, 23, 42, 0.14),
+      0 10px 20px rgba(20, 184, 166, 0.10),
       inset 0 1px 0 rgba(255,255,255,0.95);
 }
 
