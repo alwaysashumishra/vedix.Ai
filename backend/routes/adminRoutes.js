@@ -1,4 +1,4 @@
-﻿import express from "express";
+import express from "express";
 import {
   getAdminConfig,
   getAdminSummary,
@@ -6,6 +6,10 @@ import {
   getPublicConfig,
   updateAdminConfig,
   updateAdminUser,
+  deleteAdminUser,
+  getServerStatus,
+  clearServerCache,
+  restartServer,
 } from "../controllers/adminController.js";
 import { adminAuth } from "../middleware/adminAuth.js";
 
@@ -18,8 +22,13 @@ router.use(adminAuth);
 router.get("/summary", getAdminSummary);
 router.get("/users", getAdminUsers);
 router.patch("/users/:id", updateAdminUser);
+router.delete("/users/:id", deleteAdminUser);
+
 router.get("/config", getAdminConfig);
 router.put("/config", updateAdminConfig);
 
-export default router;
+router.get("/server/status", getServerStatus);
+router.post("/server/clear-cache", clearServerCache);
+router.post("/server/restart", restartServer);
 
+export default router;

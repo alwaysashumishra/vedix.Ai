@@ -16,8 +16,16 @@ export const getAdminSummary = async () => {
   return response.data;
 };
 
-export const getAdminUsers = async () => {
-  const response = await axios.get(`${ADMIN_API}/users`, {
+export const getAdminUsers = async (params = {}) => {
+  const query = new URLSearchParams(params).toString();
+  const response = await axios.get(`${ADMIN_API}/users${query ? `?${query}` : ""}`, {
+    headers: getAuthHeaders(),
+  });
+  return response.data;
+};
+
+export const deleteAdminUser = async (userId) => {
+  const response = await axios.delete(`${ADMIN_API}/users/${userId}`, {
     headers: getAuthHeaders(),
   });
   return response.data;
@@ -39,6 +47,27 @@ export const updateAdminConfig = async (config) => {
 
 export const updateAdminUser = async (userId, updates) => {
   const response = await axios.patch(`${ADMIN_API}/users/${userId}`, updates, {
+    headers: getAuthHeaders(),
+  });
+  return response.data;
+};
+
+export const getServerStatus = async () => {
+  const response = await axios.get(`${ADMIN_API}/server/status`, {
+    headers: getAuthHeaders(),
+  });
+  return response.data;
+};
+
+export const clearServerCache = async () => {
+  const response = await axios.post(`${ADMIN_API}/server/clear-cache`, {}, {
+    headers: getAuthHeaders(),
+  });
+  return response.data;
+};
+
+export const restartServer = async () => {
+  const response = await axios.post(`${ADMIN_API}/server/restart`, {}, {
     headers: getAuthHeaders(),
   });
   return response.data;
