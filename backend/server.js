@@ -2,6 +2,9 @@ import "./config/polyfills.js";
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import zlib from "zlib";
+import cluster from "cluster";
+import os from "os";
 
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
@@ -10,41 +13,94 @@ import analyzeRoutes from "./routes/analyzeRoutes.js";
 import newsRoutes from "./routes/newsRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import cricketRoutes from "./routes/cricketRoutes.js";
-import { trackUsage } from "./middleware/trackUsage.js";
-
 import paymentRoutes from "./routes/paymentRoutes.js";
+
+import { trackUsage } from "./middleware/trackUsage.js";
+import { rateLimiter } from "./middleware/rateLimiter.js";
 
 dotenv.config();
 
-const app = express();
 const PORT = process.env.PORT || 5000;
+const ENABLE_CLUSTER = process.env.CLUSTER_MODE === "true" && cluster.isPrimary;
 
-app.use(
-  cors({
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ limit: "10mb", extended: true }));
+// Multi-Core CPU Worker Clustering for High Scale Production
+if (ENABLE_CLUSTER) {
+  const numCPUs = os.cpus().length;
+  console.log(`Primary Master Process ${process.pid} is running. Forking ${numCPUs} CPU workers... 🚀`);
 
-app.use("/api", trackUsage("api"));
+  for (let i = 0; i < numCPUs; i++) {
+    cluster.fork();
+  }
 
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/analyze", analyzeRoutes);
-app.use("/api/news", newsRoutes);
-app.use("/api/admin", adminRoutes);
-app.use("/api/cricket", cricketRoutes);
-app.use("/api/payments", paymentRoutes);
+  cluster.on("exit", (worker, code, signal) => {
+    console.log(`Worker process ${worker.process.pid} died. Forking replacement worker...`);
+    cluster.fork();
+  });
+} else {
+  const app = express();
 
-app.get("/", (_req, res) => {
-  res.send("Vedix AI Backend Running");
-});
+  // CORS Security & Allowed Methods
+  app.use(
+    cors({
+      origin: "*",
+      methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization"],
+    })
+  );
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on port ${PORT}`);
-});
+  // High-Throughput Gzip Compression Middleware
+  app.use((req, res, next) => {
+    const acceptEncoding = req.headers["accept-encoding"] || "";
+    if (!acceptEncoding.includes("gzip")) return next();
 
-connectDB();
+    const originalSend = res.send;
+    res.send = function (body) {
+      if (typeof body === "string" || Buffer.isBuffer(body)) {
+        res.setHeader("Content-Encoding", "gzip");
+        res.setHeader("Vary", "Accept-Encoding");
+        const compressed = zlib.gzipSync(body);
+        return originalSend.call(this, compressed);
+      }
+      return originalSend.call(this, body);
+    };
+    next();
+  });
+
+  // Body Parsing with Payload Boundaries
+  app.use(express.json({ limit: "10mb" }));
+  app.use(express.urlencoded({ limit: "10mb", extended: true }));
+
+  // Global Rate Limiter & DDOS Protection (300 requests per minute per IP)
+  app.use(rateLimiter({ windowMs: 60000, maxRequests: 300 }));
+
+  // Usage Tracking & Metrics
+  app.use("/api", trackUsage("api"));
+
+  // Strictly Scoped Rate Limiting on Auth & Heavy AI Routes
+  app.use("/api/auth", rateLimiter({ windowMs: 60000, maxRequests: 60 }), authRoutes);
+  app.use("/api/analyze", rateLimiter({ windowMs: 60000, maxRequests: 40 }), analyzeRoutes);
+
+  // API Routes
+  app.use("/api/users", userRoutes);
+  app.use("/api/news", newsRoutes);
+  app.use("/api/admin", adminRoutes);
+  app.use("/api/cricket", cricketRoutes);
+  app.use("/api/payments", paymentRoutes);
+
+  // Health Check Endpoint for Load Balancers (AWS / Railway / Render)
+  app.get("/", (_req, res) => {
+    res.status(200).json({
+      status: "online",
+      service: "Vedix.AI Scalable Cluster Engine",
+      pid: process.pid,
+      uptimeSeconds: Math.floor(process.uptime()),
+    });
+  });
+
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Process ${process.pid} listening on port ${PORT} ✅`);
+  });
+
+  // Connect MongoDB Pool
+  connectDB();
+}

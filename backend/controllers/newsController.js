@@ -1,5 +1,6 @@
 import axios from "axios";
 import { XMLParser } from "fast-xml-parser";
+import { getCache, setCache } from "../middleware/cache.js";
 
 const parser = new XMLParser({
   ignoreAttributes: false,
@@ -131,6 +132,14 @@ const fetchFeed = async ([key, feed]) => {
 export const getNewsFeed = async (req, res) => {
   try {
     const lang = (req.query?.lang || "en").toLowerCase();
+    const cacheKey = `news_feed_${lang}`;
+    const cachedNews = getCache(cacheKey);
+
+    if (cachedNews) {
+      res.setHeader("X-Cache", "HIT");
+      return res.status(200).json(cachedNews);
+    }
+
     const feeds = getNewsFeeds(lang);
 
     const entries = await Promise.all(
@@ -156,14 +165,19 @@ export const getNewsFeed = async (req, res) => {
       )
       .slice(0, 24);
 
-    res.status(200).json({
+    const responsePayload = {
       success: true,
       lang,
       updatedAt: new Date().toISOString(),
       hero: topStories.slice(0, 5),
       latest,
       categories,
-    });
+    };
+
+    setCache(cacheKey, responsePayload, 180); // 3 minutes RAM cache
+    res.setHeader("X-Cache", "MISS");
+
+    res.status(200).json(responsePayload);
   } catch (error) {
     console.log(error);
 

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { XMLParser } from "fast-xml-parser";
+import { getCache, setCache } from "../middleware/cache.js";
 
 const parser = new XMLParser({
   ignoreAttributes: false,
@@ -163,6 +164,13 @@ const DEFAULT_MATCHES = [
 export const getLiveMatches = async (req, res) => {
   try {
     const lang = (req.query?.lang || "en").toLowerCase();
+    const cacheKey = `cricket_scores_${lang}`;
+    const cachedScores = getCache(cacheKey);
+
+    if (cachedScores) {
+      res.setHeader("X-Cache", "HIT");
+      return res.status(200).json(cachedScores);
+    }
     
     let liveMatches = DEFAULT_MATCHES;
 
@@ -233,11 +241,16 @@ export const getLiveMatches = async (req, res) => {
       console.log("Cricinfo RSS fallback used:", rssError.message);
     }
 
-    res.status(200).json({
+    const payload = {
       success: true,
       lang,
       matches: liveMatches,
-    });
+    };
+
+    setCache(cacheKey, payload, 30); // 30 seconds RAM cache
+    res.setHeader("X-Cache", "MISS");
+
+    res.status(200).json(payload);
   } catch (error) {
     console.log("Matches error:", error);
     res.status(500).json({
