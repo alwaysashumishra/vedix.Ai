@@ -105,9 +105,33 @@
 
     flex-direction: column;
 
-    height: 100%;
+    flex: 1;
 
-    overflow: hidden;
+    min-height: 0;
+
+    overflow-y: auto;
+
+    overflow-x: hidden;
+
+    padding-right: 2px;
+}
+
+/* TOP SCROLLBAR */
+.top::-webkit-scrollbar{
+    width: 4px;
+}
+
+.top::-webkit-scrollbar-thumb{
+    background: rgba(100, 116, 139, 0.3);
+    border-radius: 10px;
+}
+
+.top::-webkit-scrollbar-thumb:hover{
+    background: rgba(100, 116, 139, 0.6);
+}
+
+body.dark .top::-webkit-scrollbar-thumb{
+    background: rgba(255, 255, 255, 0.2);
 }
 
 
@@ -170,6 +194,17 @@
 
 
 
+/* AI TOOLS */
+
+.sidebar .ai-tools{
+
+    display: flex;
+
+    flex-direction: column;
+
+    flex-shrink: 0;
+}
+
 /* RECENT */
 
 .sidebar .recent{
@@ -178,24 +213,19 @@
 
     flex-direction: column;
 
-    overflow-y: auto;
-
-    overflow-x: hidden;
-
-    flex: 1;
+    flex-shrink: 0;
 
     margin-top: 10px;
 
-    padding-right: 5px;
+    padding-right: 2px;
 }
-
 
 
 /* SCROLLBAR */
 
 .recent::-webkit-scrollbar{
 
-    width: 5px;
+    width: 4px;
 }
 
 .recent::-webkit-scrollbar-thumb{
@@ -275,9 +305,13 @@
 
     flex-direction: column;
 
-    gap: 5px;
+    flex-shrink: 0;
+
+    gap: 2px;
 
     padding-top: 10px;
+
+    margin-top: auto;
 
     border-top:
     1px solid rgba(0,0,0,0.08);
