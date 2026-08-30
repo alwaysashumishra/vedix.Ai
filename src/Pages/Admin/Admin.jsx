@@ -16,7 +16,6 @@ import {
   FiUsers,
   FiActivity,
   FiZap,
-  FiLayers,
   FiCpu,
   FiShield,
   FiRefreshCw,
@@ -37,11 +36,18 @@ import {
   FiSliders,
   FiList,
   FiGlobe,
+  FiMessageSquare,
+  FiMic,
+  FiDollarSign,
+  FiUserCheck,
+  FiTool,
+  FiFileText,
+  FiAward,
 } from "react-icons/fi";
 import "./Admin.css";
 
 const Admin = ({ profile, setProfile, setShowLogin }) => {
-  // Tabs: 'overview' | 'users' | 'config' | 'server' | 'logs'
+  // Tabs: 'overview' | 'users' | 'ai' | 'features' | 'pricing' | 'server' | 'logs'
   const [activeTab, setActiveTab] = useState("overview");
 
   // Summary & Stats Data
@@ -116,7 +122,7 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
       const data = await getServerStatus();
       if (data && data.success) {
         setServerData(data.server);
-        showToast("Server status updated! ✅");
+        showToast("Server health updated! ✅");
       }
     } catch (err) {
       showToast("Failed to fetch server status", true);
@@ -159,6 +165,22 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
     }
   };
 
+  const handleToggleAdminRole = async (user) => {
+    setUserUpdatingId(user._id);
+    const nextAdmin = !user.isAdmin;
+    try {
+      const data = await updateAdminUser(user._id, { isAdmin: nextAdmin });
+      if (data.success) {
+        setUsers((prev) => prev.map((u) => (u._id === user._id ? { ...u, isAdmin: nextAdmin } : u)));
+        showToast(`Admin rights ${nextAdmin ? "granted 👑" : "revoked"}`);
+      }
+    } catch (err) {
+      showToast("Error updating admin role", true);
+    } finally {
+      setUserUpdatingId(null);
+    }
+  };
+
   const handleSaveCredits = async () => {
     if (!editingCreditsUser) return;
     setUserUpdatingId(editingCreditsUser._id);
@@ -195,15 +217,15 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
     }
   };
 
-  // Save Site Config
+  // Save Site Config Form
   const handleSaveConfig = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     setSavingConfig(true);
     try {
       const data = await updateAdminConfig(config);
       if (data.success) {
         setConfig(data.config);
-        showToast("Application configuration saved live! 🚀");
+        showToast("Application settings updated live! 🚀");
       } else {
         showToast(data.message || "Failed to save configuration", true);
       }
@@ -214,7 +236,7 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
     }
   };
 
-  // Clear Server Cache
+  // Clear Server RAM Cache
   const handleFlushCache = async () => {
     try {
       const data = await clearServerCache();
@@ -293,13 +315,13 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
             </div>
             <div>
               <div className="title-row-flex">
-                <h1>Admin Control Hub</h1>
+                <h1>Vedix.AI Master Admin Suite</h1>
                 <span className="admin-live-status-pill">
-                  <span className="live-dot" /> LIVE PLATFORM CONTROLLER
+                  <span className="live-dot" /> LIVE CONTROL CENTER
                 </span>
               </div>
               <p className="admin-subtitle">
-                Manage registered users, monitor real-time traffic, configure live site settings & trigger server operations.
+                Configure AI prompts, control module toggles, manage users & pricing, and run server operations.
               </p>
             </div>
           </div>
@@ -309,7 +331,7 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
               <FiRefreshCw className={loadingSummary ? "spin-icon" : ""} /> Refresh Data
             </button>
             <NavLink to="/" className="admin-action-btn primary">
-              <FiHome /> Back to App
+              <FiHome /> Return to App
             </NavLink>
           </div>
         </div>
@@ -344,7 +366,7 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
             <div className="metric-value-row">
               <span className="metric-number">{summary.onlineNow || summary.activeToday || 0}</span>
               <span className="metric-trend-badge live-pulsing">
-                <span className="live-dot-small" /> Active Now
+                <span className="live-dot-small" /> Live Active
               </span>
             </div>
             <span className="metric-subtext">Active sessions in last 15 minutes</span>
@@ -366,7 +388,7 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
 
           <div className="metric-card-glass">
             <div className="metric-card-header">
-              <span className="metric-label">Subscriptions Breakdown</span>
+              <span className="metric-label">Plans Distribution</span>
               <div className="metric-icon-box purple">
                 <FiPieChart />
               </div>
@@ -388,41 +410,55 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
           </div>
         </div>
 
-        {/* Dashboard Tabs Navigation */}
+        {/* Master Tabs Navigation */}
         <div className="admin-nav-tabs">
           <button
             className={`admin-tab-btn ${activeTab === "overview" ? "active" : ""}`}
             onClick={() => setActiveTab("overview")}
           >
-            <FiTrendingUp className="tab-btn-icon" /> Analytics & Graphs
+            <FiTrendingUp className="tab-btn-icon" /> Overview & Charts
           </button>
 
           <button
             className={`admin-tab-btn ${activeTab === "users" ? "active" : ""}`}
             onClick={() => setActiveTab("users")}
           >
-            <FiUsers className="tab-btn-icon" /> User Management ({users.length})
+            <FiUsers className="tab-btn-icon" /> Users & Roles ({users.length})
           </button>
 
           <button
-            className={`admin-tab-btn ${activeTab === "config" ? "active" : ""}`}
-            onClick={() => setActiveTab("config")}
+            className={`admin-tab-btn ${activeTab === "ai" ? "active" : ""}`}
+            onClick={() => setActiveTab("ai")}
           >
-            <FiSliders className="tab-btn-icon" /> Site & App Settings
+            <FiCpu className="tab-btn-icon" /> AI Persona & Prompts
+          </button>
+
+          <button
+            className={`admin-tab-btn ${activeTab === "features" ? "active" : ""}`}
+            onClick={() => setActiveTab("features")}
+          >
+            <FiSliders className="tab-btn-icon" /> App Modules & Notices
+          </button>
+
+          <button
+            className={`admin-tab-btn ${activeTab === "pricing" ? "active" : ""}`}
+            onClick={() => setActiveTab("pricing")}
+          >
+            <FiDollarSign className="tab-btn-icon" /> Plans & Limits
           </button>
 
           <button
             className={`admin-tab-btn ${activeTab === "server" ? "active" : ""}`}
             onClick={() => setActiveTab("server")}
           >
-            <FiServer className="tab-btn-icon" /> Server & Operations
+            <FiServer className="tab-btn-icon" /> Server Operations
           </button>
 
           <button
             className={`admin-tab-btn ${activeTab === "logs" ? "active" : ""}`}
             onClick={() => setActiveTab("logs")}
           >
-            <FiList className="tab-btn-icon" /> Request Logs
+            <FiList className="tab-btn-icon" /> Request Audit Logs
           </button>
         </div>
 
@@ -442,7 +478,6 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
 
                 <div className="svg-chart-container">
                   <svg className="analytics-svg" viewBox="0 0 700 220" preserveAspectRatio="none">
-                    {/* Background Grid Lines */}
                     {[0.2, 0.5, 0.8].map((ratio, i) => (
                       <line
                         key={i}
@@ -455,7 +490,6 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
                       />
                     ))}
 
-                    {/* Bars */}
                     {usageTrend.map((item, idx) => {
                       const barWidth = 40;
                       const x = 70 + idx * 85;
@@ -464,14 +498,7 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
 
                       return (
                         <g key={item.date} className="chart-bar-group">
-                          <rect
-                            x={x}
-                            y={y}
-                            width={barWidth}
-                            height={height}
-                            rx="8"
-                            className="chart-bar-rect"
-                          />
+                          <rect x={x} y={y} width={barWidth} height={height} rx="8" className="chart-bar-rect" />
                           <text x={x + barWidth / 2} y={y - 8} className="chart-text-val" textAnchor="middle">
                             {item.count}
                           </text>
@@ -497,7 +524,6 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
 
                 <div className="svg-chart-container">
                   <svg className="analytics-svg" viewBox="0 0 700 220" preserveAspectRatio="none">
-                    {/* Bars for Registrations */}
                     {userRegTrend.map((item, idx) => {
                       const barWidth = 40;
                       const x = 70 + idx * 85;
@@ -506,14 +532,7 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
 
                       return (
                         <g key={item.date} className="chart-bar-group">
-                          <rect
-                            x={x}
-                            y={y}
-                            width={barWidth}
-                            height={height}
-                            rx="8"
-                            className="chart-bar-rect green-bar"
-                          />
+                          <rect x={x} y={y} width={barWidth} height={height} rx="8" className="chart-bar-rect green-bar" />
                           <text x={x + barWidth / 2} y={y - 8} className="chart-text-val" textAnchor="middle">
                             +{item.count}
                           </text>
@@ -571,10 +590,9 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
           </div>
         )}
 
-        {/* ================= TAB 2: USER MANAGEMENT ================= */}
+        {/* ================= TAB 2: USER MANAGEMENT & ROLES ================= */}
         {activeTab === "users" && (
           <div className="admin-tab-panel fade-in">
-            {/* Filter Bar */}
             <div className="users-filter-bar">
               <div className="search-input-box">
                 <FiSearch className="search-icon" />
@@ -609,11 +627,10 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
               </div>
             </div>
 
-            {/* Users Table */}
             <div className="admin-table-card">
               <div className="table-card-header">
-                <h3>Registered User Accounts ({filteredUsers.length})</h3>
-                <p>Manage subscription plans, edit AI credits, block abuse, or delete accounts.</p>
+                <h3>User Accounts & Role Privileges ({filteredUsers.length})</h3>
+                <p>Manage subscription plans, edit AI credits, grant admin rights, block abuse, or delete accounts.</p>
               </div>
 
               <div className="table-responsive">
@@ -623,7 +640,7 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
                       <th>User Info</th>
                       <th>Plan Type</th>
                       <th>AI Credits</th>
-                      <th>Status</th>
+                      <th>Role & Status</th>
                       <th>Registered</th>
                       <th>Admin Actions</th>
                     </tr>
@@ -632,6 +649,7 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
                     {filteredUsers.length > 0 ? (
                       filteredUsers.map((u) => {
                         const isUpdating = userUpdatingId === u._id;
+                        const isSystemAdmin = u.email === "ashutoshmmishra15@gmail.com" || u.isAdmin;
                         return (
                           <tr key={u._id} className={u.isBlocked ? "row-blocked" : ""}>
                             <td>
@@ -643,7 +661,10 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
                                   onError={(e) => (e.target.src = "/user_icon.png")}
                                 />
                                 <div>
-                                  <span className="user-table-username">{u.username}</span>
+                                  <div className="username-row-badge">
+                                    <span className="user-table-username">{u.username}</span>
+                                    {isSystemAdmin && <span className="admin-role-badge">ADMIN 👑</span>}
+                                  </div>
                                   <span className="user-table-email">{u.email}</span>
                                 </div>
                               </div>
@@ -679,15 +700,17 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
                             </td>
 
                             <td>
-                              {u.isBlocked ? (
-                                <span className="status-badge blocked">
-                                  <FiLock /> Blocked
-                                </span>
-                              ) : (
-                                <span className="status-badge active">
-                                  <FiCheckCircle /> Active
-                                </span>
-                              )}
+                              <div className="status-badges-column">
+                                {u.isBlocked ? (
+                                  <span className="status-badge blocked">
+                                    <FiLock /> Blocked
+                                  </span>
+                                ) : (
+                                  <span className="status-badge active">
+                                    <FiCheckCircle /> Active
+                                  </span>
+                                )}
+                              </div>
                             </td>
 
                             <td>
@@ -696,6 +719,16 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
 
                             <td>
                               <div className="action-buttons-cell">
+                                <button
+                                  className={`btn-action-sm ${u.isAdmin ? "revoke-admin" : "grant-admin"}`}
+                                  disabled={isUpdating || u.email === "ashutoshmmishra15@gmail.com"}
+                                  onClick={() => handleToggleAdminRole(u)}
+                                  title={u.isAdmin ? "Revoke Admin Role" : "Make Admin"}
+                                >
+                                  <FiUserCheck />
+                                  <span>{u.isAdmin ? "Revoke Admin" : "Make Admin"}</span>
+                                </button>
+
                                 <button
                                   className={`btn-action-sm ${u.isBlocked ? "unblock" : "block"}`}
                                   disabled={isUpdating}
@@ -707,9 +740,9 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
 
                                 <button
                                   className="btn-action-sm delete"
-                                  disabled={isUpdating}
+                                  disabled={isUpdating || u.email === "ashutoshmmishra15@gmail.com"}
                                   onClick={() => setUserToDelete(u)}
-                                  title="Delete User Account"
+                                  title="Delete Account"
                                 >
                                   <FiTrash2 />
                                 </button>
@@ -732,29 +765,180 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
           </div>
         )}
 
-        {/* ================= TAB 3: APP & FEATURE SETTINGS ================= */}
-        {activeTab === "config" && config && (
+        {/* ================= TAB 3: AI MODEL & PERSONA CONTROLS ================= */}
+        {activeTab === "ai" && config && (
           <div className="admin-tab-panel fade-in">
             <form onSubmit={handleSaveConfig} className="config-form-layout">
-              {/* Section 1: Global Site Notice & Maintenance */}
               <div className="config-card">
-                <h3>Global Site Notice & Maintenance</h3>
-                <p>Broadcast announcement messages or activate site-wide maintenance mode.</p>
+                <div className="card-header-icon-title">
+                  <FiCpu className="card-header-icon" />
+                  <div>
+                    <h3>AI System Instruction & Model Persona</h3>
+                    <p>Customize the master system prompt given to Gemini for all chat responses</p>
+                  </div>
+                </div>
 
                 <div className="form-group-block margin-top">
-                  <label>Global Announcement Notice</label>
-                  <input
-                    type="text"
-                    value={config.siteNotice || ""}
-                    onChange={(e) => setConfig({ ...config, siteNotice: e.target.value })}
-                    placeholder="e.g. Welcome to Vedix.AI Pro!"
+                  <label>Global System Instruction / Persona</label>
+                  <textarea
+                    rows={4}
+                    value={config.aiSystemPrompt || ""}
+                    onChange={(e) => setConfig({ ...config, aiSystemPrompt: e.target.value })}
+                    placeholder="e.g. You are Vedix.AI, a helpful AI built by Vedix Systems..."
+                    className="admin-textarea"
                   />
+                  <span className="input-hint">
+                    This master instruction defines the personality and baseline rules for all AI model completions.
+                  </span>
+                </div>
+
+                <div className="form-grid-3 margin-top">
+                  <div className="form-group-block">
+                    <label>Default Response Style</label>
+                    <select
+                      value={config.defaultAiStyle || "balanced"}
+                      onChange={(e) => setConfig({ ...config, defaultAiStyle: e.target.value })}
+                      className="admin-select"
+                    >
+                      <option value="balanced">Balanced (Recommended)</option>
+                      <option value="concise">Concise & Direct</option>
+                      <option value="creative">Creative & Detailed</option>
+                      <option value="code">Software Developer / Code First</option>
+                    </select>
+                  </div>
+
+                  <div className="form-group-block">
+                    <label>Temperature (Creativity: {config.temperature || 0.7})</label>
+                    <input
+                      type="range"
+                      min="0.1"
+                      max="1.0"
+                      step="0.05"
+                      value={config.temperature || 0.7}
+                      onChange={(e) => setConfig({ ...config, temperature: parseFloat(e.target.value) })}
+                    />
+                  </div>
+
+                  <div className="form-group-block">
+                    <label>Max Response Tokens</label>
+                    <select
+                      value={config.maxResponseTokens || 2048}
+                      onChange={(e) => setConfig({ ...config, maxResponseTokens: Number(e.target.value) })}
+                      className="admin-select"
+                    >
+                      <option value={1024}>1,024 Tokens (~750 words)</option>
+                      <option value={2048}>2,048 Tokens (~1,500 words)</option>
+                      <option value={4096}>4,096 Tokens (~3,000 words)</option>
+                      <option value={8192}>8,192 Tokens (~6,000 words)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* AI Features & Modality Toggles */}
+              <div className="config-card">
+                <div className="card-header-icon-title">
+                  <FiMic className="card-header-icon green" />
+                  <div>
+                    <h3>AI Modality & Input Controls</h3>
+                    <p>Enable or disable voice recognition, text-to-speech, and vision uploads</p>
+                  </div>
+                </div>
+
+                <div className="module-toggles-grid margin-top">
+                  <div className="module-toggle-card">
+                    <div>
+                      <span className="module-title">Microphone Speech Input</span>
+                      <span className="module-desc">Speech-to-Text dictation in prompt input box</span>
+                    </div>
+                    <button
+                      type="button"
+                      className={`toggle-switch ${config.enableVoiceInput !== false ? "on" : ""}`}
+                      onClick={() => setConfig({ ...config, enableVoiceInput: !config.enableVoiceInput })}
+                    >
+                      <span className="switch-thumb" />
+                    </button>
+                  </div>
+
+                  <div className="module-toggle-card">
+                    <div>
+                      <span className="module-title">Text-to-Speech Playback</span>
+                      <span className="module-desc">Audio playback button on AI responses</span>
+                    </div>
+                    <button
+                      type="button"
+                      className={`toggle-switch ${config.enableVoicePlayback !== false ? "on" : ""}`}
+                      onClick={() => setConfig({ ...config, enableVoicePlayback: !config.enableVoicePlayback })}
+                    >
+                      <span className="switch-thumb" />
+                    </button>
+                  </div>
+
+                  <div className="module-toggle-card">
+                    <div>
+                      <span className="module-title">Vision / Image Attachment Uploads</span>
+                      <span className="module-desc">Upload images for multimodal analysis</span>
+                    </div>
+                    <button
+                      type="button"
+                      className={`toggle-switch ${config.enableVisionUploads !== false ? "on" : ""}`}
+                      onClick={() => setConfig({ ...config, enableVisionUploads: !config.enableVisionUploads })}
+                    >
+                      <span className="switch-thumb" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="config-save-bar">
+                <button type="submit" className="save-config-btn" disabled={savingConfig}>
+                  <FiSave />
+                  <span>{savingConfig ? "Saving Changes..." : "Save AI Persona Settings"}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {/* ================= TAB 4: APP MODULES & NOTICES ================= */}
+        {activeTab === "features" && config && (
+          <div className="admin-tab-panel fade-in">
+            <form onSubmit={handleSaveConfig} className="config-form-layout">
+              {/* Announcement & Maintenance */}
+              <div className="config-card">
+                <h3>Global Announcement & Maintenance Engine</h3>
+                <p>Broadcast alert banners or toggle application maintenance mode</p>
+
+                <div className="form-grid-3 margin-top">
+                  <div className="form-group-block span-2">
+                    <label>Global Announcement Text</label>
+                    <input
+                      type="text"
+                      value={config.siteNotice || ""}
+                      onChange={(e) => setConfig({ ...config, siteNotice: e.target.value })}
+                      placeholder="e.g. Welcome to Vedix.AI Pro!"
+                    />
+                  </div>
+
+                  <div className="form-group-block">
+                    <label>Notice Alert Style</label>
+                    <select
+                      value={config.noticeType || "info"}
+                      onChange={(e) => setConfig({ ...config, noticeType: e.target.value })}
+                      className="admin-select"
+                    >
+                      <option value="info">Info (Blue)</option>
+                      <option value="promo">Promo (Purple)</option>
+                      <option value="success">Success (Green)</option>
+                      <option value="warning">Warning (Amber)</option>
+                    </select>
+                  </div>
                 </div>
 
                 <div className="toggle-setting-row margin-top">
                   <div>
                     <span className="setting-title">Maintenance Mode</span>
-                    <span className="setting-desc">Restrict public access to application during backend updates.</span>
+                    <span className="setting-desc">Redirect public traffic to maintenance message during backend updates.</span>
                   </div>
                   <button
                     type="button"
@@ -764,20 +948,36 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
                     <span className="switch-thumb" />
                   </button>
                 </div>
+
+                {config.maintenanceMode && (
+                  <div className="form-group-block margin-top">
+                    <label>Custom Maintenance Message</label>
+                    <input
+                      type="text"
+                      value={config.maintenanceMessage || ""}
+                      onChange={(e) => setConfig({ ...config, maintenanceMessage: e.target.value })}
+                      placeholder="Vedix.AI is under maintenance..."
+                    />
+                  </div>
+                )}
               </div>
 
-              {/* Section 2: Feature Module Toggles */}
+              {/* All 9 Feature Module Toggles */}
               <div className="config-card">
-                <h3>Feature Module Controls</h3>
-                <p>Enable or disable specific AI tools and live features dynamically.</p>
+                <h3>All 9 Feature Module Toggles</h3>
+                <p>Enable or disable specific features dynamically across the hosted application</p>
 
                 <div className="module-toggles-grid margin-top">
                   {[
-                    { key: "resumeAi", title: "Resume AI Analyzer", desc: "CV structure & ATS scoring" },
+                    { key: "resumeAi", title: "Resume AI Analyzer", desc: "CV scoring & ATS analysis" },
                     { key: "researchAi", title: "Research AI Analyzer", desc: "PDF & paper summarization" },
                     { key: "liveNews", title: "Bilingual Live News", desc: "English & Hindi news feed" },
                     { key: "cricketScorecard", title: "Live Cricket Scorecards", desc: "Live match scorecard widget" },
                     { key: "studyGroups", title: "AI Study Groups", desc: "Collaborative prompt sharing" },
+                    { key: "notesManager", title: "AI Notes Manager", desc: "PDF export & saved notes" },
+                    { key: "festivalCalendar", title: "Festival & Event Calendar", desc: "Dynamic festival theme engine" },
+                    { key: "pdfExport", title: "PDF & Document Export", desc: "1-click response export" },
+                    { key: "mobileQrDownload", title: "Mobile App QR Download", desc: "Mobile APK download modal" },
                   ].map((mod) => {
                     const currentMods = config.moduleSettings || {};
                     const isEnabled = currentMods[mod.key] !== false;
@@ -808,57 +1008,137 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
                 </div>
               </div>
 
-              {/* Section 3: Daily Limits & Pricing */}
+              {/* Feature Headlines & CTA Text */}
               <div className="config-card">
-                <h3>Daily Limits & Subscription Pricing</h3>
-                <p>Configure default free credits and paid tier pricing.</p>
+                <h3>Feature Headlines & CTA Copy</h3>
+                <p>Customize banner headlines for Explore, Resume AI, and Research AI</p>
 
                 <div className="form-grid-3 margin-top">
                   <div className="form-group-block">
-                    <label>Free Daily Credit Limit</label>
+                    <label>Explore Page Headline</label>
                     <input
-                      type="number"
-                      value={config.freeDailyLimit || 5}
-                      onChange={(e) => setConfig({ ...config, freeDailyLimit: Number(e.target.value) })}
+                      type="text"
+                      value={config.exploreHeadline || ""}
+                      onChange={(e) => setConfig({ ...config, exploreHeadline: e.target.value })}
                     />
                   </div>
 
                   <div className="form-group-block">
-                    <label>Pro Plan Price (₹)</label>
+                    <label>Resume AI CTA</label>
                     <input
-                      type="number"
-                      value={config.proPlanPrice || 199}
-                      onChange={(e) => setConfig({ ...config, proPlanPrice: Number(e.target.value) })}
+                      type="text"
+                      value={config.resumeCta || ""}
+                      onChange={(e) => setConfig({ ...config, resumeCta: e.target.value })}
                     />
                   </div>
 
                   <div className="form-group-block">
-                    <label>Premium Plan Price (₹)</label>
+                    <label>Research AI CTA</label>
                     <input
-                      type="number"
-                      value={config.premiumPlanPrice || 499}
-                      onChange={(e) => setConfig({ ...config, premiumPlanPrice: Number(e.target.value) })}
+                      type="text"
+                      value={config.researchCta || ""}
+                      onChange={(e) => setConfig({ ...config, researchCta: e.target.value })}
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Save Button */}
               <div className="config-save-bar">
                 <button type="submit" className="save-config-btn" disabled={savingConfig}>
                   <FiSave />
-                  <span>{savingConfig ? "Saving Changes..." : "Save App Settings Live"}</span>
+                  <span>{savingConfig ? "Saving Changes..." : "Save Feature Module Settings"}</span>
                 </button>
               </div>
             </form>
           </div>
         )}
 
-        {/* ================= TAB 4: SERVER OPERATIONS & DIAGNOSTICS ================= */}
+        {/* ================= TAB 5: PLANS, CREDITS & PRICING ================= */}
+        {activeTab === "pricing" && config && (
+          <div className="admin-tab-panel fade-in">
+            <form onSubmit={handleSaveConfig} className="config-form-layout">
+              <div className="config-card">
+                <div className="card-header-icon-title">
+                  <FiDollarSign className="card-header-icon amber" />
+                  <div>
+                    <h3>Membership Tier Pricing & Credit Limits Engine</h3>
+                    <p>Set signup credits, free daily limits, and monthly plan prices & quotas</p>
+                  </div>
+                </div>
+
+                <div className="form-grid-3 margin-top">
+                  <div className="form-group-block">
+                    <label>Default Signup Credits</label>
+                    <input
+                      type="number"
+                      value={config.defaultSignupCredits ?? 25}
+                      onChange={(e) => setConfig({ ...config, defaultSignupCredits: Number(e.target.value) })}
+                    />
+                    <span className="input-hint">Credits granted to new registered accounts</span>
+                  </div>
+
+                  <div className="form-group-block">
+                    <label>Free Daily Credit Replenish Limit</label>
+                    <input
+                      type="number"
+                      value={config.freeDailyLimit ?? 5}
+                      onChange={(e) => setConfig({ ...config, freeDailyLimit: Number(e.target.value) })}
+                    />
+                    <span className="input-hint">Daily free prompt allowance for Free tier</span>
+                  </div>
+
+                  <div className="form-group-block">
+                    <label>Pro Plan Monthly Price (₹)</label>
+                    <input
+                      type="number"
+                      value={config.proPlanPrice ?? 199}
+                      onChange={(e) => setConfig({ ...config, proPlanPrice: Number(e.target.value) })}
+                    />
+                  </div>
+
+                  <div className="form-group-block">
+                    <label>Pro Plan Credits / Month</label>
+                    <input
+                      type="number"
+                      value={config.proPlanCredits ?? 500}
+                      onChange={(e) => setConfig({ ...config, proPlanCredits: Number(e.target.value) })}
+                    />
+                  </div>
+
+                  <div className="form-group-block">
+                    <label>Premium Plan Monthly Price (₹)</label>
+                    <input
+                      type="number"
+                      value={config.premiumPlanPrice ?? 499}
+                      onChange={(e) => setConfig({ ...config, premiumPlanPrice: Number(e.target.value) })}
+                    />
+                  </div>
+
+                  <div className="form-group-block">
+                    <label>Premium Plan Credits / Month</label>
+                    <input
+                      type="number"
+                      value={config.premiumPlanCredits ?? 2000}
+                      onChange={(e) => setConfig({ ...config, premiumPlanCredits: Number(e.target.value) })}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="config-save-bar">
+                <button type="submit" className="save-config-btn" disabled={savingConfig}>
+                  <FiSave />
+                  <span>{savingConfig ? "Saving Changes..." : "Save Pricing & Limits Engine"}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {/* ================= TAB 6: SERVER OPERATIONS & DIAGNOSTICS ================= */}
         {activeTab === "server" && (
           <div className="admin-tab-panel fade-in">
             <div className="server-status-grid">
-              {/* Server Diagnostics Card */}
               <div className="server-card">
                 <div className="server-card-header">
                   <div className="server-title-group">
@@ -922,7 +1202,6 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
                 )}
               </div>
 
-              {/* Server Control Panel */}
               <div className="server-card">
                 <div className="server-card-header">
                   <div>
@@ -932,7 +1211,6 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
                 </div>
 
                 <div className="server-controls-stack margin-top">
-                  {/* Restart Server */}
                   <div className="operation-box danger-box">
                     <div>
                       <span className="op-title">Restart Server Process</span>
@@ -947,7 +1225,6 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
                     </button>
                   </div>
 
-                  {/* Flush Cache */}
                   <div className="operation-box">
                     <div>
                       <span className="op-title">Flush In-Memory RAM Cache</span>
@@ -962,7 +1239,6 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
                     </button>
                   </div>
 
-                  {/* DB Ping */}
                   <div className="operation-box">
                     <div>
                       <span className="op-title">Database Ping Diagnostic</span>
@@ -982,7 +1258,7 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
           </div>
         )}
 
-        {/* ================= TAB 5: SYSTEM LOGS ================= */}
+        {/* ================= TAB 7: REQUEST AUDIT LOGS ================= */}
         {activeTab === "logs" && (
           <div className="admin-tab-panel fade-in">
             <div className="admin-table-card">

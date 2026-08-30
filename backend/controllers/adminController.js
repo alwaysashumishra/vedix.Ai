@@ -8,21 +8,46 @@ import { clearCache } from "../middleware/cache.js";
 const CONFIG_KEY = "site-settings";
 
 const defaultConfig = {
-  siteNotice: "Welcome to Vedix.Ai",
+  // Announcement & Maintenance
+  siteNotice: "Welcome to Vedix.Ai - NextGen AI Engine!",
+  noticeType: "info", // "info" | "warning" | "success" | "promo"
   maintenanceMode: false,
+  maintenanceMessage: "Vedix.AI is currently undergoing scheduled backend maintenance. We'll be back shortly!",
+
+  // AI Core & Persona Settings
+  aiSystemPrompt: "You are Vedix.AI, a highly intelligent, precise, helpful AI assistant built by Vedix Systems.",
+  defaultAiStyle: "balanced", // "balanced" | "concise" | "creative" | "code"
+  maxResponseTokens: 2048,
+  temperature: 0.7,
+  enableVoiceInput: true,
+  enableVoicePlayback: true,
+  enableVisionUploads: true,
+
+  // Feature CTA Headlines
   exploreHeadline: "Explore current news by category",
   resumeCta: "Analyze resume professionally using AI",
   researchCta: "Analyze research papers and summarize concepts",
-  freeDailyLimit: 5,
-  proPlanPrice: 199,
-  premiumPlanPrice: 499,
+
+  // Application Module Toggles
   moduleSettings: {
     resumeAi: true,
     researchAi: true,
     liveNews: true,
     cricketScorecard: true,
     studyGroups: true,
+    notesManager: true,
+    festivalCalendar: true,
+    pdfExport: true,
+    mobileQrDownload: true,
   },
+
+  // Credits & Subscription Pricing Engine
+  defaultSignupCredits: 25,
+  freeDailyLimit: 5,
+  proPlanPrice: 199,
+  proPlanCredits: 500,
+  premiumPlanPrice: 499,
+  premiumPlanCredits: 2000,
 };
 
 const startOfDay = (date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -63,6 +88,7 @@ export const getAdminSummary = async (_req, res) => {
       proUsersCount,
       premiumUsersCount,
       blockedUsersCount,
+      adminUsersCount,
     ] = await Promise.all([
       User.countDocuments(),
       User.countDocuments({ createdAt: { $gte: today } }),
@@ -74,6 +100,7 @@ export const getAdminSummary = async (_req, res) => {
       User.countDocuments({ plan: "Pro" }),
       User.countDocuments({ plan: "Premium" }),
       User.countDocuments({ isBlocked: true }),
+      User.countDocuments({ $or: [{ email: "ashutoshmmishra15@gmail.com" }, { isAdmin: true }] }),
     ]);
 
     // 7-day Request Usage Trend
@@ -144,6 +171,7 @@ export const getAdminSummary = async (_req, res) => {
         todayEvents,
         totalEvents,
         blockedUsers: blockedUsersCount,
+        adminUsersCount,
         planBreakdown: {
           free: freeUsersCount,
           pro: proUsersCount,
@@ -190,7 +218,7 @@ export const getAdminUsers = async (req, res) => {
     const users = await User.find(query)
       .sort({ createdAt: -1 })
       .limit(Number(limit))
-      .select("username name surname email profilePic googleId plan credits isBlocked lastAdminNote createdAt updatedAt");
+      .select("username name surname email profilePic googleId plan credits isBlocked isAdmin lastAdminNote createdAt updatedAt");
 
     res.json({ success: true, count: users.length, users });
   } catch (error) {
@@ -270,31 +298,9 @@ export const updateAdminConfig = async (req, res) => {
 export const getPublicConfig = async (_req, res) => {
   try {
     const config = await getConfigDocument();
-    const {
-      siteNotice,
-      maintenanceMode,
-      exploreHeadline,
-      resumeCta,
-      researchCta,
-      freeDailyLimit,
-      proPlanPrice,
-      premiumPlanPrice,
-      moduleSettings,
-    } = config;
-
     res.json({
       success: true,
-      config: {
-        siteNotice,
-        maintenanceMode,
-        exploreHeadline,
-        resumeCta,
-        researchCta,
-        freeDailyLimit,
-        proPlanPrice,
-        premiumPlanPrice,
-        moduleSettings: moduleSettings || defaultConfig.moduleSettings,
-      },
+      config,
     });
   } catch (error) {
     res.status(500).json({ success: false, message: "Unable to load public settings" });
@@ -321,6 +327,10 @@ export const updateAdminUser = async (req, res) => {
       updates.isBlocked = Boolean(req.body.isBlocked);
     }
 
+    if (Object.prototype.hasOwnProperty.call(req.body, "isAdmin")) {
+      updates.isAdmin = Boolean(req.body.isAdmin);
+    }
+
     if (Object.prototype.hasOwnProperty.call(req.body, "lastAdminNote")) {
       updates.lastAdminNote = String(req.body.lastAdminNote || "").slice(0, 280);
     }
@@ -328,7 +338,7 @@ export const updateAdminUser = async (req, res) => {
     const user = await User.findByIdAndUpdate(req.params.id, updates, {
       returnDocument: "after",
       runValidators: true,
-    }).select("username name surname email profilePic googleId plan credits isBlocked lastAdminNote createdAt updatedAt");
+    }).select("username name surname email profilePic googleId plan credits isBlocked isAdmin lastAdminNote createdAt updatedAt");
 
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });
