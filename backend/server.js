@@ -47,7 +47,6 @@ if (ENABLE_CLUSTER) {
       allowedHeaders: ["*"],
     })
   );
-  app.options("*", cors());
 
   // High-Throughput Gzip Compression Middleware
   app.use((req, res, next) => {
