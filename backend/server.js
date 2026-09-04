@@ -47,19 +47,26 @@ if (ENABLE_CLUSTER) {
       allowedHeaders: ["Content-Type", "Authorization"],
     })
   );
+  app.options("*", cors());
 
   // High-Throughput Gzip Compression Middleware
   app.use((req, res, next) => {
+    if (req.method === "OPTIONS") return next();
     const acceptEncoding = req.headers["accept-encoding"] || "";
     if (!acceptEncoding.includes("gzip")) return next();
 
     const originalSend = res.send;
     res.send = function (body) {
-      if (typeof body === "string" || Buffer.isBuffer(body)) {
-        res.setHeader("Content-Encoding", "gzip");
-        res.setHeader("Vary", "Accept-Encoding");
-        const compressed = zlib.gzipSync(body);
-        return originalSend.call(this, compressed);
+      if ((typeof body === "string" || Buffer.isBuffer(body)) && res.statusCode >= 200 && res.statusCode < 300) {
+        try {
+          const compressed = zlib.gzipSync(body);
+          res.setHeader("Content-Encoding", "gzip");
+          res.setHeader("Vary", "Accept-Encoding");
+          res.setHeader("Content-Length", compressed.length);
+          return originalSend.call(this, compressed);
+        } catch (err) {
+          console.error("Gzip compression error:", err);
+        }
       }
       return originalSend.call(this, body);
     };
@@ -94,6 +101,15 @@ if (ENABLE_CLUSTER) {
       service: "Vedix.AI Scalable Cluster Engine",
       pid: process.pid,
       uptimeSeconds: Math.floor(process.uptime()),
+    });
+  });
+
+  // Global Error Handler
+  app.use((err, _req, res, _next) => {
+    console.error("Unhandled Server Error:", err);
+    res.status(500).json({
+      success: false,
+      message: err.message || "Internal Server Error",
     });
   });
 
