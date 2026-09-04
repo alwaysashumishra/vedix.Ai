@@ -9,6 +9,7 @@ const hits = new Map();
  */
 export const rateLimiter = ({ windowMs = 60000, maxRequests = 100, message = "Too many requests, please slow down." } = {}) => {
   return (req, res, next) => {
+    if (req.method === "OPTIONS") return next();
     const ip = req.ip || req.headers["x-forwarded-for"] || req.socket.remoteAddress || "global";
     const now = Date.now();
 

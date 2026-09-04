@@ -44,7 +44,7 @@ if (ENABLE_CLUSTER) {
     cors({
       origin: "*",
       methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-      allowedHeaders: ["Content-Type", "Authorization"],
+      allowedHeaders: ["*"],
     })
   );
   app.options("*", cors());
