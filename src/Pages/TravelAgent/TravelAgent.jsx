@@ -9,17 +9,17 @@ import BudgetOptimizerCard from "../../components/TravelAgent/BudgetOptimizerCar
 import ItineraryView from "../../components/TravelAgent/ItineraryView";
 import WhatIfScenarioPanel from "../../components/TravelAgent/WhatIfScenarioPanel";
 import BookingSafetyModal from "../../components/TravelAgent/BookingSafetyModal";
+import { DESTINATION_MEDIA } from "../../components/TravelAgent/travelMedia";
 import { getApiBaseUrl } from "../../config/apiConfig";
 import { FiNavigation, FiCompass, FiEdit3, FiPieChart, FiCalendar, FiCheckCircle, FiShield, FiHeart, FiFileText } from "react-icons/fi";
 
 const API_BASE = getApiBaseUrl();
 
 const TravelAgent = ({ profile }) => {
-  const [activeInputMode, setActiveInputMode] = useState("chat"); // 'chat' or 'form'
-  const [activeDashboardTab, setActiveDashboardTab] = useState("transport"); // 'transport', 'stay', 'itinerary', 'budget', 'activities', 'summary'
+  const [activeInputMode, setActiveInputMode] = useState("chat");
+  const [activeDashboardTab, setActiveDashboardTab] = useState("transport");
   const [isLoading, setIsLoading] = useState(false);
 
-  // Core Travel Plan State
   const [planData, setPlanData] = useState(null);
   const [messages, setMessages] = useState([]);
   const [selectedTransport, setSelectedTransport] = useState(null);
@@ -27,7 +27,6 @@ const TravelAgent = ({ profile }) => {
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [userPreferences, setUserPreferences] = useState({});
 
-  // Load User Preferences Memory on Mount
   useEffect(() => {
     try {
       const savedPrefs = localStorage.getItem("lexi_travel_preferences");
@@ -39,7 +38,6 @@ const TravelAgent = ({ profile }) => {
     }
   }, []);
 
-  // Save Travel Memory
   const saveMemory = (params) => {
     try {
       const memory = {
@@ -57,7 +55,6 @@ const TravelAgent = ({ profile }) => {
     }
   };
 
-  // API Call Handler
   const fetchTravelPlan = async (payload) => {
     setIsLoading(true);
     try {
@@ -78,19 +75,11 @@ const TravelAgent = ({ profile }) => {
       }
     } catch (err) {
       console.error("Error calling travel API:", err);
-      // Fallback offline mock plan generator if backend server is offline
-      generateOfflineFallbackPlan(payload.promptText || payload.explicitForm?.destination);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const generateOfflineFallbackPlan = (queryStr) => {
-    alert("Notice: Connected via local offline agent simulator.");
-    // Emergency offline plan fallback
-  };
-
-  // Chat message submit
   const handleChatSend = async (text) => {
     const newMsg = { sender: "user", text };
     setMessages((prev) => [...prev, newMsg]);
@@ -124,16 +113,13 @@ const TravelAgent = ({ profile }) => {
     }
   };
 
-  // Form submit
   const handleFormSubmit = (formData) => {
     fetchTravelPlan({ explicitForm: formData });
   };
 
-  // Transport choice change
   const handleSelectTransport = (transport) => {
     setSelectedTransport(transport);
     if (planData) {
-      // Recalculate budget optimization with new choice
       fetchTravelPlan({
         promptText: planData.userParams.naturalLanguageSummary,
         explicitForm: planData.userParams,
@@ -143,7 +129,6 @@ const TravelAgent = ({ profile }) => {
     }
   };
 
-  // Stay choice change
   const handleSelectStay = (stay) => {
     setSelectedStay(stay);
     if (planData) {
@@ -156,7 +141,6 @@ const TravelAgent = ({ profile }) => {
     }
   };
 
-  // What-if scenario execution
   const handleRunScenario = async (scenarioPayload) => {
     setIsLoading(true);
     try {
@@ -182,7 +166,6 @@ const TravelAgent = ({ profile }) => {
     }
   };
 
-  // 1-Click Budget Alternative Applier
   const handleApplyAlternative = (alt) => {
     if (alt.replacementMode) {
       const altTransport = planData.transportOptions.find((t) => t.mode === alt.replacementMode);
@@ -193,9 +176,12 @@ const TravelAgent = ({ profile }) => {
     }
   };
 
+  const destKey = (planData?.userParams?.destination || "").toLowerCase().trim();
+  const media = DESTINATION_MEDIA[destKey] || DESTINATION_MEDIA.default;
+
   return (
     <div className="travel-agent-page">
-      {/* Page Title & Navigation Header */}
+      {/* Page Title Header */}
       <header className="page-header-banner">
         <div className="title-left">
           <div className="brand-badge-row">
@@ -206,7 +192,6 @@ const TravelAgent = ({ profile }) => {
           <p>Describe your trip once. Our multi-agent network searches, compares, optimizes, and plans your entire journey.</p>
         </div>
 
-        {/* User Preferences Memory Indicator */}
         {userPreferences.preferredTransport && (
           <div className="memory-badge-card">
             <span className="memory-title"><FiHeart /> Personal Memory Active</span>
@@ -215,7 +200,7 @@ const TravelAgent = ({ profile }) => {
         )}
       </header>
 
-      {/* Main Input Mode Selector (Conversational Chat vs Structured Form) */}
+      {/* Mode Selector */}
       <div className="input-mode-switcher-bar">
         <button
           className={`mode-btn ${activeInputMode === "chat" ? "active" : ""}`}
@@ -234,35 +219,62 @@ const TravelAgent = ({ profile }) => {
       {/* Input Section */}
       <div className="input-section-container">
         {activeInputMode === "chat" ? (
-          <TravelChat onSendMessage={handleChatSend} messages={messages} isLoading={isLoading} />
+          <TravelChat
+            onSendMessage={handleChatSend}
+            messages={messages}
+            isLoading={isLoading}
+            onQuickDestinationSelect={(dest) => handleChatSend(dest.query)}
+          />
         ) : (
           <TravelForm onSubmitForm={handleFormSubmit} initialParams={planData?.userParams || {}} isLoading={isLoading} />
         )}
       </div>
 
-      {/* Execution Progress Visualizer */}
+      {/* Pipeline Status */}
       <div className="progress-section-container">
         <AgentProgressTracker agentLogs={planData?.agentLogs || []} isProcessing={isLoading} />
       </div>
 
-      {/* Main Dashboard & Results (Rendered when plan data exists) */}
+      {/* Results Dashboard */}
       {planData && (
         <div className="plan-results-dashboard">
-          {/* Trip Summary Top Banner */}
-          <div className="trip-overview-banner">
-            <div className="overview-route-info">
-              <h2>📍 {planData.userParams.origin} → {planData.userParams.destination}</h2>
-              <p>📅 {planData.userParams.departureDate} to {planData.userParams.returnDate || "N/A"} • 👥 {planData.userParams.travelers} Travelers</p>
+          {/* Destination Visual Hero Cover */}
+          <div
+            className="destination-visual-hero"
+            style={{ backgroundImage: `linear-gradient(180deg, rgba(15, 23, 42, 0.45) 0%, rgba(15, 23, 42, 0.95) 100%), url(${media.heroImage})` }}
+          >
+            <div className="hero-top-badges">
+              <span className="dest-weather-chip">☀️ {media.weather}</span>
+              <span className="dest-time-chip">🗓️ Best Time: {media.bestTime}</span>
             </div>
-            <div className="overview-budget-info">
-              <div className="stat-label">Allocated Budget</div>
-              <div className="stat-value">₹{planData.userParams.budget.toLocaleString()}</div>
-              <div className="stat-sub">Est Cost: ₹{planData.budgetAnalysis.currentTotalCost.toLocaleString()}</div>
-            </div>
-            <div className="overview-action">
-              <button className="btn-confirm-booking-hero" onClick={() => setShowBookingModal(true)}>
-                <FiShield /> Confirm & Proceed to Booking
-              </button>
+
+            <div className="hero-main-content">
+              <div className="hero-title-box">
+                <span className="hero-subtitle">📍 {planData.userParams.origin} → {planData.userParams.destination}</span>
+                <h2>{media.name || planData.userParams.destination}</h2>
+                <p>{media.tagline}</p>
+              </div>
+
+              <div className="hero-stats-row">
+                <div className="hero-stat-card">
+                  <span className="stat-num">{planData.userParams.travelers}</span>
+                  <span className="stat-desc">Travelers ({planData.userParams.roomsCount} Room)</span>
+                </div>
+                <div className="hero-stat-card">
+                  <span className="stat-num">₹{planData.userParams.budget.toLocaleString()}</span>
+                  <span className="stat-desc">Target Budget</span>
+                </div>
+                <div className="hero-stat-card">
+                  <span className="stat-num">₹{planData.budgetAnalysis.currentTotalCost.toLocaleString()}</span>
+                  <span className="stat-desc">Est Total Cost</span>
+                </div>
+              </div>
+
+              <div className="hero-action-box">
+                <button className="btn-confirm-booking-hero" onClick={() => setShowBookingModal(true)}>
+                  <FiShield /> Confirm & Proceed to Booking
+                </button>
+              </div>
             </div>
           </div>
 

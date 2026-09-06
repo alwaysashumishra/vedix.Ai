@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
-import { FiSend, FiCompass, FiZap, FiUser, FiCpu } from "react-icons/fi";
+import { FiSend, FiCompass, FiZap, FiUser, FiCpu, FiMapPin, FiArrowRight } from "react-icons/fi";
+import { QUICK_DESTINATIONS } from "./travelMedia";
 
-const TravelChat = ({ onSendMessage, messages = [], isLoading = false }) => {
+const TravelChat = ({ onSendMessage, messages = [], isLoading = false, onQuickDestinationSelect }) => {
   const [inputText, setInputText] = useState("");
   const chatBottomRef = useRef(null);
 
@@ -44,10 +45,43 @@ const TravelChat = ({ onSendMessage, messages = [], isLoading = false }) => {
           <div className="empty-chat-welcome">
             <div className="welcome-avatar">✈️</div>
             <h3>Hello! Where would you like to travel?</h3>
-            <p>You don't need to fill out a long form. Just tell me your destination, dates, budget, or preferences.</p>
+            <p>Describe your trip naturally or pick one of the trending visual destinations below to start instantly.</p>
+
+            {/* Quick Destination Cards Grid */}
+            <div className="quick-destinations-section">
+              <div className="quick-dest-title"><FiMapPin /> Popular Destinations (1-Click Auto Plan):</div>
+              <div className="quick-dest-grid">
+                {QUICK_DESTINATIONS.map((dest, idx) => (
+                  <div
+                    key={idx}
+                    className="dest-quick-card"
+                    onClick={() => {
+                      if (onQuickDestinationSelect) {
+                        onQuickDestinationSelect(dest);
+                      } else {
+                        onSendMessage(dest.query);
+                      }
+                    }}
+                  >
+                    <div className="dest-card-img">
+                      <img src={dest.image} alt={dest.city} />
+                      <span className="dest-budget-pill">{dest.budget}</span>
+                    </div>
+                    <div className="dest-card-info">
+                      <h5>{dest.city}</h5>
+                      <p>{dest.tagline}</p>
+                      <div className="dest-card-footer">
+                        <span>{dest.days} • From {dest.origin}</span>
+                        <span className="dest-arrow"><FiArrowRight /></span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
 
             <div className="prompt-chips-title">
-              <FiZap /> Click a sample query to try:
+              <FiZap /> Click a sample natural text query:
             </div>
             <div className="sample-chips-grid">
               {samplePrompts.map((prompt, idx) => (
