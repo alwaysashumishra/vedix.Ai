@@ -69,7 +69,7 @@ const buildPlans = (siteConfig = {}) => [
   },
 ];
 
-const Plans = ({ profile, setShowLogin }) => {
+const Plans = ({ profile, setShowLogin, isEmbedded = false }) => {
   const [siteConfig, setSiteConfig] = useState({});
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [userPayments, setUserPayments] = useState([]);
@@ -108,7 +108,7 @@ const Plans = ({ profile, setShowLogin }) => {
 
   const handlePlanClick = (plan) => {
     if (!profile) {
-      setShowLogin(true);
+      if (setShowLogin) setShowLogin(true);
       return;
     }
 
@@ -130,8 +130,8 @@ const Plans = ({ profile, setShowLogin }) => {
   };
 
   return (
-    <main className="plans-page">
-      <BackHomeButton className="plans-home-link" />
+    <main className={`plans-page ${isEmbedded ? "embedded" : ""}`}>
+      {!isEmbedded && <BackHomeButton className="plans-home-link" />}
       
       <section className="plans-hero">
         <span className="plans-kicker">Subscription & Payments</span>

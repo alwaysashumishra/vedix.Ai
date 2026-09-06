@@ -10,6 +10,33 @@
   color: #1e293b;
 }
 
+.plans-page.embedded {
+  min-height: auto;
+  padding: 10px 0;
+  background: transparent;
+  color: inherit;
+}
+
+.plans-page.embedded .plans-hero {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.plans-page.embedded .plans-hero h1 {
+  font-size: 26px;
+}
+
+.plans-page.embedded .plans-grid {
+  width: 100%;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.plans-page.embedded .plan-card {
+  min-height: auto;
+  padding: 20px;
+}
+
 .plans-hero {
   width: min(1060px, 100%);
   margin: 0 auto 28px;

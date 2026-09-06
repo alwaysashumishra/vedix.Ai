@@ -27,9 +27,11 @@ import {
   FiVolume2,
   FiVolumeX,
   FiCalendar,
+  FiCreditCard,
 } from "react-icons/fi";
+import Plans from "../../Pages/Plans/Plans";
 
-const SettingsModal = ({ setShowSettings, profile, setProfile }) => {
+const SettingsModal = ({ setShowSettings, profile, setProfile, setShowLogin }) => {
   const {
     theme,
     toggleTheme,
@@ -276,6 +278,14 @@ const SettingsModal = ({ setShowSettings, profile, setProfile }) => {
             >
               <FiCpu className="tab-icon" />
               <span>AI Preferences</span>
+            </button>
+
+            <button
+              className={`nav-tab-btn ${activeTab === "plans" ? "active" : ""}`}
+              onClick={() => setActiveTab("plans")}
+            >
+              <FiCreditCard className="tab-icon" />
+              <span>Plans & Subscription</span>
             </button>
 
             <button
@@ -694,7 +704,14 @@ const SettingsModal = ({ setShowSettings, profile, setProfile }) => {
               </div>
             )}
 
-            {/* ================= TAB 5: ABOUT & SYSTEM ================= */}
+            {/* ================= TAB: PLANS & SUBSCRIPTION ================= */}
+            {activeTab === "plans" && (
+              <div className="tab-content fade-in">
+                <Plans profile={profile} setShowLogin={setShowLogin} isEmbedded={true} />
+              </div>
+            )}
+
+            {/* ================= TAB 5: ABOUT ================= */}
             {activeTab === "about" && (
               <div className="tab-content fade-in">
                 <div className="about-hero-card">
