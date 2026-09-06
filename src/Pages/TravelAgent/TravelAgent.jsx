@@ -9,6 +9,7 @@ import BudgetOptimizerCard from "../../components/TravelAgent/BudgetOptimizerCar
 import ItineraryView from "../../components/TravelAgent/ItineraryView";
 import WhatIfScenarioPanel from "../../components/TravelAgent/WhatIfScenarioPanel";
 import BookingSafetyModal from "../../components/TravelAgent/BookingSafetyModal";
+import BackHomeButton from "../../components/BackHomeButton/BackHomeButton";
 import { DESTINATION_MEDIA } from "../../components/TravelAgent/travelMedia";
 import { getApiBaseUrl } from "../../config/apiConfig";
 import { FiNavigation, FiCompass, FiEdit3, FiPieChart, FiCalendar, FiCheckCircle, FiShield, FiHeart, FiFileText } from "react-icons/fi";
@@ -181,6 +182,11 @@ const TravelAgent = ({ profile }) => {
 
   return (
     <div className="travel-agent-page">
+      {/* Top Navigation Row */}
+      <div className="travel-top-nav-row">
+        <BackHomeButton label="Back to Home" className="travel-back-home-btn" />
+      </div>
+
       {/* Page Title Header */}
       <header className="page-header-banner">
         <div className="title-left">
