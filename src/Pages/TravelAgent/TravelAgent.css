@@ -1,4 +1,4 @@
-/* Classic, Elegant & Minimalist Travel Agent UI Stylesheet */
+/* Luxury Concierge Travel Agent Stylesheet */
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
@@ -12,33 +12,27 @@
   min-height: 100vh;
 }
 
-/* Dark Mode Overrides if parent has dark theme */
-[data-theme="dark"] .travel-agent-page,
-.sidebar-dark .travel-agent-page {
-  color: #f8fafc;
-  background: #0f172a;
-}
-
-/* Top Nav Row & Back Button */
-.travel-top-nav-row {
+/* Top Bar Navigation */
+.travel-top-bar {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
 .travel-back-home-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 16px;
-  border-radius: 10px;
+  padding: 9px 18px;
+  border-radius: 12px;
   background: #ffffff;
   border: 1px solid #e2e8f0;
   color: #334155;
-  font-weight: 600;
-  font-size: 13px;
+  font-weight: 700;
+  font-size: 13.5px;
   text-decoration: none;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   transition: all 0.2s ease;
 }
 
@@ -48,85 +42,85 @@
   border-color: #cbd5e1;
 }
 
-/* Classic Header Banner */
-.page-header-banner {
+.top-bar-right {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 10px;
+}
+
+.user-memory-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  color: #4338ca;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 20px;
+}
+
+.heart-icon {
+  color: #6366f1;
+}
+
+.concierge-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #059669;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 20px;
+}
+
+.shield-icon {
+  color: #10b981;
+}
+
+/* Concierge Studio Hero Card */
+.concierge-hero-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  padding: 24px 28px;
-  border-radius: 16px;
+  border-radius: 20px;
+  padding: 26px 32px;
   margin-bottom: 20px;
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
 }
 
-.brand-badge-row {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 8px;
-}
-
-.brand-pill {
-  background: #4f46e5;
-  color: #ffffff;
-  font-weight: 700;
-  font-size: 11px;
-  padding: 4px 12px;
-  border-radius: 6px;
+.hero-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  letter-spacing: 0.03em;
-}
-
-.agent-pill {
-  background: #f1f5f9;
-  color: #475569;
+  background: #1e293b;
+  color: #ffffff;
   font-size: 11px;
-  font-weight: 600;
-  padding: 4px 10px;
+  font-weight: 800;
+  padding: 4px 12px;
   border-radius: 6px;
+  margin-bottom: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
-.page-header-banner h1 {
-  font-size: 26px;
+.concierge-hero-card h1 {
+  font-size: 28px;
   font-weight: 800;
   color: #0f172a;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   letter-spacing: -0.02em;
 }
 
-.page-header-banner p {
+.concierge-hero-card p {
   color: #64748b;
   font-size: 14px;
-  line-height: 1.5;
 }
 
-.memory-badge-card {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  padding: 12px 18px;
-  border-radius: 12px;
-  max-width: 360px;
-}
-
-.memory-title {
-  color: #4f46e5;
-  font-weight: 700;
-  font-size: 12px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 4px;
-}
-
-.memory-badge-card p {
-  font-size: 12px;
-  color: #475569;
-}
-
-/* Classic Mode Switcher Bar */
+/* Mode Switcher Bar */
 .input-mode-switcher-bar {
   display: flex;
   gap: 12px;
@@ -135,27 +129,27 @@
 
 .mode-btn {
   flex: 1;
-  padding: 12px 20px;
-  border-radius: 12px;
+  padding: 14px 20px;
+  border-radius: 14px;
   background: #ffffff;
   border: 1px solid #e2e8f0;
   color: #64748b;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 14.5px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
   transition: all 0.2s ease;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
 }
 
 .mode-btn.active {
   background: #1e293b;
   color: #ffffff;
   border-color: #1e293b;
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
 }
 
 .mode-btn:hover:not(.active) {
@@ -163,11 +157,11 @@
   color: #0f172a;
 }
 
-/* Progress Tracker */
+/* Progress Pipeline Tracker */
 .agent-progress-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 14px;
+  border-radius: 16px;
   padding: 16px 20px;
   margin-bottom: 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
@@ -176,7 +170,7 @@
 .progress-header {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   margin-bottom: 12px;
 }
 
@@ -184,13 +178,6 @@
   font-size: 13px;
   font-weight: 700;
   color: #334155;
-}
-
-.live-pulse {
-  width: 8px;
-  height: 8px;
-  background-color: #10b981;
-  border-radius: 50%;
 }
 
 .progress-steps-row {
@@ -224,11 +211,11 @@
   color: #4338ca;
 }
 
-/* Classic Chat Card */
+/* Chat Card */
 .travel-chat-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 16px;
+  border-radius: 20px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -238,7 +225,7 @@
 }
 
 .chat-header {
-  padding: 16px 20px;
+  padding: 18px 24px;
   background: #f8fafc;
   border-bottom: 1px solid #e2e8f0;
 }
@@ -250,12 +237,12 @@
 }
 
 .chat-icon {
-  font-size: 22px;
+  font-size: 24px;
   color: #4f46e5;
 }
 
 .chat-header h4 {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
   color: #0f172a;
 }
@@ -267,14 +254,14 @@
 
 .chat-body-messages {
   flex: 1;
-  padding: 20px;
+  padding: 24px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-/* Popular Destinations Cards */
+/* Popular Destinations Grid */
 .quick-destinations-section {
   margin-bottom: 20px;
 }
@@ -298,7 +285,7 @@
 .dest-quick-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border-radius: 14px;
   overflow: hidden;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -312,7 +299,7 @@
 
 .dest-card-img {
   position: relative;
-  height: 100px;
+  height: 105px;
 }
 
 .dest-card-img img {
@@ -325,21 +312,21 @@
   position: absolute;
   top: 6px;
   right: 6px;
-  background: rgba(15, 23, 42, 0.8);
+  background: rgba(15, 23, 42, 0.85);
   color: #ffffff;
   font-size: 10px;
   font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
 }
 
 .dest-card-info {
-  padding: 10px;
+  padding: 12px;
 }
 
 .dest-card-info h5 {
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 800;
   color: #0f172a;
   margin-bottom: 2px;
 }
@@ -386,7 +373,7 @@
 
 .chat-message-row {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   max-width: 85%;
 }
 
@@ -400,8 +387,8 @@
 }
 
 .message-avatar {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   background: #f1f5f9;
   display: flex;
@@ -460,7 +447,7 @@
 .chat-input-bar {
   display: flex;
   gap: 10px;
-  padding: 14px 18px;
+  padding: 16px 20px;
   background: #f8fafc;
   border-top: 1px solid #e2e8f0;
 }
@@ -469,10 +456,10 @@
   flex: 1;
   background: #ffffff;
   border: 1px solid #cbd5e1;
-  padding: 10px 16px;
-  border-radius: 10px;
+  padding: 12px 18px;
+  border-radius: 12px;
   color: #0f172a;
-  font-size: 13.5px;
+  font-size: 14px;
   outline: none;
 }
 
@@ -484,27 +471,27 @@
   background: #1e293b;
   border: none;
   color: #ffffff;
-  padding: 0 18px;
-  border-radius: 10px;
-  font-size: 15px;
+  padding: 0 20px;
+  border-radius: 12px;
+  font-size: 16px;
   cursor: pointer;
 }
 
-/* Classic Destination Visual Cover */
+/* Destination Visual Cover Banner */
 .destination-visual-hero {
-  border-radius: 16px;
+  border-radius: 20px;
   background-size: cover;
   background-position: center;
-  padding: 28px;
+  padding: 32px;
   margin-bottom: 20px;
   border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
 .hero-top-badges {
   display: flex;
   gap: 8px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .dest-weather-chip,
@@ -513,45 +500,45 @@
   color: #ffffff;
   font-size: 11px;
   font-weight: 700;
-  padding: 4px 12px;
-  border-radius: 6px;
+  padding: 5px 14px;
+  border-radius: 8px;
 }
 
 .hero-title-box h2 {
-  font-size: 32px;
+  font-size: 34px;
   font-weight: 800;
   color: #ffffff;
-  margin: 4px 0;
+  margin: 4px 0 6px 0;
 }
 
 .hero-title-box p {
-  color: #e2e8f0;
-  font-size: 14px;
+  color: #f1f5f9;
+  font-size: 15px;
 }
 
 .hero-stats-row {
   display: flex;
-  gap: 12px;
-  margin: 16px 0;
+  gap: 14px;
+  margin: 20px 0;
   flex-wrap: wrap;
 }
 
 .hero-stat-card {
   background: rgba(15, 23, 42, 0.8);
-  padding: 10px 16px;
-  border-radius: 10px;
+  padding: 12px 18px;
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
 }
 
 .stat-num {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 800;
   color: #10b981;
 }
 
 .stat-desc {
-  font-size: 10px;
+  font-size: 11px;
   color: #cbd5e1;
 }
 
@@ -569,12 +556,12 @@
   gap: 8px;
 }
 
-/* Classic Travel Form */
+/* Travel Form Card */
 .travel-form-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 24px;
+  border-radius: 20px;
+  padding: 26px;
   margin-bottom: 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
 }
@@ -591,15 +578,15 @@
 .form-grid-3 {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 14px;
-  margin-bottom: 14px;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
 .form-grid-4 {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-  gap: 14px;
-  margin-bottom: 14px;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
 .form-group label {
@@ -615,8 +602,8 @@
 .form-group select {
   background: #ffffff;
   border: 1px solid #cbd5e1;
-  padding: 10px 12px;
-  border-radius: 8px;
+  padding: 10px 14px;
+  border-radius: 10px;
   color: #0f172a;
   font-size: 13.5px;
   outline: none;
@@ -660,7 +647,7 @@
 .what-if-panel-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 14px;
+  border-radius: 16px;
   padding: 20px;
   margin-bottom: 20px;
 }
@@ -725,8 +712,8 @@
 .transport-comparison-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 22px;
+  border-radius: 20px;
+  padding: 24px;
 }
 
 .mode-tabs-row {
@@ -754,14 +741,14 @@
 .transport-cards-list {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 
 .transport-item-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 14px;
-  padding: 18px;
+  border-radius: 16px;
+  padding: 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 
@@ -803,8 +790,8 @@
   justify-content: space-between;
   align-items: center;
   background: #f8fafc;
-  padding: 10px 16px;
-  border-radius: 10px;
+  padding: 12px 18px;
+  border-radius: 12px;
 }
 
 .price-tag {
@@ -842,8 +829,8 @@
 .stay-comparison-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 22px;
+  border-radius: 20px;
+  padding: 24px;
 }
 
 .stays-grid {
@@ -855,13 +842,13 @@
 .stay-card-item {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 14px;
+  border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 
 .stay-image-box {
-  height: 160px;
+  height: 170px;
 }
 
 .stay-image-box img {
@@ -871,15 +858,15 @@
 }
 
 .stay-card-content {
-  padding: 16px;
+  padding: 18px;
 }
 
 /* Budget Card */
 .budget-optimizer-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 22px;
+  border-radius: 20px;
+  padding: 24px;
 }
 
 .breakdown-grid {
@@ -893,15 +880,15 @@
   background: #f8fafc;
   border: 1px solid #e2e8f0;
   padding: 14px;
-  border-radius: 10px;
+  border-radius: 12px;
 }
 
 /* Itinerary Timeline */
 .itinerary-view-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 22px;
+  border-radius: 20px;
+  padding: 24px;
 }
 
 .timeline-card-wrapper {
@@ -909,14 +896,14 @@
   gap: 14px;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 14px;
 }
 
 .activity-thumb-box {
   width: 80px;
   height: 70px;
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
   flex-shrink: 0;
 }

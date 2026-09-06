@@ -12,7 +12,7 @@ import BookingSafetyModal from "../../components/TravelAgent/BookingSafetyModal"
 import BackHomeButton from "../../components/BackHomeButton/BackHomeButton";
 import { DESTINATION_MEDIA } from "../../components/TravelAgent/travelMedia";
 import { getApiBaseUrl } from "../../config/apiConfig";
-import { FiNavigation, FiCompass, FiEdit3, FiPieChart, FiCalendar, FiCheckCircle, FiShield, FiHeart, FiFileText } from "react-icons/fi";
+import { FiNavigation, FiCompass, FiEdit3, FiPieChart, FiCalendar, FiCheckCircle, FiShield, FiHeart, FiFileText, FiMapPin, FiUsers, FiDollarSign } from "react-icons/fi";
 
 const API_BASE = getApiBaseUrl();
 
@@ -182,43 +182,45 @@ const TravelAgent = ({ profile }) => {
 
   return (
     <div className="travel-agent-page">
-      {/* Top Navigation Row */}
-      <div className="travel-top-nav-row">
+      {/* Top Bar with Navigation & Memory */}
+      <div className="travel-top-bar">
         <BackHomeButton label="Back to Home" className="travel-back-home-btn" />
+        
+        <div className="top-bar-right">
+          {userPreferences.preferredTransport && (
+            <div className="user-memory-pill" title="Travel Memory Saved">
+              <FiHeart className="heart-icon" />
+              <span>{userPreferences.preferredTransport.join(", ")} • Min {userPreferences.minHotelRating}★ Hotels</span>
+            </div>
+          )}
+          <span className="concierge-status-pill">
+            <FiShield className="shield-icon" /> AI Travel Concierge Active
+          </span>
+        </div>
       </div>
 
-      {/* Page Title Header */}
-      <header className="page-header-banner">
-        <div className="title-left">
-          <div className="brand-badge-row">
-            <span className="brand-pill"><FiNavigation /> lexi.AI Platform</span>
-            <span className="agent-pill">Autonomous Orchestrator</span>
-          </div>
-          <h1>AI Travel Agent & Comparison Engine</h1>
-          <p>Describe your trip once. Our multi-agent network searches, compares, optimizes, and plans your entire journey.</p>
+      {/* Hero Concierge Banner */}
+      <div className="concierge-hero-card">
+        <div className="hero-badge">
+          <FiNavigation /> Vedix AI Concierge
         </div>
+        <h1>AI Travel Assistant & Comparison Hub</h1>
+        <p>Compare buses, flights, trains, cabs, stays, and budget plans in one unified AI workspace.</p>
+      </div>
 
-        {userPreferences.preferredTransport && (
-          <div className="memory-badge-card">
-            <span className="memory-title"><FiHeart /> Personal Memory Active</span>
-            <p>User prefers: {userPreferences.preferredTransport.join(", ")} • Min {userPreferences.minHotelRating}★ Hotels • Budget ~₹{userPreferences.typicalBudget?.toLocaleString()}</p>
-          </div>
-        )}
-      </header>
-
-      {/* Mode Selector */}
+      {/* Input Mode Selector Bar */}
       <div className="input-mode-switcher-bar">
         <button
           className={`mode-btn ${activeInputMode === "chat" ? "active" : ""}`}
           onClick={() => setActiveInputMode("chat")}
         >
-          <FiCompass /> Conversational AI Assistant
+          <FiCompass /> 💬 Conversational AI Concierge
         </button>
         <button
           className={`mode-btn ${activeInputMode === "form" ? "active" : ""}`}
           onClick={() => setActiveInputMode("form")}
         >
-          <FiEdit3 /> Structured Search Form
+          <FiEdit3 /> ⚡ Instant Finder Form
         </button>
       </div>
 
@@ -236,7 +238,7 @@ const TravelAgent = ({ profile }) => {
         )}
       </div>
 
-      {/* Pipeline Status */}
+      {/* Pipeline Progress Indicator */}
       <div className="progress-section-container">
         <AgentProgressTracker agentLogs={planData?.agentLogs || []} isProcessing={isLoading} />
       </div>
@@ -244,7 +246,7 @@ const TravelAgent = ({ profile }) => {
       {/* Results Dashboard */}
       {planData && (
         <div className="plan-results-dashboard">
-          {/* Destination Visual Hero Cover */}
+          {/* Destination Hero Card */}
           <div
             className="destination-visual-hero"
             style={{ backgroundImage: `linear-gradient(180deg, rgba(15, 23, 42, 0.45) 0%, rgba(15, 23, 42, 0.95) 100%), url(${media.heroImage})` }}
@@ -284,14 +286,14 @@ const TravelAgent = ({ profile }) => {
             </div>
           </div>
 
-          {/* Interactive What-If Scenario Panel */}
+          {/* Scenario Planner */}
           <WhatIfScenarioPanel
             onRunScenario={handleRunScenario}
             isLoading={isLoading}
             scenarioExplanation={planData.scenarioExplanation}
           />
 
-          {/* Dashboard Navigation Tabs */}
+          {/* Navigation Tabs */}
           <div className="dashboard-tabs-bar">
             <button
               className={`tab-item ${activeDashboardTab === "transport" ? "active" : ""}`}
