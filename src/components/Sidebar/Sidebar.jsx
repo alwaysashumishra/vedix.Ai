@@ -29,7 +29,7 @@ from "../DownloadAppModal/DownloadAppModal";
 import FestivalCalendarModal
 from "../FestivalCalendarModal/FestivalCalendarModal";
 
-import { FiCompass, FiCreditCard, FiFileText, FiShield, FiBookmark, FiUsers, FiSmartphone, FiCalendar } from "react-icons/fi";
+import { FiCompass, FiCreditCard, FiFileText, FiShield, FiBookmark, FiUsers, FiSmartphone, FiCalendar, FiNavigation } from "react-icons/fi";
 
 import { MdOutlineArticle } from "react-icons/md";
 
@@ -372,6 +372,25 @@ const Sidebar = ({ profile, setProfile }) => {
 
                   <p>
                     Research AI
+                  </p>
+
+                </NavLink>
+
+                {/* TRAVEL AGENT */}
+                <NavLink
+
+                  to="/travel-agent"
+
+                  className="
+                  recent-entry
+                  ai-tool-link
+                  "
+                >
+
+                  <FiNavigation />
+
+                  <p>
+                    Travel Agent
                   </p>
 
                 </NavLink>

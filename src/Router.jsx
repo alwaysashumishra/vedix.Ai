@@ -8,6 +8,7 @@ import Plans from "./Pages/Plans/Plans";
 import Admin from "./Pages/Admin/Admin";
 import Notes from "./Pages/Notes/Notes";
 import Groups from "./Pages/Groups/Groups";
+import TravelAgent from "./Pages/TravelAgent/TravelAgent";
 
 const AccessGate = ({ setShowLogin }) => (
   <div className="access-gate">
@@ -128,6 +129,15 @@ const Router = ({ showLogin, setShowLogin, profile, setProfile }) => {
         element={
           <ProtectedRoute profile={profile} setShowLogin={setShowLogin}>
             <PaperAnalyzer />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/travel-agent"
+        element={
+          <ProtectedRoute profile={profile} setShowLogin={setShowLogin}>
+            <TravelAgent profile={profile} />
           </ProtectedRoute>
         }
       />

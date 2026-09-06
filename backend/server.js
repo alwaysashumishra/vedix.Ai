@@ -14,6 +14,7 @@ import newsRoutes from "./routes/newsRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import cricketRoutes from "./routes/cricketRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
+import travelRoutes from "./routes/travelRoutes.js";
 
 import { trackUsage } from "./middleware/trackUsage.js";
 import { rateLimiter } from "./middleware/rateLimiter.js";
@@ -92,6 +93,7 @@ if (ENABLE_CLUSTER) {
   app.use("/api/admin", adminRoutes);
   app.use("/api/cricket", cricketRoutes);
   app.use("/api/payments", paymentRoutes);
+  app.use("/api/travel", travelRoutes);
 
   // Health Check Endpoint for Load Balancers (AWS / Railway / Render)
   app.get("/", (_req, res) => {
