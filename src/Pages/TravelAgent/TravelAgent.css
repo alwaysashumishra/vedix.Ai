@@ -1,15 +1,38 @@
-/* Luxury Concierge Travel Agent Stylesheet */
+/* Classic & Refined Travel Agent Stylesheet */
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap');
 
 .travel-agent-page {
   padding: 24px;
-  max-width: 1200px;
+  max-width: 1180px;
   margin: 0 auto;
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  color: var(--text-color, #0f172a);
-  background: var(--bg-color, #f8fafc);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #1e293b;
+  background: #f8fafc;
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Headings Typography */
+.travel-agent-page h1,
+.travel-agent-page h2,
+.travel-agent-page h3,
+.travel-agent-page h4,
+.travel-agent-page h5 {
+  font-family: "Outfit", "Inter", -apple-system, sans-serif;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.015em;
+}
+
+.travel-agent-page p,
+.travel-agent-page span,
+.travel-agent-page label,
+.travel-agent-page input,
+.travel-agent-page select,
+.travel-agent-page button {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 /* Top Bar Navigation */
@@ -24,22 +47,22 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 9px 18px;
-  border-radius: 12px;
+  padding: 8px 16px;
+  border-radius: 8px;
   background: #ffffff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #cbd5e1;
   color: #334155;
-  font-weight: 700;
-  font-size: 13.5px;
+  font-weight: 600;
+  font-size: 13px;
   text-decoration: none;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   transition: all 0.2s ease;
 }
 
 .travel-back-home-btn:hover {
   background: #f1f5f9;
   color: #0f172a;
-  border-color: #cbd5e1;
+  border-color: #94a3b8;
 }
 
 .top-bar-right {
@@ -57,7 +80,7 @@
   border: 1px solid #c7d2fe;
   color: #4338ca;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   border-radius: 20px;
 }
 
@@ -72,9 +95,9 @@
   padding: 6px 14px;
   background: #ecfdf5;
   border: 1px solid #a7f3d0;
-  color: #059669;
+  color: #047857;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   border-radius: 20px;
 }
 
@@ -86,38 +109,38 @@
 .concierge-hero-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 20px;
-  padding: 26px 32px;
+  border-radius: 16px;
+  padding: 24px 28px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
 }
 
 .hero-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: #1e293b;
+  background: #0f172a;
   color: #ffffff;
   font-size: 11px;
-  font-weight: 800;
-  padding: 4px 12px;
+  font-weight: 700;
+  padding: 4px 10px;
   border-radius: 6px;
-  margin-bottom: 12px;
-  letter-spacing: 0.04em;
+  margin-bottom: 10px;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
 }
 
 .concierge-hero-card h1 {
-  font-size: 28px;
-  font-weight: 800;
+  font-size: 26px;
+  font-weight: 700;
   color: #0f172a;
-  margin-bottom: 6px;
-  letter-spacing: -0.02em;
+  margin-bottom: 4px;
 }
 
 .concierge-hero-card p {
   color: #64748b;
   font-size: 14px;
+  line-height: 1.5;
 }
 
 /* Mode Switcher Bar */
@@ -129,27 +152,26 @@
 
 .mode-btn {
   flex: 1;
-  padding: 14px 20px;
-  border-radius: 14px;
+  padding: 12px 20px;
+  border-radius: 12px;
   background: #ffffff;
   border: 1px solid #e2e8f0;
   color: #64748b;
-  font-weight: 700;
-  font-size: 14.5px;
+  font-weight: 600;
+  font-size: 14px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   transition: all 0.2s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
 .mode-btn.active {
-  background: #1e293b;
+  background: #0f172a;
   color: #ffffff;
-  border-color: #1e293b;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+  border-color: #0f172a;
 }
 
 .mode-btn:hover:not(.active) {
@@ -191,10 +213,10 @@
   align-items: center;
   gap: 6px;
   padding: 6px 12px;
-  border-radius: 8px;
+  border-radius: 20px;
   font-size: 12px;
-  font-weight: 600;
-  background: #f8fafc;
+  font-weight: 500;
+  background: #f1f5f9;
   border: 1px solid #e2e8f0;
   color: #64748b;
 }
@@ -202,30 +224,30 @@
 .step-badge.completed {
   background: #ecfdf5;
   border-color: #a7f3d0;
-  color: #059669;
+  color: #047857;
 }
 
 .step-badge.active {
-  background: #eef2ff;
-  border-color: #c7d2fe;
-  color: #4338ca;
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
 }
 
 /* Chat Card */
 .travel-chat-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 20px;
+  border-radius: 16px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  min-height: 500px;
+  min-height: 480px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 
 .chat-header {
-  padding: 18px 24px;
+  padding: 16px 20px;
   background: #f8fafc;
   border-bottom: 1px solid #e2e8f0;
 }
@@ -233,43 +255,60 @@
 .chat-title-info {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .chat-icon {
-  font-size: 24px;
-  color: #4f46e5;
+  font-size: 20px;
+  color: #2563eb;
 }
 
 .chat-header h4 {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: #0f172a;
 }
 
 .chat-header p {
-  font-size: 12px;
+  font-size: 12.5px;
   color: #64748b;
 }
 
 .chat-body-messages {
   flex: 1;
-  padding: 24px;
+  padding: 20px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
+.empty-chat-welcome {
+  text-align: left;
+}
+
+.empty-chat-welcome h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.empty-chat-welcome p {
+  color: #64748b;
+  font-size: 13.5px;
+  margin-bottom: 16px;
+}
+
 /* Popular Destinations Grid */
 .quick-destinations-section {
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 .quick-dest-title {
   font-size: 13px;
-  font-weight: 700;
-  color: #334155;
+  font-weight: 600;
+  color: #475569;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -285,7 +324,7 @@
 .dest-quick-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 14px;
+  border-radius: 12px;
   overflow: hidden;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -294,12 +333,12 @@
 .dest-quick-card:hover {
   transform: translateY(-2px);
   border-color: #cbd5e1;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .dest-card-img {
   position: relative;
-  height: 105px;
+  height: 100px;
 }
 
 .dest-card-img img {
@@ -316,23 +355,23 @@
   color: #ffffff;
   font-size: 10px;
   font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 6px;
+  padding: 2px 7px;
+  border-radius: 4px;
 }
 
 .dest-card-info {
-  padding: 12px;
+  padding: 10px 12px;
 }
 
 .dest-card-info h5 {
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 700;
   color: #0f172a;
   margin-bottom: 2px;
 }
 
 .dest-card-info p {
-  font-size: 11px;
+  font-size: 11.5px;
   color: #64748b;
   margin-bottom: 6px;
 }
@@ -342,11 +381,21 @@
   justify-content: space-between;
   align-items: center;
   font-size: 11px;
-  color: #4f46e5;
+  color: #2563eb;
   font-weight: 600;
 }
 
-/* Chat Messages */
+/* Sample Prompts Chips */
+.prompt-chips-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
 .sample-chips-grid {
   display: flex;
   flex-direction: column;
@@ -356,98 +405,29 @@
 .chip-prompt-btn {
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  padding: 10px 14px;
+  padding: 12px 16px;
   border-radius: 10px;
   color: #334155;
   font-size: 13px;
+  line-height: 1.5;
+  font-weight: 400;
   text-align: left;
   cursor: pointer;
   transition: all 0.2s ease;
+  font-family: inherit;
 }
 
 .chip-prompt-btn:hover {
-  background: #eef2ff;
-  border-color: #c7d2fe;
-  color: #4338ca;
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
 }
 
-.chat-message-row {
-  display: flex;
-  gap: 12px;
-  max-width: 85%;
-}
-
-.chat-message-row.user-row {
-  align-self: flex-end;
-  flex-direction: row-reverse;
-}
-
-.chat-message-row.agent-row {
-  align-self: flex-start;
-}
-
-.message-avatar {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: #f1f5f9;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #475569;
-  font-size: 14px;
-  flex-shrink: 0;
-}
-
-.user-row .message-avatar {
-  background: #4f46e5;
-  color: #ffffff;
-}
-
-.message-content-bubble {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  padding: 12px 16px;
-  border-radius: 14px;
-  color: #0f172a;
-}
-
-.user-row .message-content-bubble {
-  background: #4f46e5;
-  color: #ffffff;
-  border: none;
-}
-
-.sender-label {
-  font-size: 11px;
-  font-weight: 700;
-  color: #64748b;
-  margin-bottom: 4px;
-}
-
-.user-row .sender-label {
-  color: #e0e7ff;
-}
-
-.message-text {
-  font-size: 13.5px;
-  line-height: 1.5;
-}
-
-.extracted-params-badge {
-  margin-top: 8px;
-  padding: 6px 10px;
-  background: #e0f2fe;
-  border-left: 3px solid #0284c7;
-  border-radius: 4px;
-  font-size: 11.5px;
-  color: #0369a1;
-}
-
+/* Chat Input Bar */
 .chat-input-bar {
   display: flex;
   gap: 10px;
-  padding: 16px 20px;
+  padding: 14px 18px;
   background: #f8fafc;
   border-top: 1px solid #e2e8f0;
 }
@@ -456,33 +436,192 @@
   flex: 1;
   background: #ffffff;
   border: 1px solid #cbd5e1;
-  padding: 12px 18px;
-  border-radius: 12px;
+  padding: 10px 16px;
+  border-radius: 10px;
   color: #0f172a;
-  font-size: 14px;
+  font-size: 13.5px;
   outline: none;
+  font-family: inherit;
 }
 
 .chat-input-bar input:focus {
-  border-color: #4f46e5;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .chat-send-btn {
-  background: #1e293b;
+  background: #0f172a;
   border: none;
   color: #ffffff;
-  padding: 0 20px;
-  border-radius: 12px;
-  font-size: 16px;
+  padding: 0 18px;
+  border-radius: 10px;
+  font-size: 15px;
   cursor: pointer;
 }
 
-/* Destination Visual Cover Banner */
-.destination-visual-hero {
+/* Structured Travel Form Card */
+.travel-form-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+}
+
+.form-title-bar {
+  margin-bottom: 20px;
+}
+
+.form-title-bar h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.form-title-bar p {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.form-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.form-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.form-group input,
+.form-group select {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  padding: 10px 14px;
+  border-radius: 10px;
+  color: #0f172a;
+  font-size: 13.5px;
+  font-weight: 400;
+  height: 42px;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.transport-chips-group {
+  margin-bottom: 16px;
+}
+
+.transport-chip-list {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.chip-btn {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  padding: 7px 14px;
   border-radius: 20px;
+  color: #475569;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.chip-btn.active {
+  background: #eef2ff;
+  border-color: #818cf8;
+  color: #4338ca;
+  font-weight: 600;
+}
+
+/* FIX for Show Advanced Preferences button */
+.advanced-toggle-row {
+  margin-bottom: 16px;
+}
+
+.btn-text-link {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  padding: 6px 0;
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.2s ease;
+  font-family: inherit;
+}
+
+.btn-text-link:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+.btn-primary-gradient {
+  background: #0f172a;
+  border: none;
+  color: #ffffff;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
+  font-family: inherit;
+}
+
+.btn-primary-gradient:hover:not(:disabled) {
+  background: #1e293b;
+}
+
+/* Destination Hero Cover */
+.destination-visual-hero {
+  border-radius: 16px;
   background-size: cover;
   background-position: center;
-  padding: 32px;
+  padding: 30px;
   margin-bottom: 20px;
   border: 1px solid #e2e8f0;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
@@ -491,7 +630,7 @@
 .hero-top-badges {
   display: flex;
   gap: 8px;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .dest-weather-chip,
@@ -499,13 +638,13 @@
   background: rgba(15, 23, 42, 0.85);
   color: #ffffff;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   padding: 5px 14px;
-  border-radius: 8px;
+  border-radius: 6px;
 }
 
 .hero-title-box h2 {
-  font-size: 34px;
+  font-size: 32px;
   font-weight: 800;
   color: #ffffff;
   margin: 4px 0 6px 0;
@@ -513,12 +652,12 @@
 
 .hero-title-box p {
   color: #f1f5f9;
-  font-size: 15px;
+  font-size: 14.5px;
 }
 
 .hero-stats-row {
   display: flex;
-  gap: 14px;
+  gap: 12px;
   margin: 20px 0;
   flex-wrap: wrap;
 }
@@ -526,13 +665,13 @@
 .hero-stat-card {
   background: rgba(15, 23, 42, 0.8);
   padding: 12px 18px;
-  border-radius: 12px;
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
 }
 
 .stat-num {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 800;
   color: #10b981;
 }
@@ -554,93 +693,6 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-}
-
-/* Travel Form Card */
-.travel-form-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 20px;
-  padding: 26px;
-  margin-bottom: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
-}
-
-.form-title-bar h3 {
-  font-size: 17px;
-  font-weight: 700;
-  color: #0f172a;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.form-grid-3 {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.form-grid-4 {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.form-group label {
-  font-size: 12px;
-  font-weight: 600;
-  color: #475569;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.form-group input,
-.form-group select {
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  padding: 10px 14px;
-  border-radius: 10px;
-  color: #0f172a;
-  font-size: 13.5px;
-  outline: none;
-}
-
-.transport-chip-list {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.chip-btn {
-  background: #f8fafc;
-  border: 1px solid #cbd5e1;
-  padding: 8px 14px;
-  border-radius: 8px;
-  color: #475569;
-  font-size: 12.5px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.chip-btn.active {
-  background: #eef2ff;
-  border-color: #6366f1;
-  color: #4338ca;
-}
-
-.btn-primary-gradient {
-  background: #1e293b;
-  border: none;
-  color: #ffffff;
-  padding: 12px 24px;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
 }
 
 /* What-If Panel */
@@ -668,6 +720,7 @@
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
+  font-family: inherit;
 }
 
 .scenario-input-form input {
@@ -678,6 +731,7 @@
   border-radius: 8px;
   color: #0f172a;
   font-size: 13px;
+  font-family: inherit;
 }
 
 /* Dashboard Tabs */
@@ -696,23 +750,24 @@
   padding: 10px 18px;
   border-radius: 10px;
   color: #64748b;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 13.5px;
   cursor: pointer;
   white-space: nowrap;
+  font-family: inherit;
 }
 
 .tab-item.active {
-  background: #1e293b;
+  background: #0f172a;
   color: #ffffff;
-  border-color: #1e293b;
+  border-color: #0f172a;
 }
 
 /* Transport Comparison */
 .transport-comparison-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 20px;
+  border-radius: 16px;
   padding: 24px;
 }
 
@@ -731,10 +786,11 @@
   font-size: 12.5px;
   font-weight: 600;
   cursor: pointer;
+  font-family: inherit;
 }
 
 .mode-tab-btn.active {
-  background: #4f46e5;
+  background: #2563eb;
   color: #ffffff;
 }
 
@@ -747,13 +803,13 @@
 .transport-item-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 16px;
+  border-radius: 14px;
   padding: 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 
 .transport-item-card.top-recommendation {
-  border-color: #4f46e5;
+  border-color: #2563eb;
   background: #fafafa;
 }
 
@@ -802,14 +858,15 @@
 
 .btn-select-option {
   margin-top: 6px;
-  background: #1e293b;
+  background: #0f172a;
   border: none;
   color: #ffffff;
   padding: 8px 14px;
   border-radius: 8px;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
+  font-family: inherit;
 }
 
 .btn-selected {
@@ -829,7 +886,7 @@
 .stay-comparison-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 20px;
+  border-radius: 16px;
   padding: 24px;
 }
 
@@ -842,7 +899,7 @@
 .stay-card-item {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 16px;
+  border-radius: 14px;
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
 }
@@ -865,7 +922,7 @@
 .budget-optimizer-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 20px;
+  border-radius: 16px;
   padding: 24px;
 }
 
@@ -887,7 +944,7 @@
 .itinerary-view-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 20px;
+  border-radius: 16px;
   padding: 24px;
 }
 
