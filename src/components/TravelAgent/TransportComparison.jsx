@@ -119,12 +119,15 @@ const TransportComparison = ({ transportOptions = [], selectedTransport = null, 
 
                   {/* Route & Timings Column */}
                   <div className="route-timing-info">
-                    <div className="timing-col">
-                      <span className="time-val">{item.departureTime}</span>
-                      <span className="station-val">{item.departureStation || item.pickupPoint || item.departureAirport || "Departure Point"}</span>
+                    <div className="timing-col departure">
+                      <div className="time-val">{item.departureTime}</div>
+                      <div className="station-val">
+                        {item.departureStation || item.pickupPoint || item.departureAirport || "Departure Point"}
+                      </div>
                     </div>
+                    
                     <div className="duration-col">
-                      <span className="duration-val"><FiClock /> {item.duration}</span>
+                      <span className="duration-val"><FiClock className="clock-icon" /> {item.duration}</span>
                       <div className="line-indicator">
                         <span className="dot"></span>
                         <span className="line"></span>
@@ -132,9 +135,12 @@ const TransportComparison = ({ transportOptions = [], selectedTransport = null, 
                       </div>
                       <span className="direct-badge">{item.isDirect ? "Direct Non-Stop" : `${item.transfers} Stop`}</span>
                     </div>
-                    <div className="timing-col">
-                      <span className="time-val">{item.arrivalTime}</span>
-                      <span className="station-val">{item.arrivalStation || item.dropPoint || item.arrivalAirport || "Arrival Point"}</span>
+
+                    <div className="timing-col arrival">
+                      <div className="time-val">{item.arrivalTime}</div>
+                      <div className="station-val">
+                        {item.arrivalStation || item.dropPoint || item.arrivalAirport || "Arrival Point"}
+                      </div>
                     </div>
                   </div>
 
@@ -144,8 +150,10 @@ const TransportComparison = ({ transportOptions = [], selectedTransport = null, 
                       <span className="currency">₹</span>
                       <span className="amount">{item.totalPrice.toLocaleString()}</span>
                     </div>
-                    <span className="price-sub">₹{item.pricePerPerson} / person</span>
-                    <span className="cancellation-sub">{item.cancellationPolicy}</span>
+                    <div className="price-sub">₹{item.pricePerPerson.toLocaleString()} / person</div>
+                    {item.cancellationPolicy && (
+                      <div className="cancellation-sub">{item.cancellationPolicy}</div>
+                    )}
                     <button
                       className={`btn-select-option ${isSelected ? "btn-selected" : ""}`}
                       onClick={() => onSelectTransport(item)}
@@ -159,15 +167,15 @@ const TransportComparison = ({ transportOptions = [], selectedTransport = null, 
                 {item.amenities && item.amenities.length > 0 && (
                   <div className="transport-amenities-row">
                     {item.amenities.map((am, idx) => (
-                      <span key={idx} className="transport-amenity-tag">✓ {am}</span>
+                      <span key={idx} className="transport-amenity-tag"><FiCheck className="amenity-icon" /> {am}</span>
                     ))}
                   </div>
                 )}
 
                 {/* AI Explanation Bar */}
                 <div className="ai-reason-bar">
-                  <span className="reason-label">🤖 Why this is recommended:</span>
-                  <p>{item.whyRecommended}</p>
+                  <div className="reason-label">🤖 Why this is recommended:</div>
+                  <div className="reason-text">{item.whyRecommended}</div>
                 </div>
               </div>
             );

@@ -700,38 +700,125 @@
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 16px;
-  padding: 20px;
+  padding: 20px 24px;
   margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.panel-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.panel-header .panel-icon {
+  font-size: 22px;
+  color: #2563eb;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.panel-header h4 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 2px;
+}
+
+.panel-header p {
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.4;
 }
 
 .preset-buttons-grid {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 .preset-sc-btn {
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  padding: 6px 12px;
-  border-radius: 8px;
+  padding: 8px 14px;
+  border-radius: 20px;
   color: #475569;
-  font-size: 12px;
+  font-size: 12.5px;
   font-weight: 600;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
   font-family: inherit;
+}
+
+.preset-sc-btn:hover {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+}
+
+.preset-sc-btn .zap-icon {
+  color: #f59e0b;
+}
+
+.scenario-input-form {
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
 
 .scenario-input-form input {
   flex: 1;
   background: #ffffff;
   border: 1px solid #cbd5e1;
-  padding: 10px 14px;
-  border-radius: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
   color: #0f172a;
-  font-size: 13px;
+  font-size: 13.5px;
   font-family: inherit;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.scenario-input-form input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.btn-run-scenario {
+  background: #0f172a;
+  color: #ffffff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: background 0.2s ease;
+  font-family: inherit;
+}
+
+.btn-run-scenario:hover:not(:disabled) {
+  background: #1e293b;
+}
+
+.scenario-explanation-box {
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  font-size: 13px;
+  color: #166534;
+  line-height: 1.5;
 }
 
 /* Dashboard Tabs */
@@ -755,6 +842,12 @@
   cursor: pointer;
   white-space: nowrap;
   font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.tab-item:hover:not(.active) {
+  background: #f1f5f9;
+  color: #334155;
 }
 
 .tab-item.active {
@@ -763,124 +856,7 @@
   border-color: #0f172a;
 }
 
-/* Transport Comparison */
-.transport-comparison-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 24px;
-}
 
-.mode-tabs-row {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 14px;
-}
-
-.mode-tab-btn {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  padding: 6px 14px;
-  border-radius: 8px;
-  color: #475569;
-  font-size: 12.5px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: inherit;
-}
-
-.mode-tab-btn.active {
-  background: #2563eb;
-  color: #ffffff;
-}
-
-.transport-cards-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.transport-item-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 14px;
-  padding: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
-}
-
-.transport-item-card.top-recommendation {
-  border-color: #2563eb;
-  background: #fafafa;
-}
-
-.card-main-grid {
-  display: grid;
-  grid-template-columns: 240px 1fr 180px;
-  gap: 16px;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.operator-info-with-img {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-
-.mode-img-thumbnail {
-  width: 60px;
-  height: 60px;
-  border-radius: 10px;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.mode-img-thumbnail img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.route-timing-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #f8fafc;
-  padding: 12px 18px;
-  border-radius: 12px;
-}
-
-.price-tag {
-  font-size: 22px;
-  font-weight: 800;
-  color: #0f172a;
-}
-
-.btn-select-option {
-  margin-top: 6px;
-  background: #0f172a;
-  border: none;
-  color: #ffffff;
-  padding: 8px 14px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: inherit;
-}
-
-.btn-selected {
-  background: #059669;
-}
-
-.ai-reason-bar {
-  background: #f0f9ff;
-  border-left: 3px solid #0284c7;
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  color: #0369a1;
-}
 
 /* Stays Cards */
 .stay-comparison-card {

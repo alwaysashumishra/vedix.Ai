@@ -38,13 +38,15 @@ export const scoreAndRankOptions = (transportList, stayList, userParams) => {
 
     // Build transparent explanation
     const reasons = [];
-    if (item.pricePerPerson < 1500) reasons.push(`₹${item.pricePerPerson} is cost-effective`);
-    if (item.isDirect) reasons.push("Direct non-stop journey");
-    if (item.rating >= 4.6) reasons.push(`High ${item.rating}★ user rating`);
-    if (item.isAC && acPreference === "AC") reasons.push("Matches AC preference");
-    if (item.durationMinutes <= 300) reasons.push("Fastest travel duration");
+    if (item.pricePerPerson < 1500) reasons.push(`is cost-effective at ₹${item.pricePerPerson}/person`);
+    if (item.isDirect) reasons.push("offers a direct non-stop route");
+    if (item.rating >= 4.6) reasons.push(`has a high ${item.rating}★ user rating`);
+    if (item.isAC && acPreference === "AC") reasons.push("matches your AC preference");
+    if (item.durationMinutes <= 300) reasons.push("provides a fast travel duration");
 
-    const whyRecommended = `Recommended because it ${reasons.join(", ")}, keeping your travel comfortable and within budget.`;
+    const whyRecommended = reasons.length > 0 
+      ? `Recommended because it ${reasons.join(", ")}, keeping your trip comfortable and within budget.`
+      : `Recommended option matching your destination and budget parameters.`;
 
     return {
       ...item,
@@ -70,12 +72,14 @@ export const scoreAndRankOptions = (transportList, stayList, userParams) => {
     const totalScore = Math.round(priceScore * 0.35 + ratingScore * 0.45 + locationScore * 0.2);
 
     const reasons = [];
-    if (item.rating >= 4.7) reasons.push(`Rated ${item.rating}★ by travelers`);
-    if (item.distanceFromAttractions.includes("0.")) reasons.push("Prime central location near top attractions");
-    if (item.amenities.includes("Free Breakfast")) reasons.push("Includes complimentary breakfast");
-    if (item.badge) reasons.push(item.badge);
+    if (item.rating >= 4.7) reasons.push(`is rated ${item.rating}★ by travelers`);
+    if (item.distanceFromAttractions.includes("0.")) reasons.push("has a prime central location near top attractions");
+    if (item.amenities.includes("Free Breakfast")) reasons.push("includes complimentary breakfast");
+    if (item.badge) reasons.push(`is tagged as ${item.badge}`);
 
-    const whyRecommended = `Recommended stay because it ${reasons.join(", ")}, ensuring great comfort and value.`;
+    const whyRecommended = reasons.length > 0
+      ? `Recommended stay because it ${reasons.join(", ")}, ensuring great comfort and value.`
+      : `Recommended stay matching your destination and budget parameters.`;
 
     return {
       ...item,
