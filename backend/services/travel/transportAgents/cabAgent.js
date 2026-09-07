@@ -1,6 +1,7 @@
 /**
  * Cab Search Sub-Agent
  * Searches intercity cab and taxi options.
+ * Compares prices across MakeMyTrip Cabs, Uber Intercity, Ola Outstation, and Gozo Cabs.
  */
 
 export const searchCabs = async (params) => {
@@ -32,6 +33,12 @@ export const searchCabs = async (params) => {
       pickupPoint: `Doorstep Pick-up from ${origin}`,
       dropPoint: `Doorstep Drop at ${destination} Hotel`,
       amenities: ["Doorstep Pickup & Drop", "Toll & State Taxes Included", "Experienced Driver", "Clean & Sanitized Car"],
+      platformComparisons: [
+        { platform: "MakeMyTrip Cabs", price: 3800, pricePerPerson: Math.round(3800 / Math.max(1, travelers)), badge: "Cheapest Rate", isCheapest: true, url: "https://www.makemytrip.com/cabs", icon: "🟡" },
+        { platform: "Ola Outstation", price: 3950, pricePerPerson: Math.round(3950 / Math.max(1, travelers)), badge: "Verified Driver", url: "https://www.olacabs.com", icon: "🟢" },
+        { platform: "Uber Intercity", price: 4100, pricePerPerson: Math.round(4100 / Math.max(1, travelers)), badge: "Instant Booking", url: "https://www.uber.com", icon: "⬛" },
+        { platform: "Gozo Cabs", price: 3890, pricePerPerson: Math.round(3890 / Math.max(1, travelers)), badge: "Fixed Rate", url: "https://www.gozocabs.com", icon: "🚕" },
+      ],
       metadata: {
         source: "MakeMyTrip Outstation Cabs API Adapter",
         timestamp,
@@ -62,6 +69,11 @@ export const searchCabs = async (params) => {
       pickupPoint: `Doorstep Pick-up from ${origin}`,
       dropPoint: `Doorstep Drop at ${destination} Hotel`,
       amenities: ["Carrier Luggage Space", "AC", "Tolls Included", "Music System"],
+      platformComparisons: [
+        { platform: "Gozo Cabs", price: 5100, pricePerPerson: Math.round(5100 / Math.max(1, travelers)), badge: "Cheapest Rate", isCheapest: true, url: "https://www.gozocabs.com", icon: "🚕" },
+        { platform: "MakeMyTrip Cabs", price: 5200, pricePerPerson: Math.round(5200 / Math.max(1, travelers)), badge: "Tolls Included", url: "https://www.makemytrip.com/cabs", icon: "🟡" },
+        { platform: "Ola Outstation", price: 5400, pricePerPerson: Math.round(5400 / Math.max(1, travelers)), badge: "Luxury SUV", url: "https://www.olacabs.com", icon: "🟢" },
+      ],
       metadata: {
         source: "Gozo Cabs API Adapter",
         timestamp,

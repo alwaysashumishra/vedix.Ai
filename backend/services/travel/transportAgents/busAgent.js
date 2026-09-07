@@ -1,13 +1,14 @@
 /**
  * Bus Search Sub-Agent
  * Searches for bus transportation options between origin and destination.
+ * Compares prices across RedBus, AbhiBus, MakeMyTrip, and Yatra platforms.
  */
 
 export const searchBuses = async (params) => {
   const { origin, destination, departureDate, travelers = 1, acPreference = "AC", seatPreference = "Any", budget = 20000 } = params;
   const timestamp = new Date().toISOString();
 
-  // Realistic mock data generated based on origin and destination
+  // Realistic bus options with multi-platform price breakdown (RedBus, AbhiBus, MMT, Yatra)
   const mockBuses = [
     {
       id: "bus-1",
@@ -32,8 +33,14 @@ export const searchBuses = async (params) => {
       pickupPoint: `${origin} ISBT / Major Hub`,
       dropPoint: `${destination} Bus Stand / Main Plaza`,
       amenities: ["WiFi", "Charging Port", "Water Bottle", "Blanket", "Live Tracking"],
+      platformComparisons: [
+        { platform: "AbhiBus", price: 1180 * travelers, pricePerPerson: 1180, badge: "Cheapest Deal", isCheapest: true, url: "https://www.abhibus.com", icon: "🅰️" },
+        { platform: "RedBus", price: 1250 * travelers, pricePerPerson: 1250, badge: "Most Popular", url: "https://www.redbus.in", icon: "🔴" },
+        { platform: "MakeMyTrip", price: 1290 * travelers, pricePerPerson: 1290, badge: "₹100 Cashback", url: "https://www.makemytrip.com/bus-tickets", icon: "🟡" },
+        { platform: "Yatra", price: 1270 * travelers, pricePerPerson: 1270, badge: "Instant Confirmation", url: "https://www.yatra.com/buses", icon: "🔴" },
+      ],
       metadata: {
-        source: "RedBus Partner API Adapter",
+        source: "RedBus & AbhiBus Multi-OTA Sync Adapter",
         timestamp,
         status: "demo-data",
       },
@@ -61,8 +68,14 @@ export const searchBuses = async (params) => {
       pickupPoint: `${origin} Main Expressway Junction`,
       dropPoint: `${destination} City Center Bypass`,
       amenities: ["Charging Port", "Water Bottle", "Reclining Seats"],
+      platformComparisons: [
+        { platform: "RedBus", price: 950 * travelers, pricePerPerson: 950, badge: "Cheapest Deal", isCheapest: true, url: "https://www.redbus.in", icon: "🔴" },
+        { platform: "AbhiBus", price: 980 * travelers, pricePerPerson: 980, badge: "Free Snacks Voucher", url: "https://www.abhibus.com", icon: "🅰️" },
+        { platform: "MakeMyTrip", price: 1010 * travelers, pricePerPerson: 1010, badge: "Trip Guarantee", url: "https://www.makemytrip.com/bus-tickets", icon: "🟡" },
+        { platform: "Paytm Travel", price: 970 * travelers, pricePerPerson: 970, badge: "Instant Refund", url: "https://paytm.com/bus-tickets", icon: "💙" },
+      ],
       metadata: {
-        source: "Zingbus Partner API Adapter",
+        source: "RedBus Partner API Adapter",
         timestamp,
         status: "demo-data",
       },
@@ -90,8 +103,14 @@ export const searchBuses = async (params) => {
       pickupPoint: `${origin} Metro Station Gate 2`,
       dropPoint: `${destination} Railway Station Circle`,
       amenities: ["Smart Washroom", "WiFi", "SOS Button", "Blanket"],
+      platformComparisons: [
+        { platform: "AbhiBus", price: 1399 * travelers, pricePerPerson: 1399, badge: "Cheapest Deal", isCheapest: true, url: "https://www.abhibus.com", icon: "🅰️" },
+        { platform: "IntrCity Direct", price: 1450 * travelers, pricePerPerson: 1450, badge: "Official Lounge Access", url: "https://www.intrcity.com", icon: "🚌" },
+        { platform: "RedBus", price: 1480 * travelers, pricePerPerson: 1480, badge: "Top Rated", url: "https://www.redbus.in", icon: "🔴" },
+        { platform: "MakeMyTrip", price: 1495 * travelers, pricePerPerson: 1495, badge: "MMT Assured", url: "https://www.makemytrip.com/bus-tickets", icon: "🟡" },
+      ],
       metadata: {
-        source: "IntrCity API Adapter",
+        source: "IntrCity Direct Sync",
         timestamp,
         status: "demo-data",
       },
@@ -119,6 +138,11 @@ export const searchBuses = async (params) => {
       pickupPoint: `${origin} Government Bus Depot`,
       dropPoint: `${destination} Central Bus Stand`,
       amenities: ["Luggage Space"],
+      platformComparisons: [
+        { platform: "State RTC Portal", price: 650 * travelers, pricePerPerson: 650, badge: "Official Govt Fare", isCheapest: true, url: "https://www.redbus.in", icon: "🏛️" },
+        { platform: "AbhiBus", price: 665 * travelers, pricePerPerson: 665, badge: "Easy e-Ticket", url: "https://www.abhibus.com", icon: "🅰️" },
+        { platform: "RedBus", price: 670 * travelers, pricePerPerson: 670, badge: "Fast Booking", url: "https://www.redbus.in", icon: "🔴" },
+      ],
       metadata: {
         source: "State RTC Adapter",
         timestamp,

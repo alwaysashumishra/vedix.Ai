@@ -72,7 +72,7 @@ export const TRANSPORT_MODE_MEDIA = {
   },
   Train: {
     icon: "🚆",
-    image: "https://images.unsplash.com/photo-1474487548417-781cb71495f3?w=500&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1532105956626-9569c03602f6?w=600&auto=format&fit=crop",
     badgeColor: "#10b981",
   },
   Cab: {

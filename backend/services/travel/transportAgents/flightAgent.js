@@ -1,6 +1,7 @@
 /**
  * Flight Search Sub-Agent
  * Searches for flight transportation options between origin and destination.
+ * Compares prices across MakeMyTrip, Skyscanner, EaseMyTrip, and Cleartrip.
  */
 
 export const searchFlights = async (params) => {
@@ -32,6 +33,12 @@ export const searchFlights = async (params) => {
       departureAirport: `${origin} International Airport (DEL)`,
       arrivalAirport: `${destination} Airport (JAI)`,
       amenities: ["In-flight Snacks (Paid)", "Extra Legroom Seat Available"],
+      platformComparisons: [
+        { platform: "Skyscanner", price: 3110 * travelers, pricePerPerson: 3110, badge: "Cheapest Rate", isCheapest: true, url: "https://www.skyscanner.co.in", icon: "🌐" },
+        { platform: "MakeMyTrip Flights", price: 3200 * travelers, pricePerPerson: 3200, badge: "Instant Cashback ₹300", url: "https://www.makemytrip.com/flights", icon: "🟡" },
+        { platform: "EaseMyTrip", price: 3180 * travelers, pricePerPerson: 3180, badge: "Zero Convenience Fee", url: "https://www.easemytrip.com", icon: "✈️" },
+        { platform: "Cleartrip", price: 3220 * travelers, pricePerPerson: 3220, badge: "Free Reschedule Pass", url: "https://www.cleartrip.com", icon: "🟠" },
+      ],
       metadata: {
         source: "Amadeus / Skyscanner API Adapter",
         timestamp,
@@ -62,6 +69,11 @@ export const searchFlights = async (params) => {
       departureAirport: `${origin} Airport Terminal 3`,
       arrivalAirport: `${destination} Airport Terminal 1`,
       amenities: ["Free Meal Included", "In-Flight Entertainment"],
+      platformComparisons: [
+        { platform: "EaseMyTrip", price: 3790 * travelers, pricePerPerson: 3790, badge: "Cheapest Rate", isCheapest: true, url: "https://www.easemytrip.com", icon: "✈️" },
+        { platform: "MakeMyTrip Flights", price: 3850 * travelers, pricePerPerson: 3850, badge: "Free Seat Selection", url: "https://www.makemytrip.com/flights", icon: "🟡" },
+        { platform: "Skyscanner", price: 3820 * travelers, pricePerPerson: 3820, badge: "Best Combination", url: "https://www.skyscanner.co.in", icon: "🌐" },
+      ],
       metadata: {
         source: "Skyscanner API Adapter",
         timestamp,
@@ -92,6 +104,11 @@ export const searchFlights = async (params) => {
       departureAirport: `${origin} Airport Terminal 2`,
       arrivalAirport: `${destination} Airport Terminal 1`,
       amenities: ["USB Ports", "Cafe Akasa Meal Options"],
+      platformComparisons: [
+        { platform: "MakeMyTrip Flights", price: 2899 * travelers, pricePerPerson: 2899, badge: "Cheapest Rate", isCheapest: true, url: "https://www.makemytrip.com/flights", icon: "🟡" },
+        { platform: "Akasa Direct", price: 2950 * travelers, pricePerPerson: 2950, badge: "Official Direct Fare", url: "https://www.akasaair.com", icon: "✈️" },
+        { platform: "Skyscanner", price: 2920 * travelers, pricePerPerson: 2920, badge: "Instant Lock", url: "https://www.skyscanner.co.in", icon: "🌐" },
+      ],
       metadata: {
         source: "Akasa Direct Adapter",
         timestamp,
