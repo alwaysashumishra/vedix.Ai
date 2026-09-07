@@ -1,17 +1,149 @@
-import React, { useState } from "react";
-import { FiNavigation, FiCalendar, FiUsers, FiDollarSign, FiCheck, FiFilter } from "react-icons/fi";
+import React, { useState, useRef, useEffect } from "react";
+import {
+  FiNavigation,
+  FiCalendar,
+  FiUsers,
+  FiDollarSign,
+  FiCheck,
+  FiFilter,
+  FiMapPin,
+  FiRepeat,
+} from "react-icons/fi";
+
+const POPULAR_LOCATIONS = [
+  { city: "Pari Chowk", state: "Greater Noida, UP", category: "ISBT / Expressway Hub", icon: "🚌" },
+  { city: "Kanpur", state: "Uttar Pradesh", category: "Central Junction", icon: "🚆" },
+  { city: "Ghaziabad", state: "Delhi NCR, UP", category: "Major Railway Hub", icon: "🏙️" },
+  { city: "Delhi / New Delhi", state: "Delhi NCR", category: "Capital Airport (DEL)", icon: "✈️" },
+  { city: "Jaipur", state: "Rajasthan", category: "Pink City (JAI)", icon: "🏰" },
+  { city: "Agra", state: "Uttar Pradesh", category: "Taj Heritage", icon: "🕌" },
+  { city: "Lucknow", state: "Uttar Pradesh", category: "Charbagh Station", icon: "🚆" },
+  { city: "Varanasi", state: "Uttar Pradesh", category: "Ghats & Heritage", icon: "🛕" },
+  { city: "Mumbai", state: "Maharashtra", category: "Financial Hub (BOM)", icon: "✈️" },
+  { city: "Pune", state: "Maharashtra", category: "Expressway Hub", icon: "🏙️" },
+  { city: "Goa", state: "Goa", category: "Beach Resort (GOI)", icon: "🏖️" },
+  { city: "Bangalore", state: "Karnataka", category: "Tech Capital (BLR)", icon: "✈️" },
+  { city: "Hyderabad", state: "Telangana", category: "IT Hub (HYD)", icon: "✈️" },
+  { city: "Manali", state: "Himachal Pradesh", category: "Hill Station", icon: "🏔️" },
+  { city: "Shimla", state: "Himachal Pradesh", category: "Hill Station", icon: "⛰️" },
+  { city: "Rishikesh", state: "Uttarakhand", category: "Adventure Hub", icon: "🌊" },
+  { city: "Chandigarh", state: "Punjab / Haryana", category: "Tri-City Hub", icon: "🏙️" },
+  { city: "Ahmedabad", state: "Gujarat", category: "Heritage City", icon: "🏙️" },
+  { city: "Kolkata", state: "West Bengal", category: "Metro Hub (CCU)", icon: "✈️" },
+  { city: "Chennai", state: "Tamil Nadu", category: "Coastal Hub (MAA)", icon: "✈️" },
+  { city: "Kochi / Munnar", state: "Kerala", category: "Backwaters & Tea", icon: "🌴" },
+  { city: "Udaipur", state: "Rajasthan", category: "City of Lakes", icon: "⛵" },
+  { city: "Jodhpur", state: "Rajasthan", category: "Blue City", icon: "🏰" },
+  { city: "Nainital", state: "Uttarakhand", category: "Lake Station", icon: "🏞️" },
+  { city: "Amritsar", state: "Punjab", category: "Golden City", icon: "🛕" },
+  { city: "Dehradun", state: "Uttarakhand", category: "Capital Station", icon: "⛰️" },
+  { city: "Mathura / Vrindavan", state: "Uttar Pradesh", category: "Heritage Hub", icon: "🛕" },
+  { city: "Noida", state: "Uttar Pradesh", category: "Delhi NCR", icon: "🏙️" },
+];
+
+const LocationAutocomplete = ({ label, name, value, onChange, placeholder, required = false }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [query, setQuery] = useState(value || "");
+  const wrapperRef = useRef(null);
+
+  useEffect(() => {
+    setQuery(value || "");
+  }, [value]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const filteredLocations = POPULAR_LOCATIONS.filter((loc) => {
+    if (!query || query.trim() === "") return true;
+    const q = query.toLowerCase().trim();
+    return (
+      loc.city.toLowerCase().includes(q) ||
+      loc.state.toLowerCase().includes(q) ||
+      loc.category.toLowerCase().includes(q)
+    );
+  });
+
+  const handleInputChange = (e) => {
+    const val = e.target.value;
+    setQuery(val);
+    onChange({ target: { name, value: val } });
+    setIsOpen(true);
+  };
+
+  const handleSelectLocation = (loc) => {
+    setQuery(loc.city);
+    onChange({ target: { name, value: loc.city } });
+    setIsOpen(false);
+  };
+
+  return (
+    <div className="form-group location-autocomplete-group" ref={wrapperRef}>
+      <label>
+        <FiMapPin className="map-icon" /> {label}
+      </label>
+      <div className="input-wrapper-relative">
+        <input
+          type="text"
+          name={name}
+          placeholder={placeholder}
+          value={query}
+          onChange={handleInputChange}
+          onFocus={() => setIsOpen(true)}
+          required={required}
+          autoComplete="off"
+        />
+        {isOpen && (
+          <div className="autocomplete-dropdown-panel">
+            <div className="dropdown-panel-title">
+              {query ? `Matching Locations (${filteredLocations.length})` : "Popular Locations"}
+            </div>
+            <div className="suggestions-scroll-list">
+              {filteredLocations.length === 0 ? (
+                <div className="no-suggestions-item">
+                  Use custom location: <strong>"{query}"</strong>
+                </div>
+              ) : (
+                filteredLocations.map((loc, idx) => (
+                  <div
+                    key={idx}
+                    className="suggestion-row-item"
+                    onMouseDown={() => handleSelectLocation(loc)}
+                  >
+                    <span className="loc-icon">{loc.icon}</span>
+                    <div className="loc-info">
+                      <span className="loc-city">{loc.city}</span>
+                      <span className="loc-sub">{loc.state}</span>
+                    </div>
+                    <span className="loc-category-tag">{loc.category}</span>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
 const TravelForm = ({ onSubmitForm, initialParams = {}, isLoading = false }) => {
   const [formData, setFormData] = useState({
-    origin: initialParams.origin || "Ghaziabad",
-    destination: initialParams.destination || "Jaipur",
+    origin: initialParams.origin || "Pari Chowk",
+    destination: initialParams.destination || "Kanpur",
     departureDate: initialParams.departureDate || new Date(Date.now() + 86400000 * 5).toISOString().split("T")[0],
     returnDate: initialParams.returnDate || new Date(Date.now() + 86400000 * 8).toISOString().split("T")[0],
-    travelers: initialParams.travelers || 3,
-    adults: initialParams.adults || 3,
+    travelers: initialParams.travelers || 1,
+    adults: initialParams.adults || 1,
     children: initialParams.children || 0,
-    travelType: initialParams.travelType || "Round trip",
-    budget: initialParams.budget || 20000,
+    travelType: initialParams.travelType || "One-way",
+    budget: initialParams.budget || 500,
     preferredTransport: initialParams.preferredTransport || ["Bus", "Flight", "Train", "Cab", "Car Rental"],
     preferredDepartureTime: initialParams.preferredDepartureTime || "Anytime",
     maxDurationHours: initialParams.maxDurationHours || 24,
@@ -37,6 +169,14 @@ const TravelForm = ({ onSubmitForm, initialParams = {}, isLoading = false }) => 
     }));
   };
 
+  const handleSwapLocations = () => {
+    setFormData((prev) => ({
+      ...prev,
+      origin: prev.destination,
+      destination: prev.origin,
+    }));
+  };
+
   const handleTransportToggle = (mode) => {
     setFormData((prev) => {
       const exists = prev.preferredTransport.includes(mode);
@@ -55,40 +195,43 @@ const TravelForm = ({ onSubmitForm, initialParams = {}, isLoading = false }) => 
   return (
     <form className="travel-form-card" onSubmit={handleSubmit}>
       <div className="form-title-bar">
-        <h3><FiNavigation className="icon-pulse" /> Structured Trip Search</h3>
-        <p>Specify your travel requirements and let our multi-agent network handle the rest.</p>
+        <h3><FiNavigation className="icon-pulse" /> Structured Trip Search & City Finder</h3>
+        <p>Type any city or select from auto-complete suggestions to find live transport & platform options.</p>
       </div>
 
-      <div className="form-grid-3">
-        <div className="form-group">
-          <label>Starting Point (Origin)</label>
-          <input
-            type="text"
-            name="origin"
-            placeholder="e.g. Ghaziabad, Delhi, Mumbai"
-            value={formData.origin}
-            onChange={handleChange}
-            required
-          />
-        </div>
+      <div className="form-grid-location-row">
+        <LocationAutocomplete
+          label="Starting Point (Origin)"
+          name="origin"
+          placeholder="Type origin (e.g. Pari Chowk, Delhi, Ghaziabad)"
+          value={formData.origin}
+          onChange={handleChange}
+          required
+        />
 
-        <div className="form-group">
-          <label>Destination</label>
-          <input
-            type="text"
-            name="destination"
-            placeholder="e.g. Jaipur, Manali, Goa"
-            value={formData.destination}
-            onChange={handleChange}
-            required
-          />
-        </div>
+        <button
+          type="button"
+          className="btn-swap-locations"
+          onClick={handleSwapLocations}
+          title="Swap Origin and Destination"
+        >
+          <FiRepeat />
+        </button>
+
+        <LocationAutocomplete
+          label="Destination"
+          name="destination"
+          placeholder="Type destination (e.g. Kanpur, Jaipur, Goa)"
+          value={formData.destination}
+          onChange={handleChange}
+          required
+        />
 
         <div className="form-group">
           <label>Trip Type</label>
           <select name="travelType" value={formData.travelType} onChange={handleChange}>
-            <option value="Round trip">Round trip</option>
             <option value="One-way">One-way</option>
+            <option value="Round trip">Round trip</option>
           </select>
         </div>
       </div>
@@ -111,7 +254,7 @@ const TravelForm = ({ onSubmitForm, initialParams = {}, isLoading = false }) => 
 
         <div className="form-group">
           <label><FiDollarSign /> Total Budget (₹)</label>
-          <input type="number" name="budget" step="500" min="2000" value={formData.budget} onChange={handleChange} />
+          <input type="number" name="budget" step="50" min="200" value={formData.budget} onChange={handleChange} />
         </div>
       </div>
 
@@ -156,8 +299,8 @@ const TravelForm = ({ onSubmitForm, initialParams = {}, isLoading = false }) => 
               <label>Seat / Class Preference</label>
               <select name="seatPreference" value={formData.seatPreference} onChange={handleChange}>
                 <option value="Any">Any Seat Type</option>
-                <option value="Sleeper">Sleeper Bed</option>
                 <option value="Seater">Seater / Chair Car</option>
+                <option value="Sleeper">Sleeper Bed</option>
                 <option value="Economy">Flight Economy</option>
               </select>
             </div>
@@ -166,9 +309,9 @@ const TravelForm = ({ onSubmitForm, initialParams = {}, isLoading = false }) => 
               <label>Preferred Departure Window</label>
               <select name="preferredDepartureTime" value={formData.preferredDepartureTime} onChange={handleChange}>
                 <option value="Anytime">Anytime</option>
-                <option value="Morning">Morning (06:00 AM - 12:00 PM)</option>
-                <option value="Afternoon">Afternoon (12:00 PM - 06:00 PM)</option>
-                <option value="Evening/Night">Overnight (08:00 PM - 06:00 AM)</option>
+                <option value="Night (9 PM - 6 AM)">Overnight / Night (08:00 PM - 06:00 AM)</option>
+                <option value="Morning (6 AM - 12 PM)">Morning (06:00 AM - 12:00 PM)</option>
+                <option value="Afternoon (12 PM - 6 PM)">Afternoon (12:00 PM - 06:00 PM)</option>
               </select>
             </div>
           </div>

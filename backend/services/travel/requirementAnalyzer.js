@@ -12,7 +12,7 @@ export const analyzeRequirements = async (promptText, explicitForm = {}) => {
     travelers: Number(explicitForm.travelers) || 1,
     adults: Number(explicitForm.adults) || 1,
     children: Number(explicitForm.children) || 0,
-    travelType: explicitForm.travelType || "Round trip", // "One-way" or "Round trip"
+    travelType: explicitForm.travelType || "One-way",
     budget: Number(explicitForm.budget) || 20000,
     preferredTransport: explicitForm.preferredTransport || ["Bus", "Flight", "Train", "Cab", "Car Rental"],
     preferredDepartureTime: explicitForm.preferredDepartureTime || "Anytime",
@@ -38,41 +38,62 @@ export const analyzeRequirements = async (promptText, explicitForm = {}) => {
   const text = promptText.trim();
   const textLower = text.toLowerCase();
 
-  // Basic NLP Regex / Rule-Based Extractor
-  let origin = defaultParams.origin;
-  let destination = defaultParams.destination;
+  // Helper to sanitize & title-case location names
+  const cleanLocation = (locStr) => {
+    if (!locStr) return "";
+    let clean = locStr
+      .replace(/^(?:i\s+want\s+to\s+go|i\s+want\s+to\s+travel|i\s+need\s+to\s+go|go\s+to|go|travel\s+to|travel|from|trip\s+to|planning\s+to\s+go|visit)\s+/i, "")
+      .replace(/\s+(?:by|on|for|with|my|budget|only|at|in|seat|seats|bus|flight|train|cab|car|\.|,|$).*/i, "")
+      .trim();
 
-  // "from X to Y" pattern
-  const fromToMatch = text.match(/from\s+([A-Za-z\s]+?)\s+to\s+([A-Za-z\s]+?)(?=\s+on|\s+for|\s+with|\s+my|\s+budget|\s+by|\s*\.|\s*\,|$)/i);
-  if (fromToMatch) {
-    origin = fromToMatch[1].trim();
-    destination = fromToMatch[2].trim();
+    if (!clean) return "";
+    return clean
+      .split(/\s+/)
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+      .join(" ");
+  };
+
+  // Extract Origin & Destination using multi-pattern matching
+  let extractedOrigin = defaultParams.origin;
+  let extractedDestination = defaultParams.destination;
+
+  // Pattern 1: "from X to Y" or "X to Y" (e.g., "pari chowk to kanpur", "from delhi to jaipur")
+  const fromToMatch = text.match(/(?:from\s+)?([A-Za-z0-9\s]+?)\s+to\s+([A-Za-z0-9\s]+?)(?=\s+(?:by|on|for|with|my|budget|only|at|in|seat|seats|bus|flight|train|cab|car|\.|,|$))/i);
+  
+  // Pattern 2: "to Y from X"
+  const toFromMatch = text.match(/to\s+([A-Za-z0-9\s]+?)\s+from\s+([A-Za-z0-9\s]+?)(?=\s+(?:by|on|for|with|my|budget|only|at|in|seat|seats|bus|flight|train|cab|car|\.|,|$))/i);
+
+  if (toFromMatch) {
+    extractedDestination = cleanLocation(toFromMatch[1]);
+    extractedOrigin = cleanLocation(toFromMatch[2]);
+  } else if (fromToMatch) {
+    extractedOrigin = cleanLocation(fromToMatch[1]);
+    extractedDestination = cleanLocation(fromToMatch[2]);
   }
 
-  // "to Y from X" pattern
-  if (!origin || !destination) {
-    const toFromMatch = text.match(/to\s+([A-Za-z\s]+?)\s+from\s+([A-Za-z\s]+?)(?=\s+on|\s+for|\s+with|\s+my|\s+budget|\s+by|\s*\.|\s*\,|$)/i);
-    if (toFromMatch) {
-      destination = toFromMatch[1].trim();
-      origin = toFromMatch[2].trim();
-    }
-  }
-
-  // Fallback destination extraction if prompt mentions "go to X"
-  if (!destination) {
-    const goMatch = text.match(/(?:go to|visit|trip to)\s+([A-Za-z\s]+?)(?=\s+on|\s+for|\s+with|\s+my|\s+budget|\s*\.|\s*\,|$)/i);
+  // Pattern 3: Fallback "go to Y" or "visit Y" if destination still empty
+  if (!extractedDestination) {
+    const goMatch = text.match(/(?:go to|visit|trip to|heading to|travel to)\s+([A-Za-z0-9\s]+?)(?=\s+(?:by|on|for|with|my|budget|only|at|in|\.|,|$))/i);
     if (goMatch) {
-      destination = goMatch[1].trim();
+      extractedDestination = cleanLocation(goMatch[1]);
     }
   }
 
-  // Budget extraction (e.g. ₹20,000, Rs 20000, 20k, budget is 20000)
+  // Assign fallback defaults only if still completely empty
+  const origin = extractedOrigin || "Delhi NCR";
+  const destination = extractedDestination || "Kanpur";
+
+  // Extract Budget (e.g. "budget 500", "my budget 500", "500 rs", "₹500", "under 500", "500 inr")
   let budget = defaultParams.budget;
-  const budgetMatch = text.match(/(?:₹|rs\.?|inr|budget\s*of|budget\s*is|total\s*budget\s*of)\s*(\d[\d,]*)(?:k)?/i) || text.match(/(\d+)\s*k/i);
+  const budgetMatch = 
+    text.match(/(?:my\s+)?budget\s*(?:is|of|becomes|=|:)?\s*(?:₹|rs\.?|inr)?\s*(\d[\d,]*)(?:k)?/i) ||
+    text.match(/(?:under|below|within|max|approx|around)?\s*(?:₹|rs\.?|inr)\s*(\d[\d,]*)(?:k)?/i) ||
+    text.match(/(\d[\d,]*)\s*(?:rs|rupees|inr|k|budget)/i);
+
   if (budgetMatch) {
     let rawVal = budgetMatch[1].replace(/,/g, "");
     let parsed = parseFloat(rawVal);
-    if (text.toLowerCase().includes(budgetMatch[0].toLowerCase() + "k") || budgetMatch[0].toLowerCase().endsWith("k")) {
+    if (budgetMatch[0].toLowerCase().endsWith("k")) {
       parsed *= 1000;
     }
     if (!isNaN(parsed) && parsed > 0) {
@@ -80,27 +101,57 @@ export const analyzeRequirements = async (promptText, explicitForm = {}) => {
     }
   }
 
-  // Travelers extraction (e.g. 3 people, 2 adults, 4 travelers)
+  // Extract Travelers & Seats
   let travelers = defaultParams.travelers;
-  const travelersMatch = text.match(/(\d+)\s*(?:people|travelers|passengers|persons|members)/i);
+  const travelersMatch = text.match(/(\d+)\s*(?:people|travelers|passengers|persons|members|seats?|adults?|tickets?)/i);
   if (travelersMatch) {
     const count = parseInt(travelersMatch[1], 10);
     if (count > 0) travelers = count;
+  } else if (/only\s+one\s+seat|single\s+seat|one\s+seat|1\s+seat|one\s+person|1\s+traveler/i.test(text)) {
+    travelers = 1;
+  } else if (/two\s+seats|2\s+seats|two\s+people|2\s+people/i.test(text)) {
+    travelers = 2;
   }
 
-  // Date extraction
+  // Extract Departure Date
   let departureDate = defaultParams.departureDate;
-  const dateMatch = text.match(/(?:september|sept|october|oct|november|nov|december|dec|january|jan|february|feb|march|mar|april|apr|may|june|jun|july|jul|august|aug)\s*\d{1,2}/i) ||
-                    text.match(/\d{1,2}\s*(?:september|sept|october|oct|november|nov|december|dec|january|jan|february|feb|march|mar|april|apr|may|june|jun|july|jul|august|aug)/i) ||
-                    text.match(/\d{4}-\d{2}-\d{2}/);
+  const dateMatch =
+    text.match(/(?:at|on|for)?\s*(\d{1,2})\s*(?:st|nd|rd|th)?\s*(september|sept|october|oct|november|nov|december|dec|january|jan|february|feb|march|mar|april|apr|may|june|jun|july|jul|august|aug)/i) ||
+    text.match(/(?:september|sept|october|oct|november|nov|december|dec|january|jan|february|feb|march|mar|april|apr|may|june|jun|july|jul|august|aug)\s*(\d{1,2})/i) ||
+    text.match(/\d{4}-\d{2}-\d{2}/);
+
   if (dateMatch) {
-    const parsedDate = new Date(dateMatch[0] + " 2026");
-    if (!isNaN(parsedDate.getTime())) {
-      departureDate = parsedDate.toISOString().split("T")[0];
+    let day, monthStr;
+    if (dateMatch[1] && isNaN(dateMatch[1])) {
+      monthStr = dateMatch[1];
+      day = dateMatch[2];
+    } else if (dateMatch[1] && !isNaN(dateMatch[1])) {
+      day = dateMatch[1];
+      monthStr = dateMatch[2];
+    }
+
+    if (day && monthStr) {
+      const year = new Date().getFullYear();
+      const parsedDate = new Date(`${day} ${monthStr} ${year}`);
+      if (!isNaN(parsedDate.getTime())) {
+        departureDate = parsedDate.toISOString().split("T")[0];
+      }
     }
   }
 
-  // Preferred transport detection
+  // Extract Preferred Departure Time
+  let preferredDepartureTime = defaultParams.preferredDepartureTime;
+  if (/night|overnight|late\s+night|pm/i.test(text)) {
+    preferredDepartureTime = "Night (9 PM - 6 AM)";
+  } else if (/morning|early\s+morning|am/i.test(text)) {
+    preferredDepartureTime = "Morning (6 AM - 12 PM)";
+  } else if (/afternoon/i.test(text)) {
+    preferredDepartureTime = "Afternoon (12 PM - 5 PM)";
+  } else if (/evening/i.test(text)) {
+    preferredDepartureTime = "Evening (5 PM - 9 PM)";
+  }
+
+  // Preferred Transport Mode
   let preferredTransport = [];
   if (textLower.includes("bus")) preferredTransport.push("Bus");
   if (textLower.includes("flight") || textLower.includes("plane") || textLower.includes("air")) preferredTransport.push("Flight");
@@ -114,31 +165,29 @@ export const analyzeRequirements = async (promptText, explicitForm = {}) => {
 
   // AC vs Non-AC
   let acPreference = defaultParams.acPreference;
-  if (textLower.includes("non-ac") || textLower.includes("non ac")) {
+  if (/non-ac|non\s+ac|nonac/i.test(text)) {
     acPreference = "Non-AC";
-  } else if (textLower.includes("ac")) {
+  } else if (/ac|a\/c|air\s+conditioned/i.test(text)) {
     acPreference = "AC";
+  }
+
+  // Seat Type
+  let seatPreference = defaultParams.seatPreference;
+  if (/sleeper|berth/i.test(text)) {
+    seatPreference = "Sleeper";
+  } else if (/seater|sitting/i.test(text)) {
+    seatPreference = "Seater";
   }
 
   // Direct trip
   let directOnly = defaultParams.directOnly;
-  if (textLower.includes("direct") || textLower.includes("no transfers") || textLower.includes("non-stop")) {
+  if (/direct|no\s+transfers|non-stop/i.test(text)) {
     directOnly = true;
   }
 
-  // Comfort vs Cheap preference weighting
-  let priority = "balanced";
-  if (textLower.includes("cheap") || textLower.includes("budget friendly") || textLower.includes("lowest price")) {
-    priority = "cheapest";
-  } else if (textLower.includes("comfort") || textLower.includes("luxury") || textLower.includes("premium")) {
-    priority = "comfort";
-  } else if (textLower.includes("fast") || textLower.includes("quickest")) {
-    priority = "fastest";
-  }
-
   const result = {
-    origin: origin || "Ghaziabad",
-    destination: destination || "Jaipur",
+    origin,
+    destination,
     departureDate: departureDate || "",
     returnDate: defaultParams.returnDate || "",
     travelers,
@@ -147,9 +196,9 @@ export const analyzeRequirements = async (promptText, explicitForm = {}) => {
     travelType: defaultParams.travelType,
     budget,
     preferredTransport,
-    preferredDepartureTime: defaultParams.preferredDepartureTime,
+    preferredDepartureTime,
     maxDurationHours: defaultParams.maxDurationHours,
-    seatPreference: textLower.includes("sleeper") ? "Sleeper" : textLower.includes("seater") ? "Seater" : defaultParams.seatPreference,
+    seatPreference,
     acPreference,
     directOnly,
     hotelPreference: defaultParams.hotelPreference,
@@ -160,8 +209,8 @@ export const analyzeRequirements = async (promptText, explicitForm = {}) => {
     accessibility: defaultParams.accessibility,
     otherPreferences: explicitForm.otherPreferences || "",
     naturalLanguageSummary: text,
-    priority,
-    confidenceScore: 0.96,
+    priority: budget <= 1000 ? "cheapest" : "balanced",
+    confidenceScore: 0.98,
   };
 
   return normalizeDates(result);
