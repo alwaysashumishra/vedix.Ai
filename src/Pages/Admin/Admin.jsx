@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { NavLink } from "react-router-dom";
 import Navbar from "../../components/NavBar/Navbar";
+import { assets } from "../../assets/assets";
 import {
   getAdminSummary,
   getAdminUsers,
@@ -655,10 +656,10 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
                             <td>
                               <div className="user-table-profile">
                                 <img
-                                  src={u.profilePic || "/user_icon.png"}
+                                  src={u.profilePic || assets.user_icon}
                                   alt="Avatar"
                                   className="user-table-avatar"
-                                  onError={(e) => (e.target.src = "/user_icon.png")}
+                                  onError={(e) => (e.target.src = assets.user_icon)}
                                 />
                                 <div>
                                   <div className="username-row-badge">
