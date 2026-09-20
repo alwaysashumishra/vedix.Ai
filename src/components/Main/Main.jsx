@@ -18,6 +18,10 @@ import {
   FiMail,
   FiMessageCircle,
   FiCalendar,
+  FiCpu,
+  FiChevronDown,
+  FiLock,
+  FiZap,
 } from "react-icons/fi";
 import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { RiArticleLine } from "react-icons/ri";
@@ -30,6 +34,37 @@ import "./Main.css";
 
 const stripHtml = (html) =>
   html.replace(/<br\/>/g, "\n").replace(/<[^>]*>?/gm, "");
+
+const AVAILABLE_MODELS = [
+  {
+    id: "gemini-3.1-flash-lite",
+    name: "Vedix 3.1 Flash-Lite",
+    badge: "FREE",
+    isPro: false,
+    description: "Fast, everyday AI model for quick answers & general queries.",
+  },
+  {
+    id: "gemini-3.1-flash",
+    name: "Vedix 3.1 Flash Standard",
+    badge: "FREE",
+    isPro: false,
+    description: "Balanced speed & accuracy for everyday prompts.",
+  },
+  {
+    id: "gemini-3.5-pro",
+    name: "Vedix 3.5 Pro Reasoning",
+    badge: "PRO ⚡",
+    isPro: true,
+    description: "Advanced reasoning, deep math, complex logic & code synthesis.",
+  },
+  {
+    id: "gemini-2.0-flash-thinking",
+    name: "Vedix Ultra 2.0 Thinking",
+    badge: "PRO ⚡",
+    isPro: true,
+    description: "High-priority ultra speed with multi-step reasoning capabilities.",
+  },
+];
 
 const Main = ({ setShowLogin, profile, setProfile }) => {
   const {
@@ -64,6 +99,44 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
   const [savedNoteIds, setSavedNoteIds] = useState({});
   const recognitionRef = useRef(null);
   const resultRef = useRef(null);
+  const modelDropdownRef = useRef(null);
+
+  const userPlan = profile?.plan || "free";
+  const isProUser =
+    profile?.isAdmin ||
+    profile?.isPro ||
+    userPlan === "pro" ||
+    userPlan === "premium" ||
+    userPlan === "enterprise";
+
+  const [selectedModel, setSelectedModel] = useState(() => {
+    const savedId = localStorage.getItem("selected_ai_model");
+    const found = AVAILABLE_MODELS.find((m) => m.id === savedId);
+    return found || AVAILABLE_MODELS[0];
+  });
+  const [showModelMenu, setShowModelMenu] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (modelDropdownRef.current && !modelDropdownRef.current.contains(e.target)) {
+        setShowModelMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleModelSelect = (model) => {
+    if (model.isPro && !isProUser) {
+      setShowModelMenu(false);
+      setShowUpgradeModal(model);
+      return;
+    }
+    setSelectedModel(model);
+    localStorage.setItem("selected_ai_model", model.id);
+    setShowModelMenu(false);
+  };
 
   const handleSaveToNotes = (question, answerHtml, msgId) => {
     const qText = question || recentPrompt || "Chat Q&A Note";
@@ -274,6 +347,9 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
 
   return (
     <div className="main">
+      {/* Minimal Clean Ambient Background */}
+      <div className="minimal-ambient-bg" aria-hidden="true"></div>
+
       {activeFestivalData && !bannerDismissed && (
         <div className="festival-top-banner" style={{ background: activeFestivalData.gradient }}>
           <div className="festival-banner-content">
@@ -402,7 +478,7 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
                           e.currentTarget.src = assets.user_icon;
                         }}
                       />
-                      <div>
+                      <div className="user-message-content">
                         {msg.images && msg.images.length > 0 ? (
                           <div className="chat-images-grid">
                             {msg.images.map((imgUrl, idx) => (
@@ -552,12 +628,12 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
 
             {loading && (
               <div className="result-data loading-data" style={{ marginTop: "16px" }}>
-                <img src={assets.gemini_icon} alt="" className="ai-logo" />
-                <div className="response-box">
-                  <div className="loader">
-                    <hr />
-                    <hr />
-                    <hr />
+                <img src={assets.gemini_icon} alt="AI Logo" className="ai-logo" />
+                <div className="response-box dotted-loading-box">
+                  <div className="typing-dots-indicator">
+                    <span className="dot"></span>
+                    <span className="dot"></span>
+                    <span className="dot"></span>
                   </div>
                 </div>
               </div>
@@ -607,6 +683,59 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
             />
 
             <div className="chat-actions">
+              {/* Compact Model Icon Button & Menu */}
+              <div className="compact-model-wrapper" ref={modelDropdownRef}>
+                <button
+                  type="button"
+                  className={`chat-icon-btn model-trigger-btn ${showModelMenu ? "active" : ""}`}
+                  onClick={() => setShowModelMenu((prev) => !prev)}
+                  title={`Current Model: ${selectedModel.name} (${selectedModel.isPro ? "PRO" : "FREE"}). Click to change.`}
+                >
+                  <FiCpu />
+                  {selectedModel.isPro && <span className="mini-pro-dot"></span>}
+                </button>
+
+                {showModelMenu && (
+                  <div className="compact-model-dropdown">
+                    <div className="compact-menu-header">
+                      <span>Select AI Model</span>
+                      <span className={`compact-user-badge ${isProUser ? "is-pro" : "is-free"}`}>
+                        {isProUser ? "PRO ACTIVE" : "FREE TIER"}
+                      </span>
+                    </div>
+                    <div className="compact-model-list">
+                      {AVAILABLE_MODELS.map((model) => {
+                        const isLocked = model.isPro && !isProUser;
+                        return (
+                          <div
+                            key={model.id}
+                            className={`compact-model-item ${selectedModel.id === model.id ? "selected" : ""} ${isLocked ? "locked" : ""}`}
+                            onClick={() => handleModelSelect(model)}
+                          >
+                            <div className="compact-model-info">
+                              <div className="compact-model-name-row">
+                                <span className="compact-name">{model.name}</span>
+                                {model.isPro ? (
+                                  <span className="compact-badge pro">PRO ⚡</span>
+                                ) : (
+                                  <span className="compact-badge free">FREE</span>
+                                )}
+                              </div>
+                              <span className="compact-desc">{model.description}</span>
+                            </div>
+                            {isLocked ? (
+                              <span className="compact-lock" title="Upgrade to Pro"><FiLock /></span>
+                            ) : (
+                              selectedModel.id === model.id && <span className="compact-check"><FiCheck /></span>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <label htmlFor="imageUpload" className="chat-icon-btn" title="Upload images (Up to 5)">
                 <FiImage />
               </label>
@@ -705,6 +834,52 @@ const Main = ({ setShowLogin, profile, setProfile }) => {
                   </button>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Upgrade Pro Model Modal */}
+      {showUpgradeModal && (
+        <div className="modal-overlay" onClick={() => setShowUpgradeModal(null)}>
+          <div className="modal-content upgrade-pro-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close-btn" onClick={() => setShowUpgradeModal(null)}>
+              <FiX />
+            </button>
+            <div className="upgrade-modal-header">
+              <div className="upgrade-lock-icon">
+                <FiLock />
+              </div>
+              <h2>Unlock {showUpgradeModal.name}</h2>
+              <p className="upgrade-modal-subtitle">
+                Pro & Premium subscription features
+              </p>
+            </div>
+            <div className="upgrade-modal-body">
+              <p>
+                The <strong>{showUpgradeModal.name}</strong> model is reserved for Pro & Premium subscribers. Free users are limited to Vedix 3.1 Flash models.
+              </p>
+              <div className="pro-feature-highlights">
+                <div className="feat-chip">⚡ Deep Math & Reasoning</div>
+                <div className="feat-chip">💻 Code Synthesis Specialist</div>
+                <div className="feat-chip">🚀 Priority High-Speed Queue</div>
+              </div>
+            </div>
+            <div className="upgrade-modal-actions">
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={() => setShowUpgradeModal(null)}
+              >
+                Stay on Free Plan
+              </button>
+              <NavLink
+                to="/plans"
+                className="btn-upgrade-pro"
+                onClick={() => setShowUpgradeModal(null)}
+              >
+                <FiZap /> Upgrade to Pro
+              </NavLink>
             </div>
           </div>
         </div>
