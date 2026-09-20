@@ -9,7 +9,8 @@
   "scripts": {
     "start": "node backend/server.js",
     "backend": "node backend/server.js",
-    "dev": "vite",
+    "dev": "node scripts/dev.js",
+    "dev:frontend": "vite",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",

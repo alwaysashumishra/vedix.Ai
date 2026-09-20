@@ -2,13 +2,13 @@ import "../config/polyfills.js";
 import mammoth from "mammoth";
 import Groq from "groq-sdk";
 
-const MAX_ANALYSIS_CHARS = 50000;
+const MAX_ANALYSIS_CHARS = 18000;
 
 let groq;
 
 const getGroq = () => {
   if (!process.env.GROQ_API_KEY) {
-    throw new Error("GROQ_API_KEY is missing in backend .env");
+    return null;
   }
 
   if (!groq) {
@@ -18,6 +18,52 @@ const getGroq = () => {
   }
 
   return groq;
+};
+
+const callGeminiApi = async (prompt) => {
+  const apiKey = process.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+
+  if (!apiKey) {
+    throw new Error("No Gemini API key available in environment");
+  }
+
+  const models = [
+    "gemini-3.5-flash-lite",
+    "gemini-3.6-flash",
+    "gemini-2.5-flash-lite",
+    "gemini-1.5-flash",
+  ];
+
+  let lastErr = null;
+
+  for (const model of models) {
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
+        return data.candidates[0].content.parts[0].text.trim();
+      }
+
+      if (data.error) {
+        console.warn(`Gemini model '${model}' error:`, data.error.message);
+        lastErr = new Error(data.error.message);
+      }
+    } catch (err) {
+      console.warn(`Gemini model '${model}' request failed:`, err.message);
+      lastErr = err;
+    }
+  }
+
+  throw lastErr || new Error("All Gemini models failed");
 };
 
 const extractTextFromPDF = async (buffer) => {
@@ -81,60 +127,42 @@ const ensureTextWasExtracted = (text, label) => {
   return cleanText.slice(0, MAX_ANALYSIS_CHARS);
 };
 
-const getAvailableModels = async () => {
-  const defaultModels = [
-    process.env.GROQ_MODEL,
-    "openai/gpt-oss-120b",
-    "openai/gpt-oss-20b",
-    "groq/compound",
-    "qwen/qwen3.6-27b",
-    "groq/compound-mini",
-    "llama-3.3-70b-versatile",
-    "llama3-8b-8192",
-  ].filter(Boolean);
-
-  try {
-    const list = await getGroq().models.list();
-    const activeModels = list.data
-      .map((m) => m.id)
-      .filter((id) => !id.includes("whisper") && !id.includes("guard"));
-
-    const combined = Array.from(new Set([...defaultModels, ...activeModels]));
-    return combined.length ? combined : defaultModels;
-  } catch (err) {
-    console.warn("Could not list Groq models dynamically, using defaults:", err.message);
-    return defaultModels;
-  }
-};
-
 const createAnalysis = async (prompt) => {
-  const modelsToTry = await getAvailableModels();
+  const groqClient = getGroq();
+  const groqModels = ["openai/gpt-oss-20b", "openai/gpt-oss-120b", "groq/compound-mini"];
   let lastError = null;
 
-  for (const model of modelsToTry) {
-    try {
-      const completion = await getGroq().chat.completions.create({
-        messages: [
-          {
-            role: "user",
-            content: prompt,
-          },
-        ],
-        model,
-        temperature: 0.2,
-      });
+  if (groqClient) {
+    for (const model of groqModels) {
+      try {
+        const completion = await groqClient.chat.completions.create({
+          messages: [{ role: "user", content: prompt }],
+          model,
+          temperature: 0.2,
+        });
 
-      const content = completion.choices[0]?.message?.content?.trim();
-      if (content) {
-        return content;
+        const content = completion.choices[0]?.message?.content?.trim();
+        if (content) {
+          return content;
+        }
+      } catch (err) {
+        console.warn(`Groq model '${model}' failed:`, err.message);
+        lastError = err;
       }
-    } catch (err) {
-      console.warn(`Groq model '${model}' failed:`, err.message);
-      lastError = err;
     }
   }
 
-  throw lastError || new Error("No Groq models succeeded");
+  try {
+    const geminiResult = await callGeminiApi(prompt);
+    if (geminiResult) {
+      return geminiResult;
+    }
+  } catch (geminiErr) {
+    console.warn("Gemini API fallback failed:", geminiErr.message);
+    lastError = geminiErr;
+  }
+
+  throw lastError || new Error("AI analysis service is temporarily unavailable. Please try again.");
 };
 
 const parseJsonObject = (value) => {
