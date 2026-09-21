@@ -114,7 +114,7 @@ if (ENABLE_CLUSTER) {
     });
   });
 
-  app.listen(PORT, "0.0.0.0", () => {
+  app.listen(PORT, () => {
     console.log(`Process ${process.pid} listening on port ${PORT} ✅`);
   });
 

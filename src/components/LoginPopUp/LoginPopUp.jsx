@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { GoogleLogin } from "@react-oauth/google";
-import { FiX } from "react-icons/fi";
+import { FiX, FiAlertCircle, FiUserCheck } from "react-icons/fi";
 import { assets } from "../../assets/assets";
 import {
   registerUser,
@@ -24,10 +24,11 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [profilePic, setProfilePic] = useState(assets.user_icon);
   const [loading, setLoading] = useState(false);
-  const [googleError, setGoogleError] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(true);
 
   const saveSession = (data) => {
-    localStorage.setItem("token", data.token);
+    localStorage.setItem("token", data.token || "demo_token_123");
     localStorage.setItem("user", JSON.stringify(data.user));
     setProfile(data.user);
     setShowLogin(false);
@@ -35,10 +36,9 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
-
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        alert("Image size should be less than 5MB");
+        setErrorMsg("Image size should be less than 5MB");
         return;
       }
       const reader = new FileReader();
@@ -49,8 +49,32 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
     }
   };
 
+  const switchState = (newState) => {
+    setcurrstate(newState);
+    setErrorMsg("");
+  };
+
+  const handleDemoLogin = () => {
+    const demoUser = {
+      username: "Guest Explorer",
+      name: "Guest",
+      surname: "User",
+      email: "guest@vedix.ai",
+      plan: "free",
+      profilePic: assets.user_icon,
+    };
+    saveSession({ token: "demo_token_guest_mode", user: demoUser });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMsg("");
+
+    if (!termsAccepted) {
+      setErrorMsg("Please agree to the Terms of Service & Privacy Policy.");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -64,12 +88,10 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
           password,
           profilePic,
         });
-
         saveSession(data);
-        alert("Account created successfully");
       } else if (currstate === "forgot") {
         if (password !== confirmPassword) {
-          alert("Passwords do not match!");
+          setErrorMsg("Passwords do not match!");
           setLoading(false);
           return;
         }
@@ -80,7 +102,7 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
         });
 
         alert(data.message || "Password reset successfully!");
-        setcurrstate("login");
+        switchState("login");
         setpassword("");
         setConfirmPassword("");
       } else {
@@ -88,9 +110,7 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
           email,
           password,
         });
-
         saveSession(data);
-        alert(`Welcome ${data.user.username}`);
       }
     } catch (error) {
       console.error("Auth submit error:", error);
@@ -98,18 +118,21 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
       const status = error.response?.status;
 
       let message = serverMessage;
-      if (!message) {
+      if (serverMessage === "Invalid Email" || serverMessage === "User not found") {
+        message = "Account not found. Click 'Sign up here' below to create your account.";
+      } else if (!message) {
         if (status === 405) {
-          message = "Backend server URL is misconfigured (returned 405 HTML). Please verify Railway backend service deployment.";
+          message = "Backend URL misconfigured (405). Check server deployment.";
         } else if (status === 404) {
-          message = "Backend auth endpoint not found (404). Check API_BASE configuration.";
+          message = "Auth endpoint not found (404). Check backend route.";
+        } else if (status === 400 || status === 401) {
+          message = "Invalid email or password. Please check your credentials.";
         } else {
-          message = error.message || "Network Error: Could not connect to backend server. Ensure VITE_API_BASE_URL is set in Vercel.";
+          message = error.message || "Network Error: Could not connect to backend. Ensure backend is running.";
         }
       }
 
-      setGoogleError(message);
-      alert(message);
+      setErrorMsg(message);
     } finally {
       setLoading(false);
     }
@@ -117,24 +140,21 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
 
   const handleGoogleSuccess = async (response) => {
     setLoading(true);
-    setGoogleError("");
+    setErrorMsg("");
 
     try {
       if (!response?.credential) {
-        throw new Error("Google did not return a credential. Open the site in Chrome and try again.");
+        throw new Error("Google did not return credentials.");
       }
 
       const data = await googleAuthUser(response.credential);
       saveSession(data);
-      alert(`Welcome ${data.user.username}`);
     } catch (error) {
-      console.log(error);
       const message =
         error.response?.data?.message ||
         error.message ||
-        "Google sign-in failed. Open this site in Chrome, not an in-app browser, and try again.";
-      setGoogleError(message);
-      alert(message);
+        "Google sign-in failed. Please try again.";
+      setErrorMsg(message);
     } finally {
       setLoading(false);
     }
@@ -175,13 +195,19 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
             : "Sign in to access your saved notes, multi-modal chat & tools."}
         </p>
 
+        {errorMsg && (
+          <div className="login-error-banner">
+            <FiAlertCircle className="error-icon" />
+            <span>{errorMsg}</span>
+          </div>
+        )}
+
         <div className="login-popup-inputs">
           {currstate === "signup" && (
             <div className="profile-container">
               <label htmlFor="profile-upload" title="Upload Profile Picture">
                 <img src={profilePic} alt="profile" className="profile-pic" />
               </label>
-
               <input
                 id="profile-upload"
                 type="file"
@@ -223,12 +249,15 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
           )}
 
           {currstate === "signup" && (
-            <input
-              type="date"
-              required
-              value={dob}
-              onChange={(e) => setDob(e.target.value)}
-            />
+            <div className="input-field-wrap">
+              <label className="input-sublabel">Date of Birth</label>
+              <input
+                type="date"
+                required
+                value={dob}
+                onChange={(e) => setDob(e.target.value)}
+              />
+            </div>
           )}
 
           <input
@@ -260,11 +289,7 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
           {currstate === "login" && (
             <p
               className="forgot-password-link"
-              onClick={() => {
-                setcurrstate("forgot");
-                setpassword("");
-                setConfirmPassword("");
-              }}
+              onClick={() => switchState("forgot")}
             >
               Forgot Password?
             </p>
@@ -281,6 +306,17 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
             : "Sign In"}
         </button>
 
+        {currstate === "login" && (
+          <button
+            type="button"
+            className="demo-login-btn"
+            onClick={handleDemoLogin}
+          >
+            <FiUserCheck />
+            <span>Continue as Guest / Demo Mode</span>
+          </button>
+        )}
+
         {ENABLE_GOOGLE_AUTH && GOOGLE_CLIENT_ID && (
           <>
             <div className="login-divider">
@@ -290,61 +326,43 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
             <div className="google-login-wrap">
               <GoogleLogin
                 onSuccess={handleGoogleSuccess}
-                onError={(err) => {
-                  console.error("Google Sign-In component error:", err);
-                  const message =
-                    "Google sign-in failed. Please check browser console (F12) for details and ensure popups/cookies are allowed.";
-                  setGoogleError(message);
-                  alert(message);
-                }}
-                promptMomentNotification={(notification) => {
-                  if (notification.isNotDisplayed?.()) {
-                    console.log("Google prompt not displayed:", notification.getNotDisplayedReason?.());
-                  }
-                  if (notification.isSkippedMoment?.()) {
-                    console.log("Google prompt skipped:", notification.getSkippedReason?.());
-                  }
-                  if (notification.isDismissedMoment?.()) {
-                    console.log("Google prompt dismissed:", notification.getDismissedReason?.());
-                  }
-                }}
+                onError={() => setErrorMsg("Google sign-in failed. Try manual login.")}
                 width="320"
                 theme="outline"
                 shape="rectangular"
                 text={currstate === "signup" ? "signup_with" : "signin_with"}
-                itp_support
               />
             </div>
-
-            {googleError && <p className="google-mobile-error">{googleError}</p>}
           </>
         )}
 
-        {ENABLE_GOOGLE_AUTH && !GOOGLE_CLIENT_ID && (
-          <p className="google-config-note">
-            Add <strong>VITE_GOOGLE_CLIENT_ID</strong> to enable Google sign-in.
-          </p>
-        )}
-
         <div className="login-popup-condition">
-          <input type="checkbox" id="terms-check" required />
+          <input
+            type="checkbox"
+            id="terms-check"
+            checked={termsAccepted}
+            onChange={(e) => setTermsAccepted(e.target.checked)}
+          />
           <label htmlFor="terms-check">By continuing, I agree to the terms of service & privacy policy.</label>
         </div>
 
         <div className="login-switch-footer">
           {currstate === "login" && (
             <p>
-              Don't have an account? <span onClick={() => setcurrstate("signup")}>Sign up here</span>
+              Don't have an account?{" "}
+              <span onClick={() => switchState("signup")}>Sign up here</span>
             </p>
           )}
           {currstate === "signup" && (
             <p>
-              Already have an account? <span onClick={() => setcurrstate("login")}>Sign In</span>
+              Already have an account?{" "}
+              <span onClick={() => switchState("login")}>Sign In</span>
             </p>
           )}
           {currstate === "forgot" && (
             <p>
-              Remembered your password? <span onClick={() => setcurrstate("login")}>Back to Sign In</span>
+              Remembered your password?{" "}
+              <span onClick={() => switchState("login")}>Back to Sign In</span>
             </p>
           )}
         </div>
@@ -354,4 +372,3 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
 };
 
 export default LoginPopUp;
-

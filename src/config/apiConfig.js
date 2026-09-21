@@ -6,22 +6,32 @@ export const getApiBaseUrl = () => {
   if (typeof window !== "undefined") {
     const hostname = window.location.hostname;
 
-    // Local development (localhost, loopback, or LAN IP)
-    const isLocalhost =
+    // Local development & LAN IP check (localhost, Wi-Fi 192.168.x, 10.x, Hotspot 172.x, or LAN IP)
+    const isLocalNetwork =
       hostname === "localhost" ||
       hostname === "127.0.0.1" ||
       hostname.startsWith("192.168.") ||
       hostname.startsWith("10.") ||
-      hostname.endsWith(".local");
+      hostname.startsWith("172.") ||
+      hostname.endsWith(".local") ||
+      /^(\d{1,3}\.){3}\d{1,3}$/.test(hostname);
 
-    if (isLocalhost) {
-      if (envBase && envBase.trim() !== "") {
-        if (envBase.includes("localhost") && hostname !== "localhost" && hostname !== "127.0.0.1") {
+    if (isLocalNetwork) {
+      if (hostname !== "localhost" && hostname !== "127.0.0.1") {
+        // When opening frontend from a mobile phone via laptop IP
+        if (envBase && envBase.includes("localhost")) {
           return envBase.replace("localhost", hostname).replace(/\/$/, "");
         }
-        return envBase.replace(/\/$/, "");
+        if (backendUrl && backendUrl.includes("localhost")) {
+          return `${backendUrl.replace("localhost", hostname).replace(/\/$/, "")}/api`;
+        }
+        return `http://${hostname}:5000/api`;
       }
-      return `http://${hostname}:5000/api`;
+
+      if (envBase && envBase.trim() !== "") {
+        return envBase.replace("localhost", "127.0.0.1").replace(/\/$/, "");
+      }
+      return `http://127.0.0.1:5000/api`;
     }
   }
 
@@ -30,7 +40,7 @@ export const getApiBaseUrl = () => {
     return envBase.replace(/\/$/, "");
   }
 
-  // Use VITE_BACKEND_URL if set and valid (ignoring dead placeholder URLs)
+  // Use VITE_BACKEND_URL if set and valid
   if (
     backendUrl &&
     !backendUrl.includes("localhost") &&
@@ -39,10 +49,7 @@ export const getApiBaseUrl = () => {
     return `${backendUrl.replace(/\/$/, "")}/api`;
   }
 
-  return "http://localhost:5000/api";
+  return "http://127.0.0.1:5000/api";
 };
 
 export const API_BASE = getApiBaseUrl();
-
-
-

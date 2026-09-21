@@ -166,7 +166,12 @@
   }
 
   .Lexi {
-    font-size: 19px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .nav-top-row {
+    padding-left: 44px;
   }
 
   .news-badge {
