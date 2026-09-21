@@ -248,29 +248,178 @@ Vedix.Ai
 
 ---
 
-# 📸 Screenshots
+# 📸 Application Screenshots & Detailed Showcase
 
-Replace these placeholders with your project screenshots.
+Below is a complete visual tour of **Vedix.Ai**, detailing every major module, feature preview, and platform interface along with deep explanations of their underlying capabilities.
 
-```
-Home Page
+---
 
-Chat Page
+### 1. 🏠 Home Page Dashboard (`home1.png`)
 
-Resume Analyzer
+![Home Page Dashboard](./src/assets/home1.png)
 
-Research Analyzer
+> **Overview**: The central command hub of Vedix.AI engineered with a modern glassmorphic theme, hero animations, dynamic interactive banners, and quick-access navigation to all AI power tools.
 
-News Explorer
+- **Key Highlights**:
+  - **Quick Tool Launchpad**: Direct entry points for AI Chat, Resume Analyzer, Research Assistant, and Live News.
+  - **Platform Live Stats**: Real-time counter metrics showcasing processed requests, active models, and response speeds.
+  - **Seamless Navigation**: Fully responsive dark mode aesthetic with instant guest mode access.
 
-Subscription Plans
+---
 
-Admin Dashboard
+### 2. ⚡ Core Platform Features Showcase (`features.png`)
 
-User Management
+![Core Features Overview](./src/assets/features.png)
 
-Analytics Dashboard
-```
+> **Overview**: A visual matrix highlighting Vedix.AI's modular suite of AI micro-services designed to streamline productivity, research, and content consumption.
+
+- **Key Highlights**:
+  - **Feature Grid Cards**: Interactive cards detailing capability badges and status indicators for each tool.
+  - **Modular Microservices**: Independent AI engines tailored for specific workflows (ATS checking, paper summary, itinerary planning).
+  - **Visual Badging**: Instant clarity on free vs. pro level AI features.
+
+---
+
+### 3. 🤖 Multi-Model AI Chat Interface (`chat.png`)
+
+![Multi-Model AI Chat](./src/assets/chat.png)
+
+> **Overview**: A state-of-the-art conversational workspace enabling multi-turn dialogues with advanced AI models, context memory, multimodal image attachment processing, and voice interaction.
+
+- **Key Highlights**:
+  - **Multimodal Uploads**: Analyze images, code snippets, and structured prompts directly within the chat stream.
+  - **Voice & Speech Support**: Speech-to-text dictation and real-time Text-to-Speech audio response playback.
+  - **Code Execution & Syntax Highlighting**: One-click code copying, formatted markdown responses, and session persistence.
+
+---
+
+### 4. 📰 Real-Time Live News Intelligence (`news.png`)
+
+![Live News Explorer](./src/assets/news.png)
+
+> **Overview**: An AI-curated news hub aggregating real-time global news, breaking tech headlines, market trends, and scientific research into structured visual media cards.
+
+- **Key Highlights**:
+  - **Categorized News Feed**: Filter stories across Top Stories, Technology, Business, Science, Health, and Sports.
+  - **Live News Ticker & Widgets**: Real-time scrolling news ticker, live date/calendar widget, and instant search bar.
+  - **Source Transparency**: Direct links to trusted publisher sources with concise AI-generated summary snippets.
+
+---
+
+### 5. 📄 AI Resume ATS & Career Scanner (`resume.png`)
+
+![Resume ATS Analyzer](./src/assets/resume.png)
+
+> **Overview**: An intelligent career assistant that scans resumes against Applicant Tracking System (ATS) algorithms to provide actionable formatting tips, skill gap analysis, and tailored job role suggestions.
+
+- **Key Highlights**:
+  - **ATS Compatibility Score**: Automated numeric rating evaluating formatting, keyword density, and readability.
+  - **Skills & Gap Detection**: Clear breakdown of detected technical skills versus critical missing keywords.
+  - **Job Portal Links**: Direct recommendations linked to top portals (LinkedIn, Internshala, Indeed, Naukri, Unstop).
+
+---
+
+### 6. 📚 Academic Research Paper Analyzer (`research.png`)
+
+![Research Paper Analyzer](./src/assets/research.png)
+
+> **Overview**: Tailored for researchers, academics, and students to quickly extract key insights, methodologies, findings, and limitations from complex scientific papers.
+
+- **Key Highlights**:
+  - **Executive Summaries**: AI-synthesized breakdowns of dense literature into concise bulleted insights.
+  - **Methodology & Limitation Parsing**: Automated identification of study constraints, data sampling, and future work.
+  - **Citation & Related Work Suggestions**: Discover connected papers, related research topics, and reference links.
+
+---
+
+### 7. 📝 Smart Notes & Knowledge Vault (`notes.png`)
+
+![Smart Notes Vault](./src/assets/notes.png)
+
+> **Overview**: A unified workspace for taking notes, organizing study materials, saving AI prompt responses, and building a searchable personal knowledge base.
+
+- **Key Highlights**:
+  - **Markdown & Tagging**: Full markdown formatting support with custom tags for effortless filtering.
+  - **AI Auto-Summarizer**: Convert lengthy study notes or meeting transcripts into concise bullet points.
+  - **Fast Search & Cloud Sync**: Instant instant-search bar and persistent cloud storage across user sessions.
+
+---
+
+### 8. 👥 Collaborative Study & Team Groups (`group.png`)
+
+![Study & Team Groups](./src/assets/group.png)
+
+> **Overview**: A collaborative community feature allowing users to form study circles, project teams, or peer groups to share research findings, study notes, and custom AI prompts.
+
+- **Key Highlights**:
+  - **Group Workspaces**: Create public or private team spaces with unique join codes and invite links.
+  - **Shared Resource Hub**: Centralized repository for team notes, shared paper summaries, and discussion threads.
+  - **Role-Based Access**: Group admin management, member permissions, and shared team feeds.
+
+---
+
+### 9. ✈️ Autonomous AI Travel Agent (`travel.png`)
+
+![Autonomous Travel Agent](./src/assets/travel.png)
+
+> **Overview**: An intelligent travel planner that constructs tailored trip concepts based on target destination, budget constraints, trip duration, companion preferences, and travel style.
+
+- **Key Highlights**:
+  - **Personalized Recommendations**: AI-driven itinerary suggestions matching budget tiers (Backpacker, Luxury, Family).
+  - **Smart Prompt Templates**: Preset destination ideas and activity filters for instant planning.
+  - **Interactive Travel Inputs**: Custom preference selectors for solo travelers, couples, or group trips.
+
+---
+
+### 10. 🗺️ Detailed Travel Itineraries & Schedules (`travel1.png`)
+
+![Detailed Travel Itinerary](./src/assets/travel1.png)
+
+> **Overview**: An operational day-by-day travel guide providing hourly activity timelines, local food recommendations, stay suggestions, and budget breakdowns.
+
+- **Key Highlights**:
+  - **Day-by-Day Timeline**: Morning, afternoon, and evening structured itineraries with route suggestions.
+  - **Expense Optimization**: Clear estimated breakdown for accommodations, transport, food, and sightseeing.
+  - **Exportable Guide**: Print-ready and downloadable travel plan layout for offline access.
+
+---
+
+### 11. 👤 User Profile & Subscription Management (`profile.png`)
+
+![User Profile & Settings](./src/assets/profile.png)
+
+> **Overview**: A comprehensive personal dashboard detailing user profile information, active subscription plan tier, remaining AI credits, and account security controls.
+
+- **Key Highlights**:
+  - **Credit Meter**: Live usage tracker displaying daily/monthly AI query consumption.
+  - **Subscription Upgrades**: Seamless plan switching between Free, Pro, and Premium tiers.
+  - **OAuth & Security**: Managed connected authentication providers (Google OAuth) and password settings.
+
+---
+
+### 12. 📩 Contact & Feedback Support Portal (`contactus.png`)
+
+![Contact Us & Support](./src/assets/contactus.png)
+
+> **Overview**: A responsive user feedback interface allowing community members to submit bug reports, feature requests, or technical inquiries directly to the development team.
+
+- **Key Highlights**:
+  - **Interactive Form Controls**: Structured input fields with real-time validation feedback.
+  - **Support Categories**: Quick tags for Bug Reports, Feature Suggestions, General Support, and Business Inquiries.
+  - **Automated Confirmation**: Instant status updates and submission verification alerts.
+
+---
+
+### 13. 🔐 Secure Authentication & Sign In Modal (`login.png`)
+
+![Authentication & Sign In Modal](./src/assets/login.png)
+
+> **Overview**: A dual-purpose modal interface facilitating quick login and account registration with email credentials or 1-click Google OAuth 2.0 integration.
+
+- **Key Highlights**:
+  - **1-Click Google OAuth**: Fast social login backed by JWT token security.
+  - **Instant Guest Login**: Quick preview mode for first-time visitors to explore core features.
+  - **Form Validation & Recovery**: In-line error handling, toggleable password fields, and account recovery triggers.
 
 ---
 
