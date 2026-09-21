@@ -17,6 +17,8 @@ import {
   FiGlobe,
   FiUser,
   FiLock,
+  FiMenu,
+  FiX,
 } from "react-icons/fi";
 import { assets } from "../../assets/assets";
 import ParticleCanvas from "./ParticleCanvas";
@@ -35,20 +37,27 @@ const LandingPage = ({ setShowLogin }) => {
   // Lenis Smooth Scroll Setup
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.4,
+      duration: 1.0,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
-      wheelMultiplier: 1.1,
-      touchMultiplier: 1.5,
+      wheelMultiplier: 1.0,
+      touchMultiplier: 1.2,
+      infinite: false,
     });
 
+    lenis.on("scroll", ScrollTrigger.update);
+
+    let animationFrameId;
     function raf(time) {
       lenis.raf(time);
-      requestAnimationFrame(raf);
+      animationFrameId = requestAnimationFrame(raf);
     }
-    requestAnimationFrame(raf);
+    animationFrameId = requestAnimationFrame(raf);
 
-    return () => lenis.destroy();
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      lenis.destroy();
+    };
   }, []);
 
   // Spotlight mouse effect
@@ -57,8 +66,9 @@ const LandingPage = ({ setShowLogin }) => {
     setMousePos({ x: e.clientX, y: e.clientY });
   };
 
-  // Active Nav Link State & IntersectionObserver scroll detection
+  // Active Nav Link State & Mobile Menu Toggle State
   const [activeNav, setActiveNav] = useState("home");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -267,23 +277,102 @@ const LandingPage = ({ setShowLogin }) => {
               <span>Get Started</span>
               <FiArrowRight />
             </motion.button>
+            <button
+              type="button"
+              className="mobile-menu-btn"
+              aria-label="Toggle Navigation Menu"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <FiX /> : <FiMenu />}
+            </button>
           </div>
         </motion.nav>
+
+        {/* Mobile Glass Menu Drawer Overlay */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              className="mobile-menu-overlay"
+              initial={{ opacity: 0, y: -15, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -15, scale: 0.98 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="mobile-menu-content">
+                <button
+                  type="button"
+                  className={activeNav === "home" ? "active" : ""}
+                  onClick={() => {
+                    setActiveNav("home");
+                    setMobileMenuOpen(false);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                >
+                  Home
+                </button>
+                <button
+                  type="button"
+                  className={activeNav === "features" ? "active" : ""}
+                  onClick={() => {
+                    setActiveNav("features");
+                    setMobileMenuOpen(false);
+                    scrollToSection("features");
+                  }}
+                >
+                  Features
+                </button>
+                <button
+                  type="button"
+                  className={activeNav === "about" ? "active" : ""}
+                  onClick={() => {
+                    setActiveNav("about");
+                    setMobileMenuOpen(false);
+                    scrollToSection("about");
+                  }}
+                >
+                  About Us
+                </button>
+                <button
+                  type="button"
+                  className={activeNav === "contact" ? "active" : ""}
+                  onClick={() => {
+                    setActiveNav("contact");
+                    setMobileMenuOpen(false);
+                    scrollToSection("contact");
+                  }}
+                >
+                  Contact Us
+                </button>
+                <hr className="mobile-menu-divider" />
+                <button
+                  type="button"
+                  className="mobile-menu-signin"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    setShowLogin(true);
+                  }}
+                >
+                  Sign In / Get Started
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Centered Clean Hero Header Section */}
       <motion.header
         className="landing-hero center-hero"
-        initial={{ opacity: 0, scale: 0.88, y: 30 }}
-        whileInView={{ opacity: 1, scale: 1, y: 0 }}
-        viewport={{ once: false, amount: 0.15 }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       >
         <motion.div
           className="hero-center-container"
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.6 }}
         >
           <h1 className="hero-title center-title">
             Ask me a question
@@ -397,17 +486,17 @@ const LandingPage = ({ setShowLogin }) => {
       <motion.section
         id="features"
         className="landing-section"
-        initial={{ opacity: 0, scale: 0.78, y: 60 }}
-        whileInView={{ opacity: 1, scale: 1, y: 0 }}
-        viewport={{ once: false, amount: 0.12 }}
-        transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.1 }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       >
         <motion.div
           className="section-head center"
-          initial={{ opacity: 0, scale: 0.85, y: 30 }}
-          whileInView={{ opacity: 1, scale: 1, y: 0 }}
-          viewport={{ once: false, amount: 0.3 }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
         >
           <span className="head-kicker">CORE CAPABILITIES</span>
           <h2>Designed for Precision & High Productivity</h2>
@@ -514,24 +603,24 @@ const LandingPage = ({ setShowLogin }) => {
       <motion.section
         id="about"
         className="landing-section"
-        initial={{ opacity: 0, scale: 0.78, y: 60 }}
-        whileInView={{ opacity: 1, scale: 1, y: 0 }}
-        viewport={{ once: false, amount: 0.12 }}
-        transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.1 }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       >
         <motion.div
           className="about-wrapper glass-card"
-          initial={{ opacity: 0, scale: 0.85, y: 40 }}
-          whileInView={{ opacity: 1, scale: 1, y: 0 }}
-          viewport={{ once: false, amount: 0.2 }}
-          transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
         >
           <motion.div
             className="about-col-left"
-            initial={{ opacity: 0, x: -60 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: false, amount: 0.25 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
           >
             <span className="head-kicker">ABOUT VEDIX.AI</span>
             <h2>Architecting Intelligent Digital Systems</h2>
@@ -556,10 +645,10 @@ const LandingPage = ({ setShowLogin }) => {
 
           <motion.div
             className="about-col-right"
-            initial={{ opacity: 0, x: 60 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: false, amount: 0.25 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
           >
             <div className="trust-card">
               <FiShield className="trust-icon" />
@@ -581,17 +670,17 @@ const LandingPage = ({ setShowLogin }) => {
       <motion.section
         id="contact"
         className="landing-section"
-        initial={{ opacity: 0, scale: 0.78, y: 60 }}
-        whileInView={{ opacity: 1, scale: 1, y: 0 }}
-        viewport={{ once: false, amount: 0.12 }}
-        transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.1 }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       >
         <motion.div
           className="section-head center"
-          initial={{ opacity: 0, scale: 0.85, y: 30 }}
-          whileInView={{ opacity: 1, scale: 1, y: 0 }}
-          viewport={{ once: false, amount: 0.3 }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
         >
           <span className="head-kicker">CONTACT US</span>
           <h2>Get in Touch with Our Team</h2>
@@ -600,10 +689,10 @@ const LandingPage = ({ setShowLogin }) => {
 
         <motion.div
           className="contact-card glass-card"
-          initial={{ opacity: 0, scale: 0.85, y: 40 }}
-          whileInView={{ opacity: 1, scale: 1, y: 0 }}
-          viewport={{ once: false, amount: 0.2 }}
-          transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
         >
           <form className="contact-form" onSubmit={handleContactSubmit}>
             <div className="form-grid">
