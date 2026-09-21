@@ -29,7 +29,7 @@
   color: #f8fafc;
   font-size: 22px;
   margin: 0;
-  font-weight: 800;
+  font-weight: 500;
   background: linear-gradient(135deg, #22c55e, #38bdf8);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -38,10 +38,10 @@
 .news-badge {
   padding: 3px 8px;
   border-radius: 999px;
-  background: rgba(34, 197, 94, 0.18);
+  background: rgba(34, 197, 94, 0.15);
   color: #4ade80;
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 600;
   border: 1px solid rgba(34, 197, 94, 0.3);
   text-transform: uppercase;
 }
@@ -58,38 +58,44 @@
   gap: 6px;
   padding: 7px 12px;
   border-radius: 20px;
-  border: 1px solid rgba(56, 189, 248, 0.4);
-  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  background: rgba(56, 189, 248, 0.1);
   color: #38bdf8;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
 }
 
 .lang-toggle-btn:hover {
-  background: #38bdf8;
-  color: #0f172a;
+  background: rgba(56, 189, 248, 0.25);
+  border-color: rgba(56, 189, 248, 0.6);
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.3);
 }
 
 .Nav-Home-btn,
 .feed-btn {
-  border: 1px solid rgba(148, 163, 184, 0.3);
-  background: rgba(30, 41, 59, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   color: #f8fafc;
   text-decoration: none;
   padding: 7px 14px;
   border-radius: 20px;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 400;
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: all 0.25s ease;
 }
 
 .Nav-Home-btn:hover,
 .feed-btn:hover {
-  background: #334155;
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
   color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .explore-profile-box {
@@ -109,7 +115,7 @@
 
 .nav-username {
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 500;
   color: #f1f5f9;
 }
 
@@ -131,19 +137,26 @@
   padding: 5px 12px;
   border-radius: 16px;
   border: 1px solid rgba(148, 163, 184, 0.2);
-  background: rgba(30, 41, 59, 0.6);
+  background: rgba(30, 41, 59, 0.5);
   color: #94a3b8;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 400;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.nav-category-chip:hover,
-.nav-category-chip.active {
-  background: #0f766e;
+.nav-category-chip:hover {
+  background: rgba(255, 255, 255, 0.1);
   color: #ffffff;
-  border-color: #0f766e;
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.nav-category-chip.active {
+  background: linear-gradient(135deg, rgba(15, 118, 110, 0.6), rgba(13, 148, 136, 0.4));
+  color: #ffffff;
+  border-color: #0d9488;
+  font-weight: 500;
+  box-shadow: 0 0 12px rgba(13, 148, 136, 0.3);
 }
 
 @media (max-width: 640px) {

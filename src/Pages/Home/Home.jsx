@@ -1,11 +1,8 @@
 import React from "react";
-
 import Sidebar from "../../components/Sidebar/Sidebar";
-
 import Main from "../../components/Main/Main";
-
+import LandingPage from "../LandingPage/LandingPage";
 import "./Home.css";
-
 
 const Home = ({
   showLogin,
@@ -13,10 +10,17 @@ const Home = ({
   profile,
   setProfile,
 }) => {
+  if (!profile) {
+    return (
+      <LandingPage
+        setShowLogin={setShowLogin}
+        setProfile={setProfile}
+      />
+    );
+  }
 
   return (
     <div className="home-layout">
-
       <Sidebar profile={profile} setProfile={setProfile} />
 
       <Main

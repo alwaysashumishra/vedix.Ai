@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { GoogleLogin } from "@react-oauth/google";
-import "./LoginPopUp.css";
+import { FiX } from "react-icons/fi";
 import { assets } from "../../assets/assets";
-import { GiCrossedBones } from "react-icons/gi";
 import {
   registerUser,
   loginUser,
   googleAuthUser,
   resetPasswordUser,
 } from "../../config/auth";
+import "./LoginPopUp.css";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const ENABLE_GOOGLE_AUTH = false;
@@ -142,15 +142,20 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
 
   return (
     <div className="login-popup">
-      <form className="login-popup-container" onSubmit={handleSubmit}>
+      <form className="login-popup-container glass-card" onSubmit={handleSubmit}>
         <div className="login-popup-title">
-          <h2>
-            {currstate === "signup"
-              ? "Create account"
-              : currstate === "forgot"
-              ? "Reset Password"
-              : "Login"}
-          </h2>
+          <div className="popup-brand">
+            <div className="logo-circle-wrap sm">
+              <img src={assets.gemini_icon} alt="Vedix.AI Logo" />
+            </div>
+            <h2>
+              {currstate === "signup"
+                ? "Create Account"
+                : currstate === "forgot"
+                ? "Reset Password"
+                : "Welcome Back"}
+            </h2>
+          </div>
 
           <button
             type="button"
@@ -158,14 +163,22 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
             onClick={() => setShowLogin(false)}
             aria-label="Close login"
           >
-            <GiCrossedBones />
+            <FiX />
           </button>
         </div>
+
+        <p className="login-popup-subtitle">
+          {currstate === "signup"
+            ? "Enter your details to create a Vedix.AI workspace account."
+            : currstate === "forgot"
+            ? "Enter your registered email to set a new password."
+            : "Sign in to access your saved notes, multi-modal chat & tools."}
+        </p>
 
         <div className="login-popup-inputs">
           {currstate === "signup" && (
             <div className="profile-container">
-              <label htmlFor="profile-upload">
+              <label htmlFor="profile-upload" title="Upload Profile Picture">
                 <img src={profilePic} alt="profile" className="profile-pic" />
               </label>
 
@@ -192,7 +205,7 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
           {currstate === "signup" && (
             <input
               type="text"
-              placeholder="Name"
+              placeholder="First Name"
               required
               value={name}
               onChange={(e) => setname(e.target.value)}
@@ -202,7 +215,7 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
           {currstate === "signup" && (
             <input
               type="text"
-              placeholder="Surname"
+              placeholder="Last Name"
               required
               value={surname}
               onChange={(e) => setsurname(e.target.value)}
@@ -220,7 +233,7 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
 
           <input
             type="email"
-            placeholder="Email"
+            placeholder="Email Address"
             required
             value={email}
             onChange={(e) => setemail(e.target.value)}
@@ -258,14 +271,14 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
           )}
         </div>
 
-        <button type="submit" disabled={loading}>
+        <button type="submit" className="login-submit-btn" disabled={loading}>
           {loading
             ? "Please wait..."
             : currstate === "signup"
             ? "Create Account"
             : currstate === "forgot"
             ? "Reset Password"
-            : "Login"}
+            : "Sign In"}
         </button>
 
         {ENABLE_GOOGLE_AUTH && GOOGLE_CLIENT_ID && (
@@ -314,28 +327,31 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
         )}
 
         <div className="login-popup-condition">
-          <input type="checkbox" required />
-          <p>By continuing, I agree to the terms and privacy policy.</p>
+          <input type="checkbox" id="terms-check" required />
+          <label htmlFor="terms-check">By continuing, I agree to the terms of service & privacy policy.</label>
         </div>
 
-        {currstate === "login" && (
-          <p>
-            Create new account? <span onClick={() => setcurrstate("signup")}>Click here</span>
-          </p>
-        )}
-        {currstate === "signup" && (
-          <p>
-            Already have account? <span onClick={() => setcurrstate("login")}>Login</span>
-          </p>
-        )}
-        {currstate === "forgot" && (
-          <p>
-            Remembered your password? <span onClick={() => setcurrstate("login")}>Login</span>
-          </p>
-        )}
+        <div className="login-switch-footer">
+          {currstate === "login" && (
+            <p>
+              Don't have an account? <span onClick={() => setcurrstate("signup")}>Sign up here</span>
+            </p>
+          )}
+          {currstate === "signup" && (
+            <p>
+              Already have an account? <span onClick={() => setcurrstate("login")}>Sign In</span>
+            </p>
+          )}
+          {currstate === "forgot" && (
+            <p>
+              Remembered your password? <span onClick={() => setcurrstate("login")}>Back to Sign In</span>
+            </p>
+          )}
+        </div>
       </form>
     </div>
   );
 };
 
 export default LoginPopUp;
+

@@ -16,38 +16,21 @@ const App = () => {
   const [showLogin, setShowLogin] = useState(false);
   const [profile, setProfile] = useState(getStoredUser);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 2500);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    if (!loading && !profile) {
-      setShowLogin(true);
-    }
-  }, [loading, profile]);
-
   return (
     <>
-      {loading ? (
-        <Preloader />
-      ) : (
-        <>
-          {showLogin && (
-            <LoginPopUp setShowLogin={setShowLogin} setProfile={setProfile} />
-          )}
+      {loading && <Preloader onComplete={() => setLoading(false)} />}
+      <div style={{ visibility: loading ? "hidden" : "visible", height: loading ? "0" : "auto", overflow: loading ? "hidden" : "visible" }}>
+        {showLogin && (
+          <LoginPopUp setShowLogin={setShowLogin} setProfile={setProfile} />
+        )}
 
-          <Router
-            showLogin={showLogin}
-            setShowLogin={setShowLogin}
-            profile={profile}
-            setProfile={setProfile}
-          />
-        </>
-      )}
+        <Router
+          showLogin={showLogin}
+          setShowLogin={setShowLogin}
+          profile={profile}
+          setProfile={setProfile}
+        />
+      </div>
     </>
   );
 };
