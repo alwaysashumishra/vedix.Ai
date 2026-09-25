@@ -178,6 +178,7 @@ const Sidebar = ({ profile, setProfile }) => {
             setShowSettings={setShowSettings}
             profile={profile}
             setProfile={setProfile}
+            initialTab="student"
           />
         )
       }

@@ -33,7 +33,108 @@ import {
 } from "react-icons/fi";
 import Plans from "../../Pages/Plans/Plans";
 
-const SettingsModal = ({ setShowSettings, profile, setProfile, setShowLogin }) => {
+const POPULAR_COLLEGES = [
+  "Aligarh Muslim University (AMU), Aligarh",
+  "Amity University, Noida",
+  "Anna University, Chennai",
+  "Babasaheb Bhimrao Ambedkar University (BBAU), Lucknow",
+  "Banaras Hindu University (BHU), Varanasi",
+  "Bennett University, Greater Noida",
+  "Bhatkhande Music Institute, Lucknow",
+  "BITS Pilani",
+  "Bundelkhand University, Jhansi",
+  "Caltech (California Institute of Technology)",
+  "Central Institute of Higher Tibetan Studies, Varanasi",
+  "Chaudhary Charan Singh University (CCSU), Meerut",
+  "Chhatrapati Shahu Ji Maharaj University (CSJMU), Kanpur",
+  "Columbia University",
+  "Cornell University",
+  "Dayalbagh Educational Institute, Agra",
+  "Deen Dayal Upadhyaya Gorakhpur University, Gorakhpur",
+  "Delhi Technological University (DTU)",
+  "Delhi University (DU)",
+  "Dr. A.P.J. Abdul Kalam Technical University (AKTU), Lucknow",
+  "Dr. B.R. Ambedkar University, Agra",
+  "Dr. Ram Manohar Lohia Avadh University, Ayodhya",
+  "Dr. Ram Manohar Lohia National Law University, Lucknow",
+  "Galgotias University, Greater Noida",
+  "GLA University, Mathura",
+  "Harcourt Butler Technical University (HBTU), Kanpur",
+  "Harvard University",
+  "IIMT University, Meerut",
+  "IIT Bombay",
+  "IIT Delhi",
+  "IIT Guwahati",
+  "IIT Hyderabad",
+  "IIT Indore",
+  "IIT Jammu",
+  "IIT Jodhpur",
+  "IIT Kanpur",
+  "IIT Kharagpur",
+  "IIT Madras",
+  "IIT Mandi",
+  "IIT Palakkad",
+  "IIT Patna",
+  "IIT Roorkee",
+  "IIT Ropar",
+  "IIT Tirupati",
+  "IIT (BHU) Varanasi",
+  "Imperial College London",
+  "Indian Institute of Science (IISc), Bangalore",
+  "Indian Institute of Space Science and Technology (IIST)",
+  "Indian Veterinary Research Institute (IVRI), Bareilly",
+  "Integral University, Lucknow",
+  "Invertis University, Bareilly",
+  "Jadavpur University",
+  "Jannayak Chandrashekhar University, Ballia",
+  "Jawaharlal Nehru University (JNU)",
+  "Jaypee Institute of Information Technology, Noida",
+  "Khwaja Moinuddin Chishti Language University, Lucknow",
+  "King's College London",
+  "Maa Shakumbhari University, Saharanpur",
+  "Madan Mohan Malaviya University of Technology, Gorakhpur",
+  "Maharaja Suhel Dev State University, Azamgarh",
+  "Mahatma Jyotiba Phule Rohilkhand University, Bareilly",
+  "Mangalayatan University, Aligarh",
+  "Massachusetts Institute of Technology (MIT)",
+  "Nanyang Technological University (NTU)",
+  "National Institute of Technology (NIT), Calicut",
+  "National Institute of Technology (NIT), Kurukshetra",
+  "National Institute of Technology (NIT), Rourkela",
+  "National Institute of Technology (NIT), Surathkal",
+  "National Institute of Technology (NIT), Trichy",
+  "National Law School of India University (NLSIU)",
+  "National University of Singapore (NUS)",
+  "New York University (NYU)",
+  "Oxford University",
+  "Princeton University",
+  "Prof. Rajendra Singh (Rajju Bhaiya) University, Prayagraj",
+  "Raja Mahendra Pratap Singh State University, Aligarh",
+  "Rajiv Gandhi National Aviation University, Amethi",
+  "Rani Lakshmi Bai Central Agricultural University, Jhansi",
+  "SHUATS (Sam Higginbottom University of Agriculture, Technology and Sciences), Prayagraj",
+  "Sharda University, Greater Noida",
+  "Shiv Nadar University, Dadri",
+  "Shobhit University, Gangoh",
+  "Siddharth University, Kapilvastu",
+  "SRM Institute of Science and Technology",
+  "SRM University, Lucknow",
+  "Stanford University",
+  "Teerthanker Mahaveer University, Moradabad",
+  "University of Allahabad, Prayagraj",
+  "University of California, Berkeley (UC Berkeley)",
+  "University of Cambridge",
+  "University of Chicago",
+  "University of Delhi",
+  "University of Lucknow, Lucknow",
+  "University of Mumbai",
+  "University of Toronto",
+  "Veer Bahadur Singh Purvanchal University, Jaunpur",
+  "Vellore Institute of Technology (VIT)",
+  "Yale University",
+].sort((a, b) => a.localeCompare(b));
+
+const SettingsModal = ({ setShowSettings, profile, setProfile, setShowLogin, initialTab = "student" }) => {
   const {
     theme,
     toggleTheme,
@@ -46,8 +147,8 @@ const SettingsModal = ({ setShowSettings, profile, setProfile, setShowLogin }) =
 
   const currentUser = profile || JSON.parse(localStorage.getItem("user")) || {};
 
-  // Active Tab state: 'profile' | 'appearance' | 'ai' | 'privacy' | 'about'
-  const [activeTab, setActiveTab] = useState("profile");
+  // Active Tab state: 'student' | 'profile' | 'appearance' | 'ai' | 'plans' | 'privacy' | 'about'
+  const [activeTab, setActiveTab] = useState(initialTab || "student");
 
   // Profile Form state
   const [username, setUsername] = useState(currentUser.username || "");
@@ -78,11 +179,18 @@ const SettingsModal = ({ setShowSettings, profile, setProfile, setShowLogin }) =
   // Confirm dialogs state
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [actionSuccessMsg, setActionSuccessMsg] = useState("");
+
   // Student Verification State
   const [collegeName, setCollegeName] = useState(currentUser.studentCollegeName || "");
   const [studentIdCard, setStudentIdCard] = useState(currentUser.studentIdCard || "");
   const [studentLoading, setStudentLoading] = useState(false);
   const [studentMsg, setStudentMsg] = useState({ text: "", isError: false });
+  const [showCollegeSuggestions, setShowCollegeSuggestions] = useState(false);
+
+  const filteredColleges = POPULAR_COLLEGES.filter((col) =>
+    col.toLowerCase().includes(collegeName.toLowerCase().trim())
+  ).sort((a, b) => a.localeCompare(b));
 
   const handleStudentCardUpload = (event) => {
     const file = event.target.files[0];
@@ -876,15 +984,47 @@ const SettingsModal = ({ setShowSettings, profile, setProfile, setShowLogin }) =
                           </div>
                         )}
 
-                        <div className="input-group">
+                        <div className="input-group college-input-wrap">
                           <label>College / University Name</label>
                           <input
                             type="text"
-                            placeholder="e.g. Stanford University / IIT Delhi"
+                            placeholder="Search or select your University / College (A-Z)..."
                             value={collegeName}
-                            onChange={(e) => setCollegeName(e.target.value)}
+                            onFocus={() => setShowCollegeSuggestions(true)}
+                            onChange={(e) => {
+                              setCollegeName(e.target.value);
+                              setShowCollegeSuggestions(true);
+                            }}
                             required
                           />
+
+                          {showCollegeSuggestions && filteredColleges.length > 0 && (
+                            <div className="college-suggestions-dropdown">
+                              <div className="dropdown-header">
+                                <span>Select University / College (A-Z)</span>
+                                <button
+                                  type="button"
+                                  className="close-dropdown-btn"
+                                  onClick={() => setShowCollegeSuggestions(false)}
+                                >
+                                  ✕
+                                </button>
+                              </div>
+                              <ul className="suggestions-list">
+                                {filteredColleges.map((college, idx) => (
+                                  <li
+                                    key={idx}
+                                    onClick={() => {
+                                      setCollegeName(college);
+                                      setShowCollegeSuggestions(false);
+                                    }}
+                                  >
+                                    🎓 {college}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
                         </div>
 
                         <div className="input-group">
