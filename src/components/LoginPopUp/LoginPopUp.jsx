@@ -66,6 +66,22 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
     saveSession({ token: "demo_token_guest_mode", user: demoUser });
   };
 
+  const validatePassword = (pass) => {
+    if (pass.length < 8) {
+      return "Password must be at least 8 characters long.";
+    }
+    if (!/[A-Z]/.test(pass)) {
+      return "Password must contain at least one uppercase letter.";
+    }
+    if (!/[0-9]/.test(pass)) {
+      return "Password must contain at least one number.";
+    }
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pass)) {
+      return "Password must contain at least one special character (!@#$%^&* etc.).";
+    }
+    return null;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg("");
@@ -73,6 +89,14 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
     if (!termsAccepted) {
       setErrorMsg("Please agree to the Terms of Service & Privacy Policy.");
       return;
+    }
+
+    if (currstate === "signup") {
+      const passError = validatePassword(password);
+      if (passError) {
+        setErrorMsg(passError);
+        return;
+      }
     }
 
     setLoading(true);
@@ -275,6 +299,26 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
             value={password}
             onChange={(e) => setpassword(e.target.value)}
           />
+
+          {currstate === "signup" && (
+            <div className="password-rules-box">
+              <p className="password-rules-title">Password must contain:</p>
+              <ul className="password-rules-list">
+                <li className={password.length >= 8 ? "valid" : "invalid"}>
+                  {password.length >= 8 ? "✓" : "•"} At least 8 characters
+                </li>
+                <li className={/[A-Z]/.test(password) ? "valid" : "invalid"}>
+                  {/[A-Z]/.test(password) ? "✓" : "•"} At least 1 uppercase letter (A-Z)
+                </li>
+                <li className={/[0-9]/.test(password) ? "valid" : "invalid"}>
+                  {/[0-9]/.test(password) ? "✓" : "•"} At least 1 number (0-9)
+                </li>
+                <li className={/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) ? "valid" : "invalid"}>
+                  {/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) ? "✓" : "•"} At least 1 special character (!@#$%^&*)
+                </li>
+              </ul>
+            </div>
+          )}
 
           {currstate === "forgot" && (
             <input

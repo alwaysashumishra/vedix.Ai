@@ -62,6 +62,20 @@ export const registerUser = async (req, res) => {
       });
     }
 
+    if (password.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 8 characters long",
+      });
+    }
+
+    if (!/[A-Z]/.test(password) || !/[0-9]/.test(password) || !/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must contain at least 1 uppercase letter, 1 number, and 1 special character",
+      });
+    }
+
     const cleanEmail = email.toLowerCase().trim();
     const cleanUsername = username.trim();
 
