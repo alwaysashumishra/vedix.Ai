@@ -10,6 +10,8 @@ import {
   getServerStatus,
   clearServerCache,
   restartServer,
+  getStudentRequests,
+  reviewStudentRequest,
 } from "../controllers/adminController.js";
 import { adminAuth } from "../middleware/adminAuth.js";
 
@@ -23,6 +25,9 @@ router.get("/summary", getAdminSummary);
 router.get("/users", getAdminUsers);
 router.patch("/users/:id", updateAdminUser);
 router.delete("/users/:id", deleteAdminUser);
+
+router.get("/student-requests", getStudentRequests);
+router.patch("/student-requests/:id", reviewStudentRequest);
 
 router.get("/config", getAdminConfig);
 router.put("/config", updateAdminConfig);

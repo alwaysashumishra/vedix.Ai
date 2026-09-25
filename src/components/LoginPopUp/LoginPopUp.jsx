@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { GoogleLogin } from "@react-oauth/google";
-import { FiX, FiAlertCircle, FiUserCheck } from "react-icons/fi";
+import { FiX, FiAlertCircle, FiUserCheck, FiInfo } from "react-icons/fi";
 import { assets } from "../../assets/assets";
 import {
   registerUser,
@@ -22,6 +22,7 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPasswordRules, setShowPasswordRules] = useState(false);
   const [profilePic, setProfilePic] = useState(assets.user_icon);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -292,17 +293,40 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
             onChange={(e) => setemail(e.target.value)}
           />
 
-          <input
-            type="password"
-            placeholder={currstate === "forgot" ? "New Password" : "Password"}
-            required
-            value={password}
-            onChange={(e) => setpassword(e.target.value)}
-          />
+          <div className="password-input-wrapper">
+            <input
+              type="password"
+              placeholder={currstate === "forgot" ? "New Password" : "Password"}
+              required
+              value={password}
+              onChange={(e) => setpassword(e.target.value)}
+            />
+            {currstate === "signup" && (
+              <button
+                type="button"
+                className={`password-info-btn ${showPasswordRules ? "active" : ""}`}
+                onClick={() => setShowPasswordRules((prev) => !prev)}
+                title="Click to view Password Rules"
+                aria-label="Password Rules Info"
+              >
+                <FiInfo />
+              </button>
+            )}
+          </div>
 
-          {currstate === "signup" && (
-            <div className="password-rules-box">
-              <p className="password-rules-title">Password must contain:</p>
+          {currstate === "signup" && showPasswordRules && (
+            <div className="password-rules-box popover-box">
+              <div className="password-rules-header">
+                <p className="password-rules-title">Password Requirements:</p>
+                <button
+                  type="button"
+                  className="close-rules-btn"
+                  onClick={() => setShowPasswordRules(false)}
+                  title="Close rules"
+                >
+                  <FiX />
+                </button>
+              </div>
               <ul className="password-rules-list">
                 <li className={password.length >= 8 ? "valid" : "invalid"}>
                   {password.length >= 8 ? "✓" : "•"} At least 8 characters

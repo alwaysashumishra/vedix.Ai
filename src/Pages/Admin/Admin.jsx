@@ -12,6 +12,8 @@ import {
   getServerStatus,
   clearServerCache,
   restartServer,
+  getStudentRequests,
+  reviewStudentRequest,
 } from "../../config/admin";
 import {
   FiUsers,
@@ -86,29 +88,91 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
     setTimeout(() => setToastMsg({ text: "", isError: false }), 4000);
   };
 
+  // Student Requests Data
+  const [studentRequests, setStudentRequests] = useState([]);
+  const [loadingStudentRequests, setLoadingStudentRequests] = useState(false);
+  const [studentStatusFilter, setStudentStatusFilter] = useState("all");
+  const [previewIdCardModal, setPreviewIdCardModal] = useState(null);
+  const [rejectModalUser, setRejectModalUser] = useState(null);
+  const [rejectReasonInput, setRejectReasonInput] = useState("");
+  const [processingStudentId, setProcessingStudentId] = useState(null);
+
   // Load All Admin Data
   const loadAllData = async () => {
     setLoadingSummary(true);
     setLoadingUsers(true);
+    setLoadingStudentRequests(true);
 
     try {
-      const [sumRes, usersRes, configRes, serverRes] = await Promise.all([
+      const [sumRes, usersRes, configRes, serverRes, studentRes] = await Promise.all([
         getAdminSummary().catch(() => null),
         getAdminUsers().catch(() => null),
         getAdminConfig().catch(() => null),
         getServerStatus().catch(() => null),
+        getStudentRequests().catch(() => null),
       ]);
 
       if (sumRes && sumRes.success) setSummaryData(sumRes);
       if (usersRes && usersRes.success) setUsers(usersRes.users || []);
       if (configRes && configRes.success) setConfig(configRes.config || {});
       if (serverRes && serverRes.success) setServerData(serverRes.server || null);
+      if (studentRes && studentRes.success) setStudentRequests(studentRes.requests || []);
     } catch (err) {
       console.error("Admin Load Error:", err);
       showToast("Error loading admin dashboard data.", true);
     } finally {
       setLoadingSummary(false);
       setLoadingUsers(false);
+      setLoadingStudentRequests(false);
+    }
+  };
+
+  const handleApproveStudent = async (user) => {
+    setProcessingStudentId(user._id);
+    try {
+      const res = await reviewStudentRequest(user._id, "approve");
+      if (res.success) {
+        showToast(`Approved! 1 Year Pro Access granted to ${user.username} 🎓✨`);
+        setStudentRequests((prev) =>
+          prev.map((req) =>
+            req._id === user._id
+              ? { ...req, studentVerificationStatus: "approved", plan: "Pro", proAccessUntil: res.user?.proAccessUntil }
+              : req
+          )
+        );
+      } else {
+        showToast(res.message || "Failed to approve request", true);
+      }
+    } catch (err) {
+      showToast("Error approving student verification", true);
+    } finally {
+      setProcessingStudentId(null);
+    }
+  };
+
+  const handleRejectStudentConfirm = async () => {
+    if (!rejectModalUser) return;
+    setProcessingStudentId(rejectModalUser._id);
+    try {
+      const res = await reviewStudentRequest(rejectModalUser._id, "reject", rejectReasonInput);
+      if (res.success) {
+        showToast(`Student request for ${rejectModalUser.username} rejected.`);
+        setStudentRequests((prev) =>
+          prev.map((req) =>
+            req._id === rejectModalUser._id
+              ? { ...req, studentVerificationStatus: "rejected", studentRejectReason: rejectReasonInput }
+              : req
+          )
+        );
+        setRejectModalUser(null);
+        setRejectReasonInput("");
+      } else {
+        showToast(res.message || "Failed to reject request", true);
+      }
+    } catch (err) {
+      showToast("Error rejecting student verification", true);
+    } finally {
+      setProcessingStudentId(null);
     }
   };
 
@@ -425,6 +489,18 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
             onClick={() => setActiveTab("users")}
           >
             <FiUsers className="tab-btn-icon" /> Users & Roles ({users.length})
+          </button>
+
+          <button
+            className={`admin-tab-btn ${activeTab === "student-requests" ? "active" : ""}`}
+            onClick={() => setActiveTab("student-requests")}
+          >
+            <FiAward className="tab-btn-icon" /> Student Verifications
+            {studentRequests.filter((r) => r.studentVerificationStatus === "pending").length > 0 && (
+              <span className="admin-tab-badge">
+                {studentRequests.filter((r) => r.studentVerificationStatus === "pending").length}
+              </span>
+            )}
           </button>
 
           <button
@@ -756,6 +832,157 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
                       <tr>
                         <td colSpan="6" className="no-data-cell">
                           No users found matching current search/filter.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ================= TAB: STUDENT VERIFICATIONS ================= */}
+        {activeTab === "student-requests" && (
+          <div className="admin-tab-panel fade-in">
+            <div className="users-filter-bar">
+              <div className="filter-select-group">
+                <label>Filter Requests:</label>
+                <select
+                  value={studentStatusFilter}
+                  onChange={(e) => setStudentStatusFilter(e.target.value)}
+                >
+                  <option value="all">All Requests</option>
+                  <option value="pending">Pending Review Only ⏳</option>
+                  <option value="approved">Approved Only ✅</option>
+                  <option value="rejected">Rejected Only ❌</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="admin-table-card">
+              <div className="table-card-header">
+                <h3>Student ID Verification Requests</h3>
+                <p>Review uploaded student ID cards and college names. Approving grants 1 Year of Free Pro Version Access.</p>
+              </div>
+
+              <div className="table-responsive">
+                <table className="admin-custom-table">
+                  <thead>
+                    <tr>
+                      <th>Student Account</th>
+                      <th>College / University</th>
+                      <th>Student ID Card</th>
+                      <th>Submission Date</th>
+                      <th>Status</th>
+                      <th>Verification Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {studentRequests.filter(
+                      (r) => studentStatusFilter === "all" || r.studentVerificationStatus === studentStatusFilter
+                    ).length > 0 ? (
+                      studentRequests
+                        .filter(
+                          (r) => studentStatusFilter === "all" || r.studentVerificationStatus === studentStatusFilter
+                        )
+                        .map((r) => {
+                          const isProcessing = processingStudentId === r._id;
+                          return (
+                            <tr key={r._id}>
+                              <td>
+                                <div className="user-table-profile">
+                                  <img
+                                    src={r.profilePic || assets.user_icon}
+                                    alt="Avatar"
+                                    className="user-table-avatar"
+                                    onError={(e) => (e.target.src = assets.user_icon)}
+                                  />
+                                  <div>
+                                    <span className="user-table-username">{r.username}</span>
+                                    <span className="user-table-email">{r.email}</span>
+                                  </div>
+                                </div>
+                              </td>
+
+                              <td>
+                                <strong>{r.studentCollegeName || "Not specified"}</strong>
+                              </td>
+
+                              <td>
+                                {r.studentIdCard ? (
+                                  <div
+                                    className="student-id-thumb-wrap"
+                                    onClick={() => setPreviewIdCardModal(r)}
+                                    title="Click to view full Student ID Card"
+                                  >
+                                    <img src={r.studentIdCard} alt="Student ID" className="student-id-thumb" />
+                                    <span className="view-id-badge">Click to View 🔍</span>
+                                  </div>
+                                ) : (
+                                  <span className="no-id-text">No ID Card uploaded</span>
+                                )}
+                              </td>
+
+                              <td>
+                                <span className="date-text">
+                                  {r.studentRequestDate ? new Date(r.studentRequestDate).toLocaleDateString() : "N/A"}
+                                </span>
+                              </td>
+
+                              <td>
+                                {r.studentVerificationStatus === "approved" ? (
+                                  <span className="status-badge active">
+                                    <FiCheckCircle /> Approved (Pro Active)
+                                  </span>
+                                ) : r.studentVerificationStatus === "pending" ? (
+                                  <span className="status-badge pending-badge">
+                                    <FiRefreshCw className="spin-icon" /> Pending Review
+                                  </span>
+                                ) : (
+                                  <span className="status-badge blocked">
+                                    <FiAlertTriangle /> Rejected
+                                  </span>
+                                )}
+                              </td>
+
+                              <td>
+                                <div className="action-buttons-cell">
+                                  {r.studentVerificationStatus !== "approved" && (
+                                    <button
+                                      className="btn-action-sm grant-admin"
+                                      disabled={isProcessing}
+                                      onClick={() => handleApproveStudent(r)}
+                                      title="Approve & Grant 1-Year Pro Access"
+                                    >
+                                      <FiCheckCircle />
+                                      <span>Approve Pro (1 Yr)</span>
+                                    </button>
+                                  )}
+
+                                  {r.studentVerificationStatus !== "rejected" && (
+                                    <button
+                                      className="btn-action-sm block"
+                                      disabled={isProcessing}
+                                      onClick={() => {
+                                        setRejectModalUser(r);
+                                        setRejectReasonInput("");
+                                      }}
+                                      title="Decline / Reject Request"
+                                    >
+                                      <FiTrash2 />
+                                      <span>Reject Request</span>
+                                    </button>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })
+                    ) : (
+                      <tr>
+                        <td colSpan="6" className="no-data-cell">
+                          No student verification requests found matching filter.
                         </td>
                       </tr>
                     )}
@@ -1349,6 +1576,74 @@ const Admin = ({ profile, setProfile, setShowLogin }) => {
                 Confirm Delete
               </button>
               <button className="admin-action-btn secondary" onClick={() => setUserToDelete(null)}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Preview Student ID Card Modal */}
+      {previewIdCardModal && (
+        <div className="admin-modal-overlay" onClick={() => setPreviewIdCardModal(null)}>
+          <div className="admin-modal-box preview-id-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="id-modal-header">
+              <h3>Student ID Card Preview: {previewIdCardModal.username}</h3>
+              <p>College / University: {previewIdCardModal.studentCollegeName}</p>
+            </div>
+
+            <div className="id-modal-img-container">
+              <img src={previewIdCardModal.studentIdCard} alt="Student ID Card Full" />
+            </div>
+
+            <div className="admin-modal-actions margin-top">
+              {previewIdCardModal.studentVerificationStatus !== "approved" && (
+                <button
+                  className="admin-action-btn primary"
+                  onClick={() => {
+                    handleApproveStudent(previewIdCardModal);
+                    setPreviewIdCardModal(null);
+                  }}
+                >
+                  Approve & Grant 1-Yr Pro Access 🎓
+                </button>
+              )}
+              <button className="admin-action-btn secondary" onClick={() => setPreviewIdCardModal(null)}>
+                Close Preview
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reject Student Request Modal */}
+      {rejectModalUser && (
+        <div className="admin-modal-overlay" onClick={() => setRejectModalUser(null)}>
+          <div className="admin-modal-box danger-modal" onClick={(e) => e.stopPropagation()}>
+            <FiAlertTriangle className="danger-modal-icon" />
+            <h3>Decline Student Request: {rejectModalUser.username}</h3>
+            <p>Please enter a reason for declining the student verification request (e.g. ID card unreadable, expired ID).</p>
+
+            <div className="form-group-block margin-top">
+              <label>Rejection Reason</label>
+              <textarea
+                rows={3}
+                placeholder="e.g. ID card photo is blurry or unreadable. Please re-upload a clearer image."
+                value={rejectReasonInput}
+                onChange={(e) => setRejectReasonInput(e.target.value)}
+                className="admin-textarea"
+              />
+            </div>
+
+            <div className="admin-modal-actions margin-top">
+              <button
+                className="admin-action-btn danger"
+                onClick={handleRejectStudentConfirm}
+                disabled={processingStudentId === rejectModalUser._id}
+              >
+                {processingStudentId === rejectModalUser._id ? "Rejecting..." : "Confirm Reject Request"}
+              </button>
+              <button className="admin-action-btn secondary" onClick={() => setRejectModalUser(null)}>
                 Cancel
               </button>
             </div>

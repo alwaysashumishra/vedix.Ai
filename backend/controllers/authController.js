@@ -122,6 +122,13 @@ export const registerUser = async (req, res) => {
         dob: newUser.dob,
         email: newUser.email,
         profilePic: newUser.profilePic,
+        plan: newUser.plan,
+        credits: newUser.credits,
+        studentVerificationStatus: newUser.studentVerificationStatus,
+        studentCollegeName: newUser.studentCollegeName,
+        studentIdCard: newUser.studentIdCard,
+        studentRejectReason: newUser.studentRejectReason,
+        proAccessUntil: newUser.proAccessUntil,
       },
     });
   } catch (error) {
@@ -195,6 +202,13 @@ export const loginUser = async (req, res) => {
         dob: user.dob,
         email: user.email,
         profilePic: user.profilePic,
+        plan: user.plan,
+        credits: user.credits,
+        studentVerificationStatus: user.studentVerificationStatus,
+        studentCollegeName: user.studentCollegeName,
+        studentIdCard: user.studentIdCard,
+        studentRejectReason: user.studentRejectReason,
+        proAccessUntil: user.proAccessUntil,
       },
     });
   } catch (error) {
@@ -286,6 +300,13 @@ export const googleAuth = async (req, res) => {
         dob: user.dob,
         email: user.email,
         profilePic: user.profilePic,
+        plan: user.plan,
+        credits: user.credits,
+        studentVerificationStatus: user.studentVerificationStatus,
+        studentCollegeName: user.studentCollegeName,
+        studentIdCard: user.studentIdCard,
+        studentRejectReason: user.studentRejectReason,
+        proAccessUntil: user.proAccessUntil,
       },
     });
   } catch (error) {
@@ -416,6 +437,12 @@ export const updateProfile = async (req, res) => {
       dob: user.dob,
       email: user.email,
       profilePic: user.profilePic,
+      plan: user.plan,
+      credits: user.credits,
+      studentVerificationStatus: user.studentVerificationStatus,
+      studentCollegeName: user.studentCollegeName,
+      studentRejectReason: user.studentRejectReason,
+      proAccessUntil: user.proAccessUntil,
     };
 
     res.status(200).json({
@@ -429,6 +456,67 @@ export const updateProfile = async (req, res) => {
     res.status(500).json({
       success: false,
       message: error.message || "Failed to update profile",
+    });
+  }
+};
+
+export const submitStudentVerification = async (req, res) => {
+  try {
+    if (!isDbConnected()) {
+      return handleDbDisconnected(res);
+    }
+
+    const { userId, email, collegeName, studentIdCard } = req.body;
+
+    if ((!userId && !email) || !collegeName || !studentIdCard) {
+      return res.status(400).json({
+        success: false,
+        message: "College Name and Student ID Card image are required.",
+      });
+    }
+
+    const query = userId ? { _id: userId } : { email: email.toLowerCase().trim() };
+    const user = await User.findOne(query);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    user.studentVerificationStatus = "pending";
+    user.studentCollegeName = collegeName.trim();
+    user.studentIdCard = studentIdCard;
+    user.studentRequestDate = new Date();
+    user.studentRejectReason = "";
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Student verification request submitted successfully! Pending admin approval.",
+      user: {
+        _id: user._id,
+        username: user.username,
+        name: user.name,
+        surname: user.surname,
+        dob: user.dob,
+        email: user.email,
+        profilePic: user.profilePic,
+        plan: user.plan,
+        credits: user.credits,
+        studentVerificationStatus: user.studentVerificationStatus,
+        studentCollegeName: user.studentCollegeName,
+        studentRejectReason: user.studentRejectReason,
+        proAccessUntil: user.proAccessUntil,
+      },
+    });
+  } catch (error) {
+    console.error("Student Verification Error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message || "Failed to submit student verification request",
     });
   }
 };

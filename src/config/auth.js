@@ -27,3 +27,8 @@ export const updateProfileUser = async (data) => {
   const response = await axios.put(`${API}/update-profile`, data);
   return response.data;
 };
+
+export const submitStudentVerificationUser = async (data) => {
+  const response = await axios.post(`${API}/verify-student`, data);
+  return response.data;
+};

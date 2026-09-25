@@ -418,3 +418,74 @@ export const restartServer = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to restart server" });
   }
 };
+
+export const getStudentRequests = async (req, res) => {
+  try {
+    const { status = "all" } = req.query;
+    const query = {};
+    if (status !== "all") {
+      query.studentVerificationStatus = status;
+    } else {
+      query.studentVerificationStatus = { $in: ["pending", "approved", "rejected"] };
+    }
+
+    const requests = await User.find(query)
+      .sort({ studentRequestDate: -1, createdAt: -1 })
+      .select("username name surname email profilePic plan studentVerificationStatus studentCollegeName studentIdCard studentRequestDate studentRejectReason proAccessUntil");
+
+    res.json({ success: true, count: requests.length, requests });
+  } catch (error) {
+    console.error("Get Student Requests Error:", error);
+    res.status(500).json({ success: false, message: "Unable to load student verification requests" });
+  }
+};
+
+export const reviewStudentRequest = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { action, rejectReason } = req.body;
+
+    if (!["approve", "reject"].includes(action)) {
+      return res.status(400).json({ success: false, message: "Invalid action type" });
+    }
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    if (action === "approve") {
+      user.studentVerificationStatus = "approved";
+      user.plan = "Pro";
+      user.credits = Math.max(user.credits || 0, 500);
+      const oneYearFromNow = new Date();
+      oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+      user.proAccessUntil = oneYearFromNow;
+      user.studentRejectReason = "";
+    } else {
+      user.studentVerificationStatus = "rejected";
+      user.studentRejectReason = rejectReason || "ID Card could not be verified";
+    }
+
+    await user.save();
+
+    res.json({
+      success: true,
+      message: action === "approve" ? `Approved! Granted 1 Year Pro Access to ${user.username}` : `Rejected request for ${user.username}`,
+      user: {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        plan: user.plan,
+        credits: user.credits,
+        studentVerificationStatus: user.studentVerificationStatus,
+        studentCollegeName: user.studentCollegeName,
+        studentRejectReason: user.studentRejectReason,
+        proAccessUntil: user.proAccessUntil,
+      },
+    });
+  } catch (error) {
+    console.error("Review Student Request Error:", error);
+    res.status(500).json({ success: false, message: "Failed to update student verification status" });
+  }
+};

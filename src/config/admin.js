@@ -86,3 +86,17 @@ export const updateAdminPaymentStatus = async (paymentId, updates) => {
   });
   return response.data;
 };
+
+export const getStudentRequests = async (status = "all") => {
+  const response = await axios.get(`${ADMIN_API}/student-requests?status=${status}`, {
+    headers: getAuthHeaders(),
+  });
+  return response.data;
+};
+
+export const reviewStudentRequest = async (userId, action, rejectReason = "") => {
+  const response = await axios.patch(`${ADMIN_API}/student-requests/${userId}`, { action, rejectReason }, {
+    headers: getAuthHeaders(),
+  });
+  return response.data;
+};

@@ -1,4 +1,4 @@
-﻿import mongoose from "mongoose";
+import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
@@ -70,6 +70,38 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
       trim: true,
+    },
+
+    studentVerificationStatus: {
+      type: String,
+      enum: ["none", "pending", "approved", "rejected"],
+      default: "none",
+    },
+
+    studentCollegeName: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    studentIdCard: {
+      type: String,
+      default: "",
+    },
+
+    studentRequestDate: {
+      type: Date,
+      default: null,
+    },
+
+    studentRejectReason: {
+      type: String,
+      default: "",
+    },
+
+    proAccessUntil: {
+      type: Date,
+      default: null,
     },
   },
   {

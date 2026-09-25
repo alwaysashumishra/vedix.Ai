@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import "./SettingsModal.css";
 import { ThemeContext } from "../../context/ThemeContext";
 import { assets } from "../../assets/assets";
-import { updateProfileUser } from "../../config/auth";
+import { updateProfileUser, submitStudentVerificationUser } from "../../config/auth";
 import {
   FiUser,
   FiDroplet,
@@ -28,6 +28,8 @@ import {
   FiVolumeX,
   FiCalendar,
   FiCreditCard,
+  FiAward,
+  FiUpload,
 } from "react-icons/fi";
 import Plans from "../../Pages/Plans/Plans";
 
@@ -76,7 +78,69 @@ const SettingsModal = ({ setShowSettings, profile, setProfile, setShowLogin }) =
   // Confirm dialogs state
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-  const [actionSuccessMsg, setActionSuccessMsg] = useState("");
+  // Student Verification State
+  const [collegeName, setCollegeName] = useState(currentUser.studentCollegeName || "");
+  const [studentIdCard, setStudentIdCard] = useState(currentUser.studentIdCard || "");
+  const [studentLoading, setStudentLoading] = useState(false);
+  const [studentMsg, setStudentMsg] = useState({ text: "", isError: false });
+
+  const handleStudentCardUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        setStudentMsg({ text: "ID card image should be less than 5MB", isError: true });
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setStudentIdCard(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSubmitStudentVerification = async (e) => {
+    e.preventDefault();
+    if (!collegeName.trim()) {
+      setStudentMsg({ text: "Please enter your college/university name.", isError: true });
+      return;
+    }
+    if (!studentIdCard) {
+      setStudentMsg({ text: "Please upload a photo of your Student ID Card.", isError: true });
+      return;
+    }
+
+    setStudentLoading(true);
+    setStudentMsg({ text: "", isError: false });
+
+    try {
+      const data = await submitStudentVerificationUser({
+        userId: currentUser._id,
+        email: currentUser.email,
+        collegeName: collegeName.trim(),
+        studentIdCard,
+      });
+
+      if (data.success && data.user) {
+        localStorage.setItem("user", JSON.stringify(data.user));
+        if (setProfile) setProfile(data.user);
+        setStudentMsg({
+          text: "Student verification request submitted successfully! Pending admin verification. ✨",
+          isError: false,
+        });
+      } else {
+        setStudentMsg({ text: data.message || "Failed to submit request", isError: true });
+      }
+    } catch (error) {
+      console.error(error);
+      setStudentMsg({
+        text: error.response?.data?.message || "Failed to submit request. Try again.",
+        isError: true,
+      });
+    } finally {
+      setStudentLoading(false);
+    }
+  };
 
   // Handle ESC key to close modal
   useEffect(() => {
@@ -286,6 +350,14 @@ const SettingsModal = ({ setShowSettings, profile, setProfile, setShowLogin }) =
             >
               <FiCreditCard className="tab-icon" />
               <span>Plans & Subscription</span>
+            </button>
+
+            <button
+              className={`nav-tab-btn ${activeTab === "student" ? "active" : ""}`}
+              onClick={() => setActiveTab("student")}
+            >
+              <FiAward className="tab-icon" />
+              <span>Student Verification 🎓</span>
             </button>
 
             <button
@@ -708,6 +780,147 @@ const SettingsModal = ({ setShowSettings, profile, setProfile, setShowLogin }) =
             {activeTab === "plans" && (
               <div className="tab-content fade-in">
                 <Plans profile={profile} setShowLogin={setShowLogin} isEmbedded={true} />
+              </div>
+            )}
+
+            {/* ================= TAB: STUDENT VERIFICATION ================= */}
+            {activeTab === "student" && (
+              <div className="tab-content fade-in">
+                <div className="tab-header">
+                  <h3>Student Pro Discount 🎓</h3>
+                  <p>Get 1 Year of Free Pro Access by verifying your student ID card.</p>
+                </div>
+
+                {!currentUser || !currentUser.email ? (
+                  <div className="login-prompt-card">
+                    <FiUser className="prompt-icon" />
+                    <h4>Login Required</h4>
+                    <p>Please log in or create an account to submit your student verification request.</p>
+                  </div>
+                ) : (
+                  <div className="student-verification-container">
+                    {/* Status Banners */}
+                    {currentUser.studentVerificationStatus === "approved" && (
+                      <div className="student-status-card approved">
+                        <div className="status-card-header">
+                          <FiCheckCircle className="status-icon" />
+                          <div>
+                            <h4>Student Verification Approved! 🎓</h4>
+                            <p>You have been granted 1 Year of Free Pro Version Access.</p>
+                          </div>
+                        </div>
+                        <div className="status-details-grid">
+                          <div>
+                            <span className="detail-lbl">College / University</span>
+                            <span className="detail-val">{currentUser.studentCollegeName}</span>
+                          </div>
+                          <div>
+                            <span className="detail-lbl">Pro Access Valid Until</span>
+                            <span className="detail-val">
+                              {currentUser.proAccessUntil
+                                ? new Date(currentUser.proAccessUntil).toLocaleDateString(undefined, {
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                  })
+                                : "1 Year From Approval Date"}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {currentUser.studentVerificationStatus === "pending" && (
+                      <div className="student-status-card pending">
+                        <div className="status-card-header">
+                          <FiRefreshCw className="status-icon spin-icon" />
+                          <div>
+                            <h4>Verification Under Review ⏳</h4>
+                            <p>Your request has been submitted and is currently being verified by our Admin team.</p>
+                          </div>
+                        </div>
+                        <div className="status-details-grid">
+                          <div>
+                            <span className="detail-lbl">College / University</span>
+                            <span className="detail-val">{currentUser.studentCollegeName}</span>
+                          </div>
+                          <div>
+                            <span className="detail-lbl">Status</span>
+                            <span className="detail-val highlight-amber">Pending Admin Verification</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {currentUser.studentVerificationStatus === "rejected" && (
+                      <div className="student-status-card rejected">
+                        <div className="status-card-header">
+                          <FiAlertTriangle className="status-icon" />
+                          <div>
+                            <h4>Request Declined</h4>
+                            <p>{currentUser.studentRejectReason || "Your Student ID Card could not be verified."}</p>
+                          </div>
+                        </div>
+                        <p className="resubmit-note">You may re-upload a clearer Student ID card photo below.</p>
+                      </div>
+                    )}
+
+                    {/* Submission Form (only if none, rejected, or re-submitting) */}
+                    {(currentUser.studentVerificationStatus !== "approved" &&
+                      currentUser.studentVerificationStatus !== "pending") && (
+                      <form className="student-submit-form" onSubmit={handleSubmitStudentVerification}>
+                        {studentMsg.text && (
+                          <div className={`settings-msg-banner ${studentMsg.isError ? "error" : "success"}`}>
+                            {studentMsg.isError ? <FiAlertTriangle /> : <FiCheckCircle />}
+                            <span>{studentMsg.text}</span>
+                          </div>
+                        )}
+
+                        <div className="input-group">
+                          <label>College / University Name</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. Stanford University / IIT Delhi"
+                            value={collegeName}
+                            onChange={(e) => setCollegeName(e.target.value)}
+                            required
+                          />
+                        </div>
+
+                        <div className="input-group">
+                          <label>Upload Student ID Card (Image)</label>
+                          <div className="id-card-upload-box">
+                            {studentIdCard ? (
+                              <div className="id-card-preview">
+                                <img src={studentIdCard} alt="Student ID Preview" />
+                                <label htmlFor="id-card-upload-input" className="reupload-badge">
+                                  Change Image
+                                </label>
+                              </div>
+                            ) : (
+                              <label htmlFor="id-card-upload-input" className="upload-placeholder-box">
+                                <FiUpload className="upload-icon" />
+                                <span>Click to upload Student ID Card (Max 5MB)</span>
+                              </label>
+                            )}
+                            <input
+                              id="id-card-upload-input"
+                              type="file"
+                              accept="image/*"
+                              style={{ display: "none" }}
+                              onChange={handleStudentCardUpload}
+                            />
+                          </div>
+                        </div>
+
+                        <button type="submit" className="save-profile-btn" disabled={studentLoading}>
+                          {studentLoading ? <FiRefreshCw className="spin-icon" /> : <FiAward />}
+                          <span>{studentLoading ? "Submitting Request..." : "Submit to Admin for Approval"}</span>
+                        </button>
+                      </form>
+                    )}
+                  </div>
+                )}
               </div>
             )}
 
