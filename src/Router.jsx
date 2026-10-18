@@ -9,6 +9,8 @@ import Admin from "./Pages/Admin/Admin";
 import Notes from "./Pages/Notes/Notes";
 import Groups from "./Pages/Groups/Groups";
 import TravelAgent from "./Pages/TravelAgent/TravelAgent";
+import LandingPage from "./Pages/LandingPage/LandingPage";
+import Login from "./Pages/Login/Login";
 
 const AccessGate = ({ setShowLogin }) => (
   <div className="access-gate">
@@ -82,6 +84,22 @@ const Router = ({ showLogin, setShowLogin, profile, setProfile }) => {
       <Route
         path="/plans"
         element={<Plans profile={profile} setShowLogin={setShowLogin} />}
+      />
+
+      <Route
+        path="/login"
+        element={<Login setProfile={setProfile} setShowLogin={setShowLogin} />}
+      />
+
+      <Route
+        path="/landing"
+        element={
+          <LandingPage
+            setShowLogin={setShowLogin}
+            setProfile={setProfile}
+            profile={profile}
+          />
+        }
       />
 
       <Route

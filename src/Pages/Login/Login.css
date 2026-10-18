@@ -1,0 +1,841 @@
+/* =========================================================
+   VERTEX / VEDIX.AI FULL PAGE AUTH (SIGN IN & SIGN UP)
+   1:1 Faithful Reproduction of Vertex by Uxerflow on Dribbble
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+.vertex-fullpage-auth {
+  width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  overflow-x: hidden;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: #f8fafc;
+}
+
+/* ================= 1. LEFT HALF: DEEP TEAL SHOWCASE PANEL ================= */
+.vertex-fp-left {
+  flex: 0 0 46%;
+  min-height: 100vh;
+  background: linear-gradient(155deg, #093f48 0%, #0d4a54 45%, #052429 100%);
+  color: #ffffff;
+  padding: 48px 48px 36px 54px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+/* Ambient Radial Glow & Wave Patterns */
+.vertex-fp-left::before {
+  content: "";
+  position: absolute;
+  top: -25%;
+  left: -20%;
+  width: 150%;
+  height: 150%;
+  background: radial-gradient(circle at 65% 45%, rgba(6, 182, 212, 0.16) 0%, rgba(20, 184, 166, 0.08) 35%, transparent 65%);
+  pointer-events: none;
+}
+
+/* Subtle angled rays texture */
+.vertex-fp-left::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 10% 90%, rgba(13, 74, 84, 0.8) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.vertex-fp-left-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 10;
+}
+
+.vertex-fp-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 20px;
+  padding: 6px 16px;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+}
+
+.vertex-fp-back-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateX(-2px);
+}
+
+.vertex-fp-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.vertex-fp-logo-ring {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.vertex-fp-logo-ring img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.35);
+  display: block;
+}
+
+.vertex-fp-brand-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 19px;
+  font-weight: 500; /* Font patla / slender */
+  letter-spacing: -0.2px;
+  color: #ffffff;
+}
+
+/* Copy Header */
+.vertex-fp-copy {
+  margin-top: 36px;
+  margin-bottom: 24px;
+  position: relative;
+  z-index: 10;
+}
+
+.vertex-fp-copy h2 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: clamp(32px, 3.2vw, 42px);
+  font-weight: 800;
+  line-height: 1.18;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+  margin: 0 0 14px 0;
+}
+
+.vertex-fp-copy p {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #a2dce2;
+  max-width: 440px;
+  margin: 0;
+}
+
+/* Central Angled Graphic Stage with Floating Orbit Badges */
+.vertex-fp-graphic-stage {
+  position: relative;
+  width: 100%;
+  min-height: 340px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0 30px 0;
+  z-index: 10;
+}
+
+/* Floating Orbit Badges */
+.orbit-pill {
+  position: absolute;
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 7px 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  z-index: 20;
+  animation: floatOrbit 4s ease-in-out infinite alternate;
+}
+
+@keyframes floatOrbit {
+  0% { transform: translateY(0px); }
+  100% { transform: translateY(-8px); }
+}
+
+.pill-calendar {
+  top: 6%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.pill-slack {
+  top: 2%;
+  right: 18%;
+  animation-delay: 0.6s;
+}
+
+.pill-shopify {
+  bottom: 28%;
+  left: 4%;
+  animation-delay: 1.2s;
+}
+
+.pill-googleads {
+  bottom: 18%;
+  right: 12%;
+  animation-delay: 0.4s;
+}
+
+.pill-zendesk {
+  bottom: 6%;
+  left: 22%;
+  animation-delay: 1.8s;
+}
+
+.pill-robinhood {
+  bottom: -2%;
+  right: 32%;
+  background: #0284c7;
+  color: #ffffff;
+  animation-delay: 1s;
+}
+
+.cursor-arrow-indicator {
+  font-size: 12px;
+  color: #38bdf8;
+  transform: rotate(-30deg);
+  display: inline-block;
+}
+
+.orbit-icon {
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+}
+
+/* Central 3D Angled Performance Dashboard Card */
+.vertex-fp-angled-card {
+  width: 90%;
+  max-width: 390px;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 22px 24px;
+  color: #0f172a;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+  transform: perspective(800px) rotateY(-8deg) rotateX(5deg) rotateZ(-2.5deg);
+  position: relative;
+  z-index: 10;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+}
+
+.angled-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.card-head-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  color: #0f172a;
+}
+
+.head-chart-icon {
+  font-size: 15px;
+}
+
+.mini-pill-btn {
+  font-size: 11px;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 2px 7px;
+}
+
+/* Bar Chart Graphic */
+.angled-bar-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+  height: 105px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.bar-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  flex: 1;
+}
+
+.bar-group .bar {
+  width: 8px;
+  border-radius: 4px;
+}
+
+.bar-tall { height: 60px; }
+.bar-high { height: 48px; }
+.bar-mid  { height: 36px; }
+.bar-short { height: 22px; }
+
+.bar-dark { background: #0f172a; }
+.bar-cyan { background: #06b6d4; }
+.bar-teal { background: #14b8a6; }
+
+.bar-label {
+  font-size: 9.5px;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+/* Floating Tooltip Bubble on the Angled Card */
+.angled-tooltip-bubble {
+  position: absolute;
+  top: 32px;
+  right: 14px;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 10px 14px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  z-index: 15;
+}
+
+.tooltip-tag-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.avatar-mini-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #0284c7;
+}
+
+.tooltip-stat-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10.5px;
+  line-height: 1.6;
+}
+
+.stat-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.dot-cyan { background: #06b6d4; }
+.dot-teal { background: #14b8a6; }
+.dot-dark { background: #0f172a; }
+
+.stat-name {
+  color: #64748b;
+  flex: 1;
+}
+
+.stat-val {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* Bottom Left Copyright */
+.vertex-fp-left-footer {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  position: relative;
+  z-index: 10;
+  margin-top: 16px;
+}
+
+.vertex-fp-left-footer p {
+  margin: 0;
+}
+
+/* ================= 2. RIGHT HALF: ARCHITECTURAL BLUEPRINT GRID & CARD ================= */
+.vertex-fp-right {
+  flex: 1;
+  min-height: 100vh;
+  background-color: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 32px;
+  position: relative;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+/* Architectural Blueprint Grid Lines from Dribbble Reference */
+.blueprint-grid-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: flex;
+  justify-content: space-around;
+  opacity: 0.55;
+}
+
+.blueprint-col {
+  width: 1px;
+  height: 100%;
+  background: repeating-linear-gradient(
+    to bottom,
+    #e2e8f0,
+    #e2e8f0 8px,
+    transparent 8px,
+    transparent 16px
+  );
+}
+
+.blueprint-hatch {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 48px;
+  background: repeating-linear-gradient(
+    45deg,
+    #f1f5f9,
+    #f1f5f9 2px,
+    transparent 2px,
+    transparent 10px
+  );
+}
+
+.top-hatch { top: 0; }
+.bottom-hatch { bottom: 0; }
+
+/* Center Floating White Card (Exact Match to Reference Image) */
+.vertex-fp-card-inner {
+  position: relative;
+  z-index: 10;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 28px;
+  padding: 40px 38px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+}
+
+/* Corner Rivet Screws */
+.rivet-dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  border: 1.5px solid #cbd5e1;
+}
+
+.rivet-tl { top: 14px; left: 14px; }
+.rivet-tr { top: 14px; right: 14px; }
+.rivet-bl { bottom: 14px; left: 14px; }
+.rivet-br { bottom: 14px; right: 14px; }
+
+/* Centered Circular Logo Badge */
+.vertex-fp-card-logo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.card-logo-badge {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1.5px solid rgba(16, 185, 129, 0.45);
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.22);
+}
+
+.card-logo-badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.35);
+  display: block;
+}
+
+/* Card Header */
+.vertex-fp-card-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.vertex-fp-card-header h3 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 23px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.4px;
+}
+
+.vertex-fp-card-header p {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Error Banner */
+.vertex-error-alert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 12.5px;
+  margin-bottom: 18px;
+}
+
+.vertex-error-alert svg {
+  flex-shrink: 0;
+}
+
+/* Form */
+.vertex-actual-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.vertex-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.vertex-two-col-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.field-half {
+  display: flex;
+  flex-direction: column;
+}
+
+.field-half label,
+.vertex-form-field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 6px;
+}
+
+.vertex-form-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.field-label-split {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.field-label-split label {
+  margin-bottom: 0;
+}
+
+.forgot-pass-btn {
+  background: transparent;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  color: #0284c7;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: opacity 0.2s;
+}
+
+.forgot-pass-btn:hover {
+  opacity: 0.8;
+}
+
+/* Inputs */
+.vertex-actual-form input[type="text"],
+.vertex-actual-form input[type="email"],
+.vertex-actual-form input[type="password"],
+.vertex-actual-form input[type="date"] {
+  width: 100%;
+  height: 46px;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  padding: 0 16px;
+  font-size: 14px;
+  color: #0f172a;
+  outline: none;
+  box-sizing: border-box;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.vertex-actual-form input:focus {
+  border-color: #0f172a;
+  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08);
+}
+
+.vertex-actual-form input::placeholder {
+  color: #94a3b8;
+  font-size: 13.5px;
+}
+
+/* Password Eye Toggle */
+.password-input-with-eye {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-with-eye input {
+  padding-right: 44px !important;
+}
+
+.password-eye-toggle {
+  position: absolute;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  padding: 4px;
+  transition: color 0.2s ease;
+}
+
+.password-eye-toggle:hover {
+  color: #0f172a;
+}
+
+/* Password Checklist in Sign Up */
+.vertex-password-checklist {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.checklist-items {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 10px;
+  font-size: 11.5px;
+  color: #64748b;
+}
+
+.checklist-items span.checked {
+  color: #10b981;
+  font-weight: 600;
+}
+
+/* Primary Black Pill Submit Button */
+.vertex-submit-btn {
+  width: 100%;
+  height: 48px;
+  border-radius: 24px;
+  background: #0f172a;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 6px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.25);
+  transition: all 0.2s ease;
+}
+
+.vertex-submit-btn:hover:not(:disabled) {
+  background: #1e293b;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.3);
+}
+
+.vertex-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Social Buttons Row */
+.vertex-social-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.vertex-social-btn {
+  height: 44px;
+  border-radius: 22px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #334155;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.vertex-social-btn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #0f172a;
+  transform: translateY(-1px);
+}
+
+.guest-icon {
+  font-size: 16px;
+  color: #10b981;
+}
+
+/* Bottom State Switch Pill */
+.vertex-bottom-switch {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.switch-link-btn {
+  background: transparent;
+  border: none;
+  font-size: 13px;
+  color: #64748b;
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.2s ease;
+}
+
+.switch-link-btn strong {
+  color: #0f172a;
+  margin-left: 3px;
+}
+
+.switch-link-btn:hover strong {
+  color: #0284c7;
+  text-decoration: underline;
+}
+
+/* Legal Terms Disclaimer */
+.vertex-legal-disclaimer {
+  text-align: center;
+  margin-top: 18px;
+  font-size: 11.5px;
+  color: #94a3b8;
+  line-height: 1.5;
+}
+
+.vertex-legal-disclaimer p {
+  margin: 0;
+}
+
+.vertex-legal-disclaimer span {
+  color: #64748b;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+/* ================= RESPONSIVE DESIGN ================= */
+@media (max-width: 1050px) {
+  .vertex-fullpage-auth {
+    flex-direction: column;
+  }
+
+  .vertex-fp-left {
+    flex: none;
+    min-height: auto;
+    padding: 36px 24px 28px 24px;
+  }
+
+  .vertex-fp-graphic-stage {
+    min-height: 240px;
+    margin: 10px 0;
+  }
+
+  .vertex-fp-angled-card {
+    max-width: 320px;
+    transform: none;
+  }
+
+  .vertex-fp-right {
+    flex: none;
+    min-height: auto;
+    padding: 32px 16px 48px 16px;
+  }
+
+  .vertex-fp-card-inner {
+    padding: 32px 24px;
+  }
+}
+
+@media (max-width: 600px) {
+  .vertex-fp-left {
+    display: none;
+  }
+
+  .vertex-fp-card-inner {
+    border: none;
+    box-shadow: none;
+    padding: 20px 12px;
+  }
+
+  .rivet-dot {
+    display: none;
+  }
+}

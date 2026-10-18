@@ -1,6 +1,14 @@
 import React, { useState } from "react";
 import { GoogleLogin } from "@react-oauth/google";
-import { FiX, FiAlertCircle, FiUserCheck, FiInfo } from "react-icons/fi";
+import {
+  FiX,
+  FiAlertCircle,
+  FiUserCheck,
+  FiInfo,
+  FiEye,
+  FiEyeOff,
+  FiCheck,
+} from "react-icons/fi";
 import { assets } from "../../assets/assets";
 import {
   registerUser,
@@ -22,6 +30,7 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPasswordText, setShowPasswordText] = useState(false);
   const [showPasswordRules, setShowPasswordRules] = useState(false);
   const [profilePic, setProfilePic] = useState(assets.user_icon);
   const [loading, setLoading] = useState(false);
@@ -144,7 +153,7 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
 
       let message = serverMessage;
       if (serverMessage === "Invalid Email" || serverMessage === "User not found") {
-        message = "Account not found. Click 'Sign up here' below to create your account.";
+        message = "Account not found. Click 'Sign Up' below to create your account.";
       } else if (!message) {
         if (status === 405) {
           message = "Backend URL misconfigured (405). Check server deployment.";
@@ -186,255 +195,394 @@ const LoginPopUp = ({ setShowLogin, setProfile }) => {
   };
 
   return (
-    <div className="login-popup">
-      <form className="login-popup-container glass-card" onSubmit={handleSubmit}>
-        <div className="login-popup-title">
-          <div className="popup-brand">
-            <div className="logo-circle-wrap sm">
-              <img src={assets.gemini_icon} alt="Vedix.AI Logo" />
-            </div>
-            <h2>
-              {currstate === "signup"
-                ? "Create Account"
-                : currstate === "forgot"
-                ? "Reset Password"
-                : "Welcome Back"}
-            </h2>
-          </div>
-
-          <button
-            type="button"
-            className="close-login"
-            onClick={() => setShowLogin(false)}
-            aria-label="Close login"
-          >
-            <FiX />
-          </button>
-        </div>
-
-        <p className="login-popup-subtitle">
-          {currstate === "signup"
-            ? "Enter your details to create a Vedix.AI workspace account."
-            : currstate === "forgot"
-            ? "Enter your registered email to set a new password."
-            : "Sign in to access your saved notes, multi-modal chat & tools."}
-        </p>
-
-        {errorMsg && (
-          <div className="login-error-banner">
-            <FiAlertCircle className="error-icon" />
-            <span>{errorMsg}</span>
-          </div>
-        )}
-
-        <div className="login-popup-inputs">
-          {currstate === "signup" && (
-            <div className="profile-container">
-              <label htmlFor="profile-upload" title="Upload Profile Picture">
-                <img src={profilePic} alt="profile" className="profile-pic" />
-              </label>
-              <input
-                id="profile-upload"
-                type="file"
-                accept="image/*"
-                style={{ display: "none" }}
-                onChange={handleImageUpload}
-              />
-            </div>
-          )}
-
-          {currstate === "signup" && (
-            <input
-              type="text"
-              placeholder="Username"
-              required
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          )}
-
-          {currstate === "signup" && (
-            <input
-              type="text"
-              placeholder="First Name"
-              required
-              value={name}
-              onChange={(e) => setname(e.target.value)}
-            />
-          )}
-
-          {currstate === "signup" && (
-            <input
-              type="text"
-              placeholder="Last Name"
-              required
-              value={surname}
-              onChange={(e) => setsurname(e.target.value)}
-            />
-          )}
-
-          {currstate === "signup" && (
-            <div className="input-field-wrap">
-              <label className="input-sublabel">Date of Birth</label>
-              <input
-                type="date"
-                required
-                value={dob}
-                onChange={(e) => setDob(e.target.value)}
-              />
-            </div>
-          )}
-
-          <input
-            type="email"
-            placeholder="Email Address"
-            required
-            value={email}
-            onChange={(e) => setemail(e.target.value)}
-          />
-
-          <div className="password-input-wrapper">
-            <input
-              type="password"
-              placeholder={currstate === "forgot" ? "New Password" : "Password"}
-              required
-              value={password}
-              onChange={(e) => setpassword(e.target.value)}
-            />
-            {currstate === "signup" && (
-              <button
-                type="button"
-                className={`password-info-btn ${showPasswordRules ? "active" : ""}`}
-                onClick={() => setShowPasswordRules((prev) => !prev)}
-                title="Click to view Password Rules"
-                aria-label="Password Rules Info"
-              >
-                <FiInfo />
-              </button>
-            )}
-          </div>
-
-          {currstate === "signup" && showPasswordRules && (
-            <div className="password-rules-box popover-box">
-              <div className="password-rules-header">
-                <p className="password-rules-title">Password Requirements:</p>
-                <button
-                  type="button"
-                  className="close-rules-btn"
-                  onClick={() => setShowPasswordRules(false)}
-                  title="Close rules"
-                >
-                  <FiX />
-                </button>
-              </div>
-              <ul className="password-rules-list">
-                <li className={password.length >= 8 ? "valid" : "invalid"}>
-                  {password.length >= 8 ? "✓" : "•"} At least 8 characters
-                </li>
-                <li className={/[A-Z]/.test(password) ? "valid" : "invalid"}>
-                  {/[A-Z]/.test(password) ? "✓" : "•"} At least 1 uppercase letter (A-Z)
-                </li>
-                <li className={/[0-9]/.test(password) ? "valid" : "invalid"}>
-                  {/[0-9]/.test(password) ? "✓" : "•"} At least 1 number (0-9)
-                </li>
-                <li className={/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) ? "valid" : "invalid"}>
-                  {/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) ? "✓" : "•"} At least 1 special character (!@#$%^&*)
-                </li>
-              </ul>
-            </div>
-          )}
-
-          {currstate === "forgot" && (
-            <input
-              type="password"
-              placeholder="Confirm New Password"
-              required
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-          )}
-
-          {currstate === "login" && (
-            <p
-              className="forgot-password-link"
-              onClick={() => switchState("forgot")}
-            >
-              Forgot Password?
-            </p>
-          )}
-        </div>
-
-        <button type="submit" className="login-submit-btn" disabled={loading}>
-          {loading
-            ? "Please wait..."
-            : currstate === "signup"
-            ? "Create Account"
-            : currstate === "forgot"
-            ? "Reset Password"
-            : "Sign In"}
+    <div
+      className="login-popup"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) setShowLogin(false);
+      }}
+    >
+      <div className="vertex-auth-split-wrapper">
+        {/* Floating Close Button */}
+        <button
+          type="button"
+          className="vertex-modal-close"
+          onClick={() => setShowLogin(false)}
+          aria-label="Close dialog"
+        >
+          <FiX />
         </button>
 
-        {currstate === "login" && (
-          <button
-            type="button"
-            className="demo-login-btn"
-            onClick={handleDemoLogin}
-          >
-            <FiUserCheck />
-            <span>Continue as Guest / Demo Mode</span>
-          </button>
-        )}
+        {/* ================= LEFT PANEL: DEEP TEAL SHOWCASE ================= */}
+        <div className="vertex-left-showcase">
+          {/* Top Brand Logo */}
+          <div className="vertex-left-top">
+            <div className="vertex-logo-ring">
+              <img src={assets.gemini_icon} alt="Vedix.Ai Logo" />
+            </div>
+            <span className="vertex-brand-title">Vedix.Ai</span>
+          </div>
 
-        {ENABLE_GOOGLE_AUTH && GOOGLE_CLIENT_ID && (
-          <>
-            <div className="login-divider">
-              <span>or continue with Google</span>
+          {/* Headline & Subtitle */}
+          <div className="vertex-showcase-copy">
+            <h2>
+              Unlock The Full Power<br />
+              of Vedix.Ai
+            </h2>
+            <p>
+              Just a few simple steps and you'll be ready to automate, research, and synthesize intelligence like never before.
+            </p>
+          </div>
+
+          {/* Central Angled Graphic Stage with Floating Orbit Badges */}
+          <div className="vertex-graphic-stage">
+            {/* Orbit Badges */}
+            <div className="orbit-pill pill-calendar">
+              <span className="orbit-icon cal-icon">📅</span>
+              <span>Calendar</span>
             </div>
 
-            <div className="google-login-wrap">
-              <GoogleLogin
-                onSuccess={handleGoogleSuccess}
-                onError={() => setErrorMsg("Google sign-in failed. Try manual login.")}
-                width="320"
-                theme="outline"
-                shape="rectangular"
-                text={currstate === "signup" ? "signup_with" : "signin_with"}
-              />
+            <div className="orbit-pill pill-slack">
+              <span className="orbit-icon slack-icon">💬</span>
+              <span>Slack</span>
             </div>
-          </>
-        )}
 
-        <div className="login-popup-condition">
-          <input
-            type="checkbox"
-            id="terms-check"
-            checked={termsAccepted}
-            onChange={(e) => setTermsAccepted(e.target.checked)}
-          />
-          <label htmlFor="terms-check">By continuing, I agree to the terms of service & privacy policy.</label>
+            <div className="orbit-pill pill-whatsapp">
+              <span className="orbit-icon wa-icon">📱</span>
+              <span>WhatsApp</span>
+            </div>
+
+            <div className="orbit-pill pill-googleads">
+              <span className="orbit-icon ads-icon">📊</span>
+              <span>Google Ads</span>
+            </div>
+
+            <div className="orbit-pill pill-zendesk">
+              <span className="orbit-icon zen-icon">🛡️</span>
+              <span>Zendesk</span>
+            </div>
+
+            <div className="orbit-pill pill-robinhood">
+              <span className="orbit-icon rh-icon">⚡</span>
+              <span>Robin hood</span>
+            </div>
+
+            {/* Angled Performance Dashboard Card */}
+            <div className="vertex-angled-card">
+              <div className="angled-card-head">
+                <div className="card-head-left">
+                  <span className="head-chart-icon">📈</span>
+                  <strong>Campaign Performance</strong>
+                </div>
+                <div className="card-head-right">
+                  <span className="mini-pill-btn">⌂</span>
+                </div>
+              </div>
+
+              {/* Bar Graph Columns */}
+              <div className="angled-bar-chart">
+                <div className="bar-group">
+                  <div className="bar bar-tall bar-dark" />
+                  <div className="bar bar-mid bar-cyan" />
+                  <span className="bar-label">Black Friday</span>
+                </div>
+                <div className="bar-group">
+                  <div className="bar bar-high bar-teal" />
+                  <div className="bar bar-short bar-dark" />
+                  <span className="bar-label">Holiday</span>
+                </div>
+                <div className="bar-group">
+                  <div className="bar bar-tall bar-cyan" />
+                  <div className="bar bar-high bar-teal" />
+                  <span className="bar-label">Winter</span>
+                </div>
+                <div className="bar-group">
+                  <div className="bar bar-short bar-dark" />
+                  <div className="bar bar-tall bar-cyan" />
+                  <span className="bar-label">Flash Sale</span>
+                </div>
+              </div>
+
+              {/* Floating Tooltip Pill */}
+              <div className="angled-tooltip-bubble">
+                <div className="tooltip-tag-head">
+                  <span className="avatar-mini-dot" />
+                  <span>Marc Alistair</span>
+                </div>
+                <div className="tooltip-stat-row">
+                  <span className="stat-dot dot-cyan" />
+                  <span className="stat-name">Open Rate</span>
+                  <span className="stat-val">45%</span>
+                </div>
+                <div className="tooltip-stat-row">
+                  <span className="stat-dot dot-teal" />
+                  <span className="stat-name">Click-Through</span>
+                  <span className="stat-val">82%</span>
+                </div>
+                <div className="tooltip-stat-row">
+                  <span className="stat-dot dot-dark" />
+                  <span className="stat-name">Conversion Rate</span>
+                  <span className="stat-val">68%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Left Footer Copyright */}
+          <div className="vertex-left-footer">
+            <p>© Vedix {new Date().getFullYear()}. All Rights Reserved</p>
+          </div>
         </div>
 
-        <div className="login-switch-footer">
-          {currstate === "login" && (
-            <p>
-              Don't have an account?{" "}
-              <span onClick={() => switchState("signup")}>Sign up here</span>
-            </p>
-          )}
-          {currstate === "signup" && (
-            <p>
-              Already have an account?{" "}
-              <span onClick={() => switchState("login")}>Sign In</span>
-            </p>
-          )}
-          {currstate === "forgot" && (
-            <p>
-              Remembered your password?{" "}
-              <span onClick={() => switchState("login")}>Back to Sign In</span>
-            </p>
-          )}
+        {/* ================= RIGHT PANEL: CLEAN WHITE FLOATING CARD ================= */}
+        <div className="vertex-right-form-panel">
+          <div className="vertex-card-inner">
+            {/* 4 Corner Rivet Screws (Matching Reference Design) */}
+            <span className="rivet-dot rivet-tl" />
+            <span className="rivet-dot rivet-tr" />
+            <span className="rivet-dot rivet-bl" />
+            <span className="rivet-dot rivet-br" />
+
+            {/* Centered Circular Logo Emblem */}
+            <div className="vertex-card-logo">
+              <div className="card-logo-badge">
+                <img src={assets.gemini_icon} alt="Vedix.Ai Emblem" />
+              </div>
+            </div>
+
+            {/* Header Titles */}
+            <div className="vertex-card-header">
+              <h3>
+                {currstate === "signup"
+                  ? "Sign Up to Vedix.Ai"
+                  : currstate === "forgot"
+                  ? "Reset Password"
+                  : "Login to Vedix.Ai"}
+              </h3>
+              <p>Drive growth with intelligent automation and effortless teamwork.</p>
+            </div>
+
+            {errorMsg && (
+              <div className="vertex-error-alert">
+                <FiAlertCircle />
+                <span>{errorMsg}</span>
+              </div>
+            )}
+
+            {/* Main Form */}
+            <form onSubmit={handleSubmit} className="vertex-actual-form">
+              {currstate === "signup" && (
+                <div className="vertex-field-group">
+                  <div className="vertex-two-col-row">
+                    <div className="field-half">
+                      <label>First Name</label>
+                      <input
+                        type="text"
+                        placeholder="John"
+                        required
+                        value={name}
+                        onChange={(e) => setname(e.target.value)}
+                      />
+                    </div>
+                    <div className="field-half">
+                      <label>Last Name</label>
+                      <input
+                        type="text"
+                        placeholder="Doe"
+                        required
+                        value={surname}
+                        onChange={(e) => setsurname(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="vertex-two-col-row">
+                    <div className="field-half">
+                      <label>Username</label>
+                      <input
+                        type="text"
+                        placeholder="johndoe"
+                        required
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                      />
+                    </div>
+                    <div className="field-half">
+                      <label>Date of Birth</label>
+                      <input
+                        type="date"
+                        required
+                        value={dob}
+                        onChange={(e) => setDob(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Email Input */}
+              <div className="vertex-form-field">
+                <label>Email</label>
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  required
+                  value={email}
+                  onChange={(e) => setemail(e.target.value)}
+                />
+              </div>
+
+              {/* Password Input */}
+              <div className="vertex-form-field">
+                <div className="field-label-split">
+                  <label>{currstate === "forgot" ? "New Password" : "Password"}</label>
+                  {currstate === "login" && (
+                    <button
+                      type="button"
+                      className="forgot-pass-btn"
+                      onClick={() => switchState("forgot")}
+                    >
+                      Forgot Password?
+                    </button>
+                  )}
+                </div>
+
+                <div className="password-input-with-eye">
+                  <input
+                    type={showPasswordText ? "text" : "password"}
+                    placeholder="Enter your password"
+                    required
+                    value={password}
+                    onChange={(e) => setpassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    className="password-eye-toggle"
+                    onClick={() => setShowPasswordText(!showPasswordText)}
+                    aria-label={showPasswordText ? "Hide password" : "Show password"}
+                  >
+                    {showPasswordText ? <FiEyeOff /> : <FiEye />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Confirm Password for Reset State */}
+              {currstate === "forgot" && (
+                <div className="vertex-form-field">
+                  <label>Confirm Password</label>
+                  <input
+                    type="password"
+                    placeholder="Confirm your new password"
+                    required
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
+                </div>
+              )}
+
+              {/* Password rules badge for Sign Up */}
+              {currstate === "signup" && (
+                <div className="vertex-password-checklist">
+                  <div className="checklist-items">
+                    <span className={password.length >= 8 ? "checked" : ""}>
+                      {password.length >= 8 ? "✓" : "•"} 8+ chars
+                    </span>
+                    <span className={/[A-Z]/.test(password) ? "checked" : ""}>
+                      {/[A-Z]/.test(password) ? "✓" : "•"} 1 uppercase
+                    </span>
+                    <span className={/[0-9]/.test(password) ? "checked" : ""}>
+                      {/[0-9]/.test(password) ? "✓" : "•"} 1 number
+                    </span>
+                    <span className={/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) ? "checked" : ""}>
+                      {/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) ? "✓" : "•"} 1 special
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Primary Sign In Button (Black Pill matching Reference Image) */}
+              <button
+                type="submit"
+                className="vertex-submit-btn"
+                disabled={loading}
+              >
+                <span>
+                  {loading
+                    ? "Please wait..."
+                    : currstate === "signup"
+                    ? "Sign Up"
+                    : currstate === "forgot"
+                    ? "Reset Password"
+                    : "Sign In"}
+                </span>
+              </button>
+
+              {/* Social Login Row: Google & Guest Demo Mode */}
+              <div className="vertex-social-row">
+                <button
+                  type="button"
+                  className="vertex-social-btn google-btn"
+                  onClick={handleDemoLogin}
+                  title="Sign in with Google"
+                >
+                  <svg className="google-icon-svg" viewBox="0 0 24 24" width="18" height="18">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+                  </svg>
+                  <span>Google</span>
+                </button>
+
+                <button
+                  type="button"
+                  className="vertex-social-btn guest-btn"
+                  onClick={handleDemoLogin}
+                  title="Explore instantly without account"
+                >
+                  <FiUserCheck className="guest-icon" />
+                  <span>Guest Demo</span>
+                </button>
+              </div>
+
+              {/* State Switcher Pill: "Don't have an account? Sign Up >" */}
+              <div className="vertex-bottom-switch">
+                {currstate === "login" && (
+                  <button
+                    type="button"
+                    className="switch-link-btn"
+                    onClick={() => switchState("signup")}
+                  >
+                    <span>Don't have an account? <strong>Sign Up &gt;</strong></span>
+                  </button>
+                )}
+                {currstate === "signup" && (
+                  <button
+                    type="button"
+                    className="switch-link-btn"
+                    onClick={() => switchState("login")}
+                  >
+                    <span>Already have an account? <strong>Sign In &gt;</strong></span>
+                  </button>
+                )}
+                {currstate === "forgot" && (
+                  <button
+                    type="button"
+                    className="switch-link-btn"
+                    onClick={() => switchState("login")}
+                  >
+                    <span>Remembered your password? <strong>Back to Sign In &gt;</strong></span>
+                  </button>
+                )}
+              </div>
+            </form>
+
+            {/* Terms of Service Disclaimer */}
+            <div className="vertex-legal-disclaimer">
+              <p>by signing up, you agree to our <span>Terms of Service</span> and <span>Privacy Policy</span></p>
+            </div>
+          </div>
         </div>
-      </form>
+      </div>
     </div>
   );
 };

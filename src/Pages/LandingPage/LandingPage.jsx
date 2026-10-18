@@ -1,9 +1,11 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 import {
+  FiArrowUpRight,
   FiArrowRight,
   FiZap,
   FiCpu,
@@ -19,9 +21,22 @@ import {
   FiLock,
   FiMenu,
   FiX,
+  FiSun,
+  FiMoon,
+  FiChevronLeft,
+  FiChevronRight,
+  FiBell,
+  FiLayers,
+  FiBarChart2,
+  FiCreditCard,
+  FiStar,
 } from "react-icons/fi";
 import { assets } from "../../assets/assets";
-import ParticleCanvas from "./ParticleCanvas";
+import { ThemeContext } from "../../context/ThemeContext";
+import { getPublicConfig } from "../../config/publicConfig";
+import PaymentModal from "../../components/PaymentModal/PaymentModal";
+import aiAgentHero from "../../assets/ai_agent_hero.jpg";
+import aiAgentPersona from "../../assets/ai_agent_persona.jpg";
 import "./LandingPage.css";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -33,7 +48,179 @@ const QUICK_PROMPTS = [
   "Plan a 3-day trip to Tokyo",
 ];
 
-const LandingPage = ({ setShowLogin }) => {
+const TRUSTED_INNOVATORS = [
+  { name: "talkdesk", tag: "talkdäsk" },
+  { name: "gusto", tag: "gusto" },
+  { name: "fivetran", tag: "Fivetran" },
+  { name: "yotpo", tag: "yotpo." },
+  { name: "vts", tag: "VTS" },
+  { name: "exabeam", tag: "exabeam" },
+  { name: "weave", tag: "weave" },
+];
+
+const TESTIMONIALS = [
+  {
+    name: "Amira Khalid",
+    role: "CEO at weave",
+    company: "weave",
+    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=120&auto=format&fit=crop&q=80",
+    quote: "Vedix's AI agents cut our manual workflows by 40% in the first month. Our team finally focuses on strategy instead of repetitive tasks. The data insights agent turned our raw numbers into actionable reports. Decision-making has never been this fast and precise. We were skeptical at first, but Vedix AI feels like having an extra team of experts. The productivity boost is undeniable.",
+  },
+  {
+    name: "Dr. Marcus Vance",
+    role: "Lead Research Fellow at BioMatrix Labs",
+    company: "BioMatrix",
+    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80",
+    quote: "The Research Paper Analyzer in Vedix synthesized a 48-page technical paper into rigorous methodology notes and viva questions in under 15 seconds. For our post-doctoral research group, it has become an indispensable daily collaborator.",
+  },
+  {
+    name: "Elena Rostova",
+    role: "VP of People at TalentScale",
+    company: "TalentScale",
+    avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=120&auto=format&fit=crop&q=80",
+    quote: "Vedix's Resume ATS agent accurately highlighted missing technical skill strings across hundreds of candidate submissions. Our hiring turnaround dropped from weeks to hours with zero loss in vetting quality.",
+  },
+];
+
+const VEDIX_SOLUTIONS = [
+  {
+    title: "Vedix 3.5 Pro Reasoning Chat",
+    role: "Multi-Model Neural Synthesis",
+    desc: "Seamlessly switch between Google Gemini Pro, Flash, and Thinking engines for deep mathematical proofs, code generation, and context-aware chat.",
+    icon: <FiCpu />,
+    tag: "Multi-Model 3.5",
+  },
+  {
+    title: "Resume ATS Diagnostic Agent",
+    role: "Smart ATS Matching & Score Engine",
+    desc: "Parse PDF and DOCX resumes instantly. Identify missing industry keywords, extract scoring metrics, and unlock direct high-match job opportunities.",
+    icon: <FiFileText />,
+    tag: "ATS Algorithm",
+  },
+  {
+    title: "Academic Paper Analyzer",
+    role: "Literature Decomposition & Viva Notes",
+    desc: "Upload complex peer-reviewed PDFs. Generate executive methodology summaries, extract mathematical formulas, and practice defense questions.",
+    icon: <FiBookOpen />,
+    tag: "Research Engine",
+  },
+  {
+    title: "Real-Time News Telemetry",
+    role: "24/7 Global Intelligence Stream",
+    desc: "Track breaking tech trends, world category feeds, and real-time live cricket scorecards with multi-lingual instant summarization.",
+    icon: <FiCompass />,
+    tag: "Live Feed 24/7",
+  },
+  {
+    title: "Autonomous Travel Agent",
+    role: "Itinerary & Flight Budgeting",
+    desc: "Draft multi-day custom itineraries, discover top-rated accommodations, and calculate real-time flight budget projections in seconds.",
+    icon: <FiGlobe />,
+    tag: "Travel AI",
+  },
+  {
+    title: "Study Vault & Team Workspaces",
+    role: "Collaborative Intelligence & Notes",
+    desc: "Save important Q&As directly into your encrypted note vault, organize study groups, and export formatted insights directly to WhatsApp.",
+    icon: <FiUsers />,
+    tag: "Team Vault",
+  },
+];
+
+const buildPlans = (siteConfig = {}) => [
+  {
+    name: "Free",
+    price: "₹0",
+    priceNum: "0",
+    period: "forever",
+    badge: "Current starter",
+    icon: FiLock,
+    tone: "free",
+    description: "For trying Vedix AI with basic daily limits.",
+    features: [
+      `${siteConfig.freeDailyLimit || 5} AI prompts per day`,
+      "1 resume analysis per week",
+      "Basic Explore news feed",
+      "Limited image upload prompts",
+      "Community-level speed",
+    ],
+    cta: "Start free",
+  },
+  {
+    name: "Pro",
+    price: `₹${siteConfig.proPlanPrice || 199}`,
+    priceNum: `${siteConfig.proPlanPrice || 199}`,
+    period: "month",
+    badge: "Most useful",
+    icon: FiZap,
+    tone: "pro",
+    description: "For students and job seekers who use AI every week.",
+    features: [
+      "100 AI prompts per day",
+      "20 resume analyses per month",
+      "Role-based job and internship links",
+      "Research paper summaries",
+      "Faster response priority",
+    ],
+    cta: "Upgrade via UPI QR",
+    featured: true,
+  },
+  {
+    name: "Premium",
+    price: `₹${siteConfig.premiumPlanPrice || 499}`,
+    priceNum: `${siteConfig.premiumPlanPrice || 499}`,
+    period: "month",
+    badge: "Power plan",
+    icon: FiStar,
+    tone: "premium",
+    description: "For serious career prep, research, and regular AI workflows.",
+    features: [
+      "Unlimited AI prompts",
+      "Unlimited resume analyses",
+      "Advanced career recommendations",
+      "Priority AI processing",
+      "Early access to new tools",
+    ],
+    cta: "Go Premium via UPI QR",
+  },
+];
+
+const LandingPage = ({ setShowLogin, setProfile, profile }) => {
+  const navigate = useNavigate();
+  const { theme = "light", toggleTheme } = useContext(ThemeContext) || {};
+  const isLight = theme === "light";
+
+  const [siteConfig, setSiteConfig] = useState({});
+  const [selectedPlan, setSelectedPlan] = useState(null);
+
+  const activePlan = profile?.plan || "Free";
+  const plans = useMemo(() => buildPlans(siteConfig), [siteConfig]);
+
+  useEffect(() => {
+    getPublicConfig()
+      .then(setSiteConfig)
+      .catch(() => setSiteConfig({}));
+  }, []);
+
+  const handlePlanClick = (plan) => {
+    if (!profile) {
+      navigate("/login");
+      return;
+    }
+
+    if (plan.name === "Free") {
+      alert("Free plan is currently active on your account.");
+      return;
+    }
+
+    if (activePlan === plan.name) {
+      alert(`You are already subscribed to the ${plan.name} plan!`);
+      return;
+    }
+
+    setSelectedPlan(plan);
+  };
+
   // Lenis Smooth Scroll Setup
   useEffect(() => {
     const lenis = new Lenis({
@@ -60,29 +247,33 @@ const LandingPage = ({ setShowLogin }) => {
     };
   }, []);
 
-  // Spotlight mouse effect
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const handleMouseMove = (e) => {
-    setMousePos({ x: e.clientX, y: e.clientY });
-  };
-
   // Active Nav Link State & Mobile Menu Toggle State
   const [activeNav, setActiveNav] = useState("home");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [testimonialIdx, setTestimonialIdx] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY + 200;
+      const solutionsEl = document.getElementById("solutions");
       const featuresEl = document.getElementById("features");
-      const aboutEl = document.getElementById("about");
+      const personasEl = document.getElementById("personas");
+      const testimonialsEl = document.getElementById("testimonials");
+      const pricingEl = document.getElementById("pricing");
       const contactEl = document.getElementById("contact");
 
       if (contactEl && scrollPosition >= contactEl.offsetTop) {
         setActiveNav("contact");
-      } else if (aboutEl && scrollPosition >= aboutEl.offsetTop) {
-        setActiveNav("about");
+      } else if (pricingEl && scrollPosition >= pricingEl.offsetTop) {
+        setActiveNav("pricing");
+      } else if (testimonialsEl && scrollPosition >= testimonialsEl.offsetTop) {
+        setActiveNav("testimonials");
+      } else if (personasEl && scrollPosition >= personasEl.offsetTop) {
+        setActiveNav("personas");
       } else if (featuresEl && scrollPosition >= featuresEl.offsetTop) {
         setActiveNav("features");
+      } else if (solutionsEl && scrollPosition >= solutionsEl.offsetTop) {
+        setActiveNav("solutions");
       } else {
         setActiveNav("home");
       }
@@ -92,12 +283,12 @@ const LandingPage = ({ setShowLogin }) => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Mini Chat State inside Hero Header
+  // Mini Chat State inside Hero
   const [chatMessages, setChatMessages] = useState([
     {
       id: 1,
       role: "ai",
-      text: "Welcome to Vedix.AI. Select a query below or type a prompt to test our AI model in real-time.",
+      text: "Hello! I am Vedix.AI Agent Core. Type a question or select a prompt below to see autonomous reasoning in real-time.",
     },
   ]);
   const [inputPrompt, setInputPrompt] = useState("");
@@ -137,15 +328,15 @@ const LandingPage = ({ setShowLogin }) => {
     try {
       let replyText = "";
       if (prompt.toLowerCase().includes("quantum")) {
-        replyText = "Quantum computing uses superposition and entanglement of qubits to solve complex computational problems exponentially faster than classical supercomputers.";
+        replyText = "Vedix Reasoning: Quantum computing leverages superposition and entanglement to execute exponentially parallelized matrix states. Classical cryptosystems are directly surpassed by quantum Shor's and Grover's search algorithms.";
       } else if (prompt.toLowerCase().includes("ats") || prompt.toLowerCase().includes("resume")) {
-        replyText = "ATS (Applicant Tracking System) evaluates resumes for targeted keywords, structure, and legibility. Vedix.AI Resume Scanner provides instant ATS scores and job matching.";
+        replyText = "Vedix ATS Agent: ATS engines index parsing hierarchies, exact skill strings, and bullet metrics. Vedix.AI Resume Agent scores formatting compliance, missing high-impact tech tags, and direct job relevance.";
       } else if (prompt.toLowerCase().includes("research")) {
-        replyText = "A research paper includes Abstract, Introduction, Literature Review, Methodology, Experiments, and Discussion. Try Vedix Research AI for multi-page PDF reviews!";
+        replyText = "Vedix Research Agent: A robust research paper requires formal Problem Formulation, Related Work Taxonomy, Empirical Benchmarks, and Threat-to-Validity analysis. Try Vedix Research Agent for instant multi-page PDF decomposition!";
       } else if (prompt.toLowerCase().includes("tokyo") || prompt.toLowerCase().includes("trip")) {
-        replyText = "Day 1: Shinjuku & Shibuya. Day 2: Asakusa & Akihabara. Day 3: Mt. Fuji day excursion & Ginza dining. Use Vedix Travel Agent for custom itineraries!";
+        replyText = "Vedix Travel Agent: Generated 3-Day Tokyo Itinerary: Day 1 (Shinjuku & Shibuya Crossing), Day 2 (Asakusa Senso-ji & Akihabara), Day 3 (Mt. Fuji express & Ginza culinary tour). Launch Travel Agent for live flight and hotel budgeting!";
       } else {
-        replyText = `Vedix.AI Intelligence: "${prompt}"\n\nVedix.AI synthesizes complex multi-step data. Click 'Get Started' to unlock full session history, multi-modal uploads, and team study spaces.`;
+        replyText = `Vedix.AI Intelligence: "${prompt}"\n\nVedix.AI coordinates multi-model reasoning, document indexing, and enterprise workflows. Click 'Start Now' or 'Sign In' to unlock full unlimited sessions.`;
       }
 
       setChatMessages((prev) => [
@@ -182,41 +373,48 @@ const LandingPage = ({ setShowLogin }) => {
     }
   };
 
+  const currentTestimonial = TESTIMONIALS[testimonialIdx];
+
+  const handleNextTestimonial = () => {
+    setTestimonialIdx((prev) => (prev + 1) % TESTIMONIALS.length);
+  };
+
+  const handlePrevTestimonial = () => {
+    setTestimonialIdx((prev) => (prev - 1 + TESTIMONIALS.length) % TESTIMONIALS.length);
+  };
+
   return (
-    <div className="landing-page" onMouseMove={handleMouseMove}>
-      {/* Aceternity Style Mouse Spotlight */}
-      <div
-        className="aceternity-spotlight"
-        style={{
-          left: `${mousePos.x}px`,
-          top: `${mousePos.y}px`,
-        }}
-        aria-hidden="true"
-      />
-
-      {/* Three.js 3D WebGL Particle Canvas */}
-      <ParticleCanvas />
-
-      {/* Glassmorphism Navbar */}
-      <div className="landing-navbar-wrapper">
+    <div
+      className={`landing-page ${theme || "light"}`}
+      data-theme={theme || "light"}
+    >
+      {/* ================= STELLAR / VEDIX MODERN NAVBAR WITH VEDIX LOGO ================= */}
+      <header className="stellar-navbar-container">
         <motion.nav
-          className="landing-navbar"
-          initial={{ y: -50, opacity: 0 }}
+          className="stellar-navbar"
+          initial={{ y: -30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
         >
-          <div className="landing-nav-brand">
-            <div className="logo-circle-wrap">
+          {/* Brand Logo with Official Vedix.AI Logo */}
+          <div
+            className="stellar-brand"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            role="button"
+            tabIndex={0}
+          >
+            <div className="vedix-nav-logo-badge">
               <img
                 src={assets.gemini_icon}
-                alt="Vedix.AI Logo"
-                className="vedix-nav-logo"
+                alt="Vedix.Ai Logo"
+                className="vedix-official-logo"
               />
             </div>
-            <span className="brand-title">Vedix.AI</span>
+            <span className="stellar-brand-name">Vedix.Ai</span>
           </div>
 
-          <div className="landing-nav-links">
+          {/* Centered Pill Navigation */}
+          <div className="stellar-nav-pill">
             <button
               type="button"
               className={activeNav === "home" ? "active" : ""}
@@ -226,6 +424,16 @@ const LandingPage = ({ setShowLogin }) => {
               }}
             >
               Home
+            </button>
+            <button
+              type="button"
+              className={activeNav === "solutions" ? "active" : ""}
+              onClick={() => {
+                setActiveNav("solutions");
+                scrollToSection("solutions");
+              }}
+            >
+              Solutions
             </button>
             <button
               type="button"
@@ -239,13 +447,23 @@ const LandingPage = ({ setShowLogin }) => {
             </button>
             <button
               type="button"
-              className={activeNav === "about" ? "active" : ""}
+              className={activeNav === "personas" ? "active" : ""}
               onClick={() => {
-                setActiveNav("about");
-                scrollToSection("about");
+                setActiveNav("personas");
+                scrollToSection("personas");
               }}
             >
-              About Us
+              Personas
+            </button>
+            <button
+              type="button"
+              className={activeNav === "pricing" ? "active" : ""}
+              onClick={() => {
+                setActiveNav("pricing");
+                scrollToSection("pricing");
+              }}
+            >
+              Pricing
             </button>
             <button
               type="button"
@@ -255,135 +473,526 @@ const LandingPage = ({ setShowLogin }) => {
                 scrollToSection("contact");
               }}
             >
-              Contact Us
+              Contact
             </button>
           </div>
 
-          <div className="landing-nav-actions">
+          {/* Right Action Buttons */}
+          <div className="stellar-nav-actions">
+            {/* Theme Toggle Button */}
             <button
               type="button"
-              className="nav-signin-btn"
-              onClick={() => setShowLogin(true)}
+              className={`stellar-theme-toggle ${isLight ? "light-mode" : "dark-mode"}`}
+              onClick={toggleTheme}
+              aria-label={`Switch to ${isLight ? "Dark" : "Light"} mode`}
+              title={`Switch to ${isLight ? "Dark" : "Light"} mode`}
             >
-              Sign In
+              <AnimatePresence mode="wait" initial={false}>
+                {isLight ? (
+                  <motion.div
+                    key="sun"
+                    initial={{ rotate: -90, scale: 0.6, opacity: 0 }}
+                    animate={{ rotate: 0, scale: 1, opacity: 1 }}
+                    exit={{ rotate: 90, scale: 0.6, opacity: 0 }}
+                    transition={{ duration: 0.18 }}
+                  >
+                    <FiSun className="theme-toggle-icon sun" />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="moon"
+                    initial={{ rotate: 90, scale: 0.6, opacity: 0 }}
+                    animate={{ rotate: 0, scale: 1, opacity: 1 }}
+                    exit={{ rotate: -90, scale: 0.6, opacity: 0 }}
+                    transition={{ duration: 0.18 }}
+                  >
+                    <FiMoon className="theme-toggle-icon moon" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </button>
+
+            {/* "Start Now / Get Started" Pill with Up-Right Arrow Icon */}
             <motion.button
               type="button"
-              className="nav-getstarted-btn"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={() => setShowLogin(true)}
+              className="stellar-cta-btn"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => navigate("/login")}
             >
-              <span>Get Started</span>
-              <FiArrowRight />
+              <span>Start Now</span>
+              <span className="stellar-cta-arrow">
+                <FiArrowUpRight />
+              </span>
             </motion.button>
+
+            {/* Mobile Menu Hamburger */}
             <button
               type="button"
-              className="mobile-menu-btn"
-              aria-label="Toggle Navigation Menu"
+              className="stellar-mobile-menu-btn"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <FiX /> : <FiMenu />}
             </button>
           </div>
         </motion.nav>
 
-        {/* Mobile Glass Menu Drawer Overlay */}
+        {/* Mobile Navigation Drawer */}
         <AnimatePresence>
           {mobileMenuOpen && (
             <motion.div
-              className="mobile-menu-overlay"
-              initial={{ opacity: 0, y: -15, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -15, scale: 0.98 }}
+              className="stellar-mobile-drawer"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
             >
-              <div className="mobile-menu-content">
+              <button
+                type="button"
+                className={activeNav === "home" ? "active" : ""}
+                onClick={() => {
+                  setActiveNav("home");
+                  setMobileMenuOpen(false);
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+              >
+                Home
+              </button>
+              <button
+                type="button"
+                className={activeNav === "solutions" ? "active" : ""}
+                onClick={() => {
+                  setActiveNav("solutions");
+                  setMobileMenuOpen(false);
+                  scrollToSection("solutions");
+                }}
+              >
+                Solutions
+              </button>
+              <button
+                type="button"
+                className={activeNav === "features" ? "active" : ""}
+                onClick={() => {
+                  setActiveNav("features");
+                  setMobileMenuOpen(false);
+                  scrollToSection("features");
+                }}
+              >
+                Features
+              </button>
+              <button
+                type="button"
+                className={activeNav === "personas" ? "active" : ""}
+                onClick={() => {
+                  setActiveNav("personas");
+                  setMobileMenuOpen(false);
+                  scrollToSection("personas");
+                }}
+              >
+                Personas
+              </button>
+              <button
+                type="button"
+                className={activeNav === "pricing" ? "active" : ""}
+                onClick={() => {
+                  setActiveNav("pricing");
+                  setMobileMenuOpen(false);
+                  scrollToSection("pricing");
+                }}
+              >
+                Pricing
+              </button>
+              <button
+                type="button"
+                className={activeNav === "contact" ? "active" : ""}
+                onClick={() => {
+                  setActiveNav("contact");
+                  setMobileMenuOpen(false);
+                  scrollToSection("contact");
+                }}
+              >
+                Contact
+              </button>
+
+              <hr className="drawer-divider" />
+
+              <div className="drawer-theme-row">
+                <span>Theme: <strong>{isLight ? "Light" : "Dark"}</strong></span>
                 <button
                   type="button"
-                  className={activeNav === "home" ? "active" : ""}
-                  onClick={() => {
-                    setActiveNav("home");
-                    setMobileMenuOpen(false);
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                  }}
+                  className="drawer-theme-btn"
+                  onClick={toggleTheme}
                 >
-                  Home
-                </button>
-                <button
-                  type="button"
-                  className={activeNav === "features" ? "active" : ""}
-                  onClick={() => {
-                    setActiveNav("features");
-                    setMobileMenuOpen(false);
-                    scrollToSection("features");
-                  }}
-                >
-                  Features
-                </button>
-                <button
-                  type="button"
-                  className={activeNav === "about" ? "active" : ""}
-                  onClick={() => {
-                    setActiveNav("about");
-                    setMobileMenuOpen(false);
-                    scrollToSection("about");
-                  }}
-                >
-                  About Us
-                </button>
-                <button
-                  type="button"
-                  className={activeNav === "contact" ? "active" : ""}
-                  onClick={() => {
-                    setActiveNav("contact");
-                    setMobileMenuOpen(false);
-                    scrollToSection("contact");
-                  }}
-                >
-                  Contact Us
-                </button>
-                <hr className="mobile-menu-divider" />
-                <button
-                  type="button"
-                  className="mobile-menu-signin"
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    setShowLogin(true);
-                  }}
-                >
-                  Sign In / Get Started
+                  {isLight ? <FiSun /> : <FiMoon />}
+                  <span>Switch</span>
                 </button>
               </div>
+
+              <button
+                type="button"
+                className="drawer-cta-btn"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  navigate("/login");
+                }}
+              >
+                <span>Start Now</span>
+                <FiArrowUpRight />
+              </button>
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </header>
 
-      {/* Centered Clean Hero Header Section */}
-      <motion.header
-        className="landing-hero center-hero"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      >
-        <motion.div
-          className="hero-center-container"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <h1 className="hero-title center-title">
-            Ask me a question
-          </h1>
-          <p className="hero-subtitle center-subtitle">
-            Instant multi-model reasoning, document inspection, and research intelligence.
+      {/* ================= HERO SECTION (MATCHING REFERENCE IMAGE 1) ================= */}
+      <section className="stellar-hero-section">
+        <div className="stellar-hero-layout">
+          {/* Left Column: Headline & Sub-Action Button */}
+          <motion.div
+            className="hero-col-left"
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <h1 className="hero-main-title">
+              Next Level Teams<br />
+              of AI Agents
+            </h1>
+
+            <div className="hero-btn-wrap">
+              <motion.button
+                type="button"
+                className="hero-explore-btn"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => scrollToSection("solutions")}
+              >
+                <span>Explore AI Solutions</span>
+                <span className="hero-circle-arrow">
+                  <FiArrowUpRight />
+                </span>
+              </motion.button>
+            </div>
+          </motion.div>
+
+          {/* Center Column: Futuristic Sci-Fi AI Agent Character Overlap */}
+          <motion.div
+            className="hero-col-center"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+          >
+            <div className="character-display-wrap">
+              <div className="character-ambient-ring" aria-hidden="true" />
+              <img
+                src={aiAgentHero}
+                alt="Next Level AI Agent"
+                className="stellar-character-img"
+              />
+            </div>
+          </motion.div>
+
+          {/* Right Column: User Avatars + 20M+ & Value Proposition */}
+          <motion.div
+            className="hero-col-right"
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
+          >
+            <div className="hero-metric-badge">
+              <div className="avatar-overlap-group">
+                <img
+                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
+                  alt="Member 1"
+                  className="overlap-avatar"
+                />
+                <img
+                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80"
+                  alt="Member 2"
+                  className="overlap-avatar"
+                />
+                <img
+                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80"
+                  alt="Member 3"
+                  className="overlap-avatar"
+                />
+              </div>
+              <span className="metric-large-text">20M+</span>
+            </div>
+
+            <p className="hero-paragraph-desc">
+              Empower your business with intelligent AI agents designed to automate workflows, boost productivity, and scale innovation.
+            </p>
+          </motion.div>
+        </div>
+
+        {/* ================= CURVED EMERALD LOWER CONTAINER ================= */}
+        <div className="emerald-curved-container">
+          {/* Subtle Atmospheric Watermark Text */}
+          <div className="emerald-watermark-row" aria-hidden="true">
+            <span className="emerald-watermark-text">Artificial Intelligence</span>
+          </div>
+
+          {/* Trusted by Leading Innovators */}
+          <div className="trusted-innovators-block">
+            <h3 className="trusted-title">Trusted by Leading Innovators</h3>
+
+            <div className="innovators-logo-row">
+              {TRUSTED_INNOVATORS.map((item, index) => (
+                <div key={index} className="innovator-item">
+                  <span className="innovator-logo-text">{item.tag}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= SECTION 1: PROACTIVE ALERTS & DYNAMIC AVAILABILITY (MATCHING IMAGE 2 TOP ROW) ================= */}
+      <section id="features" className="vedix-bento-feature-section">
+        <div className="section-header-centered">
+          <span className="kicker-pill">INTELLIGENCE PLATFORM</span>
+          <h2>Proactive Reasoning & Integrated Workflows</h2>
+          <p>
+            Stay ahead with automated research telemetry, multi-modal synthesis, and synchronized team workspace analytics.
+          </p>
+        </div>
+
+        <div className="bento-two-col-grid">
+          {/* Left Card: Proactive Alerts */}
+          <div className="bento-feature-card proactive-card">
+            <div className="bento-text-area">
+              <h3>Proactive Alerts</h3>
+              <p>
+                Stay ahead with instant, context-aware notifications. Our agents anticipate your priorities and act before you do.
+              </p>
+            </div>
+
+            {/* Embedded Mock Analytics Graphic */}
+            <div className="mock-analytics-preview">
+              <div className="mock-card-header">
+                <span>Data Analysis</span>
+                <div className="mock-legend-dots">
+                  <span className="dot dot-pink">● Analysis</span>
+                  <span className="dot dot-cyan">● Queries</span>
+                  <span className="dot dot-green">● Uptime</span>
+                </div>
+              </div>
+              <svg className="mock-curve-svg" viewBox="0 0 320 80" fill="none">
+                <path
+                  d="M10 55 C 60 20, 110 70, 160 35 C 210 10, 260 50, 310 25"
+                  stroke="#ec4899"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M10 40 C 70 65, 130 15, 190 45 C 240 60, 280 20, 310 35"
+                  stroke="#06b6d4"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M10 65 C 50 45, 120 55, 170 30 C 220 15, 270 40, 310 18"
+                  stroke="#10b981"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                />
+              </svg>
+              <div className="mock-alert-floating-note">
+                <div className="note-icon-bullet"><FiCheckCircle /></div>
+                <div>
+                  <strong>ATS Optimization Complete</strong>
+                  <span>Resume parsed with 98.4% relevance match.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Card: Dynamic Availability */}
+          <div className="bento-feature-card dynamic-card">
+            <div className="bento-text-area">
+              <h3>Dynamic Availability</h3>
+              <p>
+                Integrated with your existing tool stack. Seamlessly export notes to WhatsApp, trigger research from Slack, and deploy anywhere.
+              </p>
+            </div>
+
+            <div className="mock-tools-badge-container">
+              <div className="tools-icons-cluster">
+                <span className="tool-circle tool-1"><FiCpu /></span>
+                <span className="tool-circle tool-2"><FiFileText /></span>
+                <span className="tool-circle tool-3"><FiGlobe /></span>
+              </div>
+              <div className="tools-count-info">
+                <span className="tools-count-number">200+</span>
+                <span className="tools-count-label">Tools Integrated</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= SECTION 2: MEET YOUR AI AGENT, TAILORED TO YOU (MATCHING IMAGE 2 MIDDLE ROW) ================= */}
+      <section id="personas" className="meet-agent-split-section">
+        <div className="meet-agent-layout">
+          {/* Left Column: Heading, Subtitle & Action Button */}
+          <div className="meet-agent-left">
+            <h2 className="meet-agent-title">
+              Meet Your AI Agent,<br />
+              Tailored to You
+            </h2>
+            <p className="meet-agent-desc">
+              Choose from intelligent assistants — designed to match your workflow and style.
+            </p>
+            <button
+              type="button"
+              className="hero-explore-btn"
+              onClick={() => scrollToSection("solutions")}
+            >
+              <span>Explore AI Solutions</span>
+              <span className="hero-circle-arrow">
+                <FiArrowUpRight />
+              </span>
+            </button>
+          </div>
+
+          {/* Right Column: Sleek Studio Persona Portrait (Matching User Reference Image) */}
+          <div className="meet-agent-right">
+            <div className="agent-portrait-card">
+              <img
+                src={aiAgentPersona}
+                alt="AI Agent Specialist"
+                className="agent-portrait-img"
+              />
+              <div className="portrait-glass-tag">
+                <span className="green-live-dot" />
+                <div>
+                  <strong>Agent Specialist</strong>
+                  <span>Custom Research & Intelligence</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= SECTION 3: WHAT CLIENTS SAY ABOUT US (MATCHING IMAGE 2 BOTTOM ROW) ================= */}
+      <section id="testimonials" className="stellar-testimonials-section">
+        <div className="section-header-centered">
+          <h2>What Clients Say About us</h2>
+          <p>
+            From startups to enterprises, businesses are transforming their workflows, support, and growth with Vedix AI Agents.
+          </p>
+        </div>
+
+        <div className="testimonial-feature-card">
+          <div className="testimonial-card-left">
+            <img
+              src={currentTestimonial.avatar}
+              alt={currentTestimonial.name}
+              className="testimonial-author-avatar"
+            />
+            <div className="testimonial-author-info">
+              <h4>{currentTestimonial.name}</h4>
+              <span className="author-role">{currentTestimonial.role}</span>
+            </div>
+            <div className="company-logo-wrap">
+              <span className="client-logo-weave">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/>
+                </svg>
+                <span>{currentTestimonial.company}</span>
+              </span>
+            </div>
+          </div>
+
+          <div className="testimonial-card-divider" />
+
+          <div className="testimonial-card-right">
+            <p className="testimonial-quote-text">
+              "{currentTestimonial.quote}"
+            </p>
+
+            <div className="testimonial-navigation-row">
+              <button
+                type="button"
+                className="testimonial-nav-arrow"
+                onClick={handlePrevTestimonial}
+                aria-label="Previous testimonial"
+              >
+                <FiChevronLeft />
+              </button>
+              <button
+                type="button"
+                className="testimonial-nav-arrow"
+                onClick={handleNextTestimonial}
+                aria-label="Next testimonial"
+              >
+                <FiChevronRight />
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= VEDIX.AI CORE SOLUTIONS ROSTER ================= */}
+      <section id="solutions" className="stellar-solutions-section">
+        <div className="section-header-centered">
+          <span className="kicker-pill">VEDIX.AI SUITE</span>
+          <h2>Intelligent Digital Capabilities</h2>
+          <p>
+            Everything you need for academic research, resume optimization, autonomous planning, and enterprise productivity.
+          </p>
+        </div>
+
+        <div className="agents-roster-grid">
+          {VEDIX_SOLUTIONS.map((item, idx) => (
+            <motion.div
+              key={idx}
+              className="agent-card-item"
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.1 }}
+              transition={{ duration: 0.4, delay: idx * 0.06 }}
+            >
+              <div className="agent-card-top">
+                <div className="agent-icon-wrap">{item.icon}</div>
+                <span className="agent-tag-pill">{item.tag}</span>
+              </div>
+              <h3>{item.title}</h3>
+              <div className="agent-role-label">{item.role}</div>
+              <p>{item.desc}</p>
+              <div className="agent-card-footer">
+                <button
+                  type="button"
+                  className="agent-launch-btn"
+                  onClick={() => navigate("/login")}
+                >
+                  <span>Explore Feature</span>
+                  <FiArrowUpRight />
+                </button>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* ================= INTERACTIVE AGENT TERMINAL QUERY ================= */}
+      <section className="live-preview-section">
+        <div className="live-preview-container">
+          <div className="preview-top-badge">
+            <span className="pulse-indicator-dot" />
+            <span>Autonomous Intelligence Orchestrator</span>
+          </div>
+
+          <h2 className="preview-headline">Test Vedix.AI Model in Real-Time</h2>
+          <p className="preview-subheadline">
+            Enter any prompt or test one of our pre-built scenarios below.
           </p>
 
-          {/* Central Prominent Input Bar */}
           <form
-            className="hero-ask-bar glass-card"
+            className="agent-ask-input-box"
             onSubmit={(e) => {
               e.preventDefault();
               handleSendMiniChat();
@@ -391,13 +1000,13 @@ const LandingPage = ({ setShowLogin }) => {
           >
             <input
               type="text"
-              placeholder="Ask me a question or enter any prompt..."
+              placeholder="Ask me anything or enter a research query..."
               value={inputPrompt}
               onChange={(e) => setInputPrompt(e.target.value)}
             />
             <button
               type="submit"
-              className="hero-ask-send-btn"
+              className="agent-ask-btn"
               disabled={!inputPrompt.trim() || chatLoading}
             >
               <span>Ask AI</span>
@@ -405,55 +1014,45 @@ const LandingPage = ({ setShowLogin }) => {
             </button>
           </form>
 
-          {/* Quick Prompts Bar */}
-          <div className="hero-prompts-row">
-            {QUICK_PROMPTS.map((promptText, idx) => (
+          {/* Quick Scenario Chips */}
+          <div className="prompt-scenarios-row">
+            {QUICK_PROMPTS.map((pText, idx) => (
               <button
                 key={idx}
                 type="button"
-                className="hero-prompt-chip"
-                onClick={() => handleSendMiniChat(promptText)}
+                className="scenario-chip"
+                onClick={() => handleSendMiniChat(pText)}
               >
-                {promptText}
+                {pText}
               </button>
             ))}
           </div>
 
-          {/* Clean Small Chat Preview Box (No Scrollbar Design) */}
-          <div className="center-mini-chat-box glass-card">
-            <div className="mini-chat-top">
-              <div className="mini-chat-brand">
-                <div className="logo-circle-wrap sm">
-                  <img src={assets.gemini_icon} alt="Vedix.AI" className="mini-chat-logo" />
-                </div>
-                <div>
-                  <strong>Vedix.AI Live Preview</strong>
-                  <span className="live-status">● Neural Model Active</span>
-                </div>
+          {/* Mini Agent Response Terminal */}
+          <div className="agent-terminal-card">
+            <div className="terminal-header">
+              <div className="terminal-brand-meta">
+                <span className="terminal-star">✦</span>
+                <strong>Vedix.AI Terminal</strong>
+                <span className="terminal-tag">v3.5 Engine</span>
               </div>
-              <span className="guest-pill">Guest Mode</span>
+              <span className="terminal-status-pill">● Model Active</span>
             </div>
 
-            <div className="mini-chat-body clean-no-scroll" ref={chatScrollRef}>
+            <div className="terminal-body" ref={chatScrollRef}>
               <AnimatePresence>
                 {chatMessages.map((msg) => (
                   <motion.div
                     key={msg.id}
-                    className={`mini-msg ${msg.role === "user" ? "user" : "ai"}`}
-                    initial={{ opacity: 0, y: 10 }}
+                    className={`terminal-msg ${msg.role === "user" ? "user-msg" : "ai-msg"}`}
+                    initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3 }}
+                    transition={{ duration: 0.25 }}
                   >
-                    <div className="mini-avatar">
-                      {msg.role === "user" ? (
-                        <FiUser />
-                      ) : (
-                        <div className="logo-circle-wrap xs">
-                          <img src={assets.gemini_icon} alt="AI" />
-                        </div>
-                      )}
+                    <div className="msg-badge">
+                      {msg.role === "user" ? <FiUser /> : <span>✦</span>}
                     </div>
-                    <div className="mini-text">
+                    <div className="msg-content">
                       <p>{msg.text}</p>
                     </div>
                   </motion.div>
@@ -461,242 +1060,123 @@ const LandingPage = ({ setShowLogin }) => {
               </AnimatePresence>
 
               {chatLoading && (
-                <div className="mini-msg ai loading">
-                  <div className="mini-avatar">
-                    <div className="logo-circle-wrap xs">
-                      <img src={assets.gemini_icon} alt="AI" />
-                    </div>
+                <div className="terminal-msg ai-msg loading-state">
+                  <div className="msg-badge">
+                    <span>✦</span>
                   </div>
-                  <div className="typing-indicator">
-                    <span></span><span></span><span></span>
+                  <div className="typing-indicator-wave">
+                    <span />
+                    <span />
+                    <span />
                   </div>
                 </div>
               )}
             </div>
 
-            <div className="mini-footnote">
+            <div className="terminal-footer">
               <FiLock />
-              <span>Click <strong>Get Started</strong> to unlock full file uploads, history & team tools.</span>
-            </div>
-          </div>
-        </motion.div>
-      </motion.header>
-
-      {/* Aceternity Style Bento Grid Section */}
-      <motion.section
-        id="features"
-        className="landing-section"
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.1 }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      >
-        <motion.div
-          className="section-head center"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
-          <span className="head-kicker">CORE CAPABILITIES</span>
-          <h2>Designed for Precision & High Productivity</h2>
-          <p>
-            An integrated suite of neural tools tailored for academic, software, and enterprise workflows.
-          </p>
-        </motion.div>
-
-        <div className="bento-grid">
-          {/* Card 1 */}
-          <div className="bento-card glass-card bento-wide">
-            <div className="icon-container">
-              <FiCpu />
-            </div>
-            <h3>Multi-Model AI Chat & Neural Reasoning</h3>
-            <p>
-              Switch between Vedix 3.5 Pro reasoning and fast-inference engines for deep logic, complex code synthesis, and mathematical proofs.
-            </p>
-            <div className="feature-tags">
-              <span>Reasoning 3.5</span>
-              <span>Code Synth</span>
-              <span>Voice AI</span>
-            </div>
-          </div>
-
-          {/* Card 2 */}
-          <div className="bento-card glass-card">
-            <div className="icon-container">
-              <FiFileText />
-            </div>
-            <h3>Resume ATS Scanner</h3>
-            <p>
-              Upload PDF or DOCX resumes to extract ATS scores, identify missing technical skills, and access job links.
-            </p>
-            <div className="feature-tags">
-              <span>ATS Score</span>
-              <span>Skill Gaps</span>
-            </div>
-          </div>
-
-          {/* Card 3 */}
-          <div className="bento-card glass-card">
-            <div className="icon-container">
-              <FiBookOpen />
-            </div>
-            <h3>Research Paper Analyzer</h3>
-            <p>
-              Inspect complex academic papers. Extract methodology reviews, key findings, and viva notes.
-            </p>
-            <div className="feature-tags">
-              <span>Methodology Audit</span>
-              <span>Viva Notes</span>
-            </div>
-          </div>
-
-          {/* Card 4 */}
-          <div className="bento-card glass-card">
-            <div className="icon-container">
-              <FiCompass />
-            </div>
-            <h3>Live News Intelligence</h3>
-            <p>
-              Access 24/7 global category feeds, tech trends, and real-time cricket scorecards in multi-lingual format.
-            </p>
-            <div className="feature-tags">
-              <span>Live RSS</span>
-              <span>Cricket Widget</span>
-            </div>
-          </div>
-
-          {/* Card 5 */}
-          <div className="bento-card glass-card">
-            <div className="icon-container">
-              <FiUsers />
-            </div>
-            <h3>Smart Notes & Team Groups</h3>
-            <p>
-              Save AI Q&As directly to notes, export insights via WhatsApp, and collaborate in custom study groups.
-            </p>
-            <div className="feature-tags">
-              <span>Note Vault</span>
-              <span>Team Groups</span>
-            </div>
-          </div>
-
-          {/* Card 6 */}
-          <div className="bento-card glass-card">
-            <div className="icon-container">
-              <FiGlobe />
-            </div>
-            <h3>Autonomous Travel Agent</h3>
-            <p>
-              Plan complete travel itineraries, discover top accommodation matches, and calculate flight budget estimates.
-            </p>
-            <div className="feature-tags">
-              <span>Itineraries</span>
-              <span>Hotel Match</span>
+              <span>Click <strong>Get Started</strong> to unlock full file uploads, document reviews & history.</span>
             </div>
           </div>
         </div>
-      </motion.section>
+      </section>
 
-      {/* About Us Section */}
-      <motion.section
-        id="about"
-        className="landing-section"
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.1 }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      >
-        <motion.div
-          className="about-wrapper glass-card"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <motion.div
-            className="about-col-left"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
-            <span className="head-kicker">ABOUT VEDIX.AI</span>
-            <h2>Architecting Intelligent Digital Systems</h2>
-            <p>
-              Vedix.AI was created to unify advanced artificial intelligence models into a singular, clean, and reliable workspace.
-            </p>
-            <p>
-              We focus on speed, data privacy, and practical utility — providing professionals, researchers, and students with tools that deliver real outcomes.
-            </p>
-
-            <div className="about-highlights">
-              <div className="highlight-item">
-                <FiCheckCircle className="check-icon" />
-                <span>Zero-data selling policy with enterprise-grade encryption.</span>
-              </div>
-              <div className="highlight-item">
-                <FiCheckCircle className="check-icon" />
-                <span>Multi-model redundancy for 99.9% uptime and low-latency responses.</span>
-              </div>
+      {/* ================= PRICING SECTION (FROM PLANS.JSX) ================= */}
+      <section id="pricing" className="stellar-pricing-section">
+        <div className="section-header-centered">
+          <span className="kicker-pill">TRANSPARENT PLANS</span>
+          <h2>Choose the Right Vedix AI Plan</h2>
+          <p>
+            Start free with daily limits, or upgrade instantly via UPI QR code for high limits, priority AI processing, and advanced features.
+          </p>
+          {profile && (
+            <div className="landing-plan-status-pill">
+              <span>Your Current Plan: <strong>{activePlan}</strong></span>
+              {activePlan !== "Free" && <span className="active-tag">Active</span>}
             </div>
-          </motion.div>
+          )}
+        </div>
 
-          <motion.div
-            className="about-col-right"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
-            <div className="trust-card">
-              <FiShield className="trust-icon" />
-              <div>
-                <h4>Enterprise Standard</h4>
-                <p>Built with robust security protocols and standard multi-region infrastructure.</p>
+        <div className="pricing-cards-grid">
+          {plans.map((plan) => {
+            const isCurrent = activePlan === plan.name;
+            const isFeatured = plan.featured;
+
+            return (
+              <div
+                key={plan.name}
+                className={`pricing-card ${isFeatured ? "highlighted" : ""} ${isCurrent ? "current" : ""}`}
+              >
+                {isFeatured && <div className="popular-ribbon">{plan.badge}</div>}
+
+                <div className="plan-topline-badge">
+                  <span className="pricing-plan-name">{plan.name}</span>
+                  <span className="plan-badge-tag">{isCurrent ? "Active Plan" : plan.badge}</span>
+                </div>
+
+                <div className="pricing-rate">
+                  <span className="currency">₹</span>
+                  <span className="price-num">{plan.priceNum}</span>
+                  <span className="duration">/{plan.period}</span>
+                </div>
+
+                <p className="plan-pitch">{plan.description}</p>
+
+                <ul className="plan-features-list">
+                  {plan.features.map((feat, idx) => (
+                    <li key={idx}>
+                      <FiCheckCircle />
+                      <span>{feat}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <button
+                  type="button"
+                  className={`plan-action-btn ${isFeatured ? "primary" : "secondary"} ${isCurrent ? "active-disabled" : ""}`}
+                  onClick={() => handlePlanClick(plan)}
+                >
+                  {isCurrent ? (
+                    <span>Current Active Plan</span>
+                  ) : (
+                    <>
+                      <span>{plan.cta}</span>
+                      <FiArrowUpRight />
+                    </>
+                  )}
+                </button>
               </div>
-            </div>
+            );
+          })}
+        </div>
 
-            <div className="metrics-box">
-              <span className="metric-large">10M+</span>
-              <p>Prompts & Academic Pages Processed</p>
-            </div>
-          </motion.div>
-        </motion.div>
-      </motion.section>
+        {/* View Full Plans page link */}
+        <div className="pricing-footer-hint">
+          <p>
+            Want to see your detailed payment history or direct UPI QR checkout?{" "}
+            <button
+              type="button"
+              className="text-link-btn"
+              onClick={() => navigate("/plans")}
+            >
+              Open Full Plans & Payment Dashboard →
+            </button>
+          </p>
+        </div>
+      </section>
 
-      {/* Contact Us Section */}
-      <motion.section
-        id="contact"
-        className="landing-section"
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.1 }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      >
-        <motion.div
-          className="section-head center"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
-          <span className="head-kicker">CONTACT US</span>
-          <h2>Get in Touch with Our Team</h2>
-          <p>Have questions, feedback, or enterprise inquiries? Send us a direct message below.</p>
-        </motion.div>
+      {/* ================= CONTACT / CONSULTATION FORM ================= */}
+      <section id="contact" className="stellar-contact-section">
+        <div className="contact-form-wrapper">
+          <div className="contact-head">
+            <span className="kicker-pill">GET IN TOUCH</span>
+            <h2>Book a Consultation with Our Engineers</h2>
+            <p>Ready to deploy Vedix into your workflow? Send us a message and our team will get back to you shortly.</p>
+          </div>
 
-        <motion.div
-          className="contact-card glass-card"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <form className="contact-form" onSubmit={handleContactSubmit}>
-            <div className="form-grid">
-              <div className="field-group">
+          <form className="stellar-contact-form" onSubmit={handleContactSubmit}>
+            <div className="form-fields-grid">
+              <div className="form-field-item">
                 <label>Full Name</label>
                 <input
                   type="text"
@@ -707,11 +1187,11 @@ const LandingPage = ({ setShowLogin }) => {
                 />
               </div>
 
-              <div className="field-group">
-                <label>Email Address</label>
+              <div className="form-field-item">
+                <label>Work Email</label>
                 <input
                   type="email"
-                  placeholder="you@domain.com"
+                  placeholder="name@company.com"
                   required
                   value={contactForm.email}
                   onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
@@ -719,85 +1199,108 @@ const LandingPage = ({ setShowLogin }) => {
               </div>
             </div>
 
-            <div className="field-group">
-              <label>Subject</label>
+            <div className="form-field-item">
+              <label>Subject / Interest</label>
               <input
                 type="text"
-                placeholder="Inquiry Subject"
+                placeholder="Enterprise Deployment / Inquiries"
                 required
                 value={contactForm.subject}
                 onChange={(e) => setContactForm({ ...contactForm, subject: e.target.value })}
               />
             </div>
 
-            <div className="field-group">
-              <label>Message</label>
+            <div className="form-field-item">
+              <label>How can Vedix.AI assist you?</label>
               <textarea
                 rows="4"
-                placeholder="Write your message here..."
+                placeholder="Describe your research, workflow, or team requirements..."
                 required
                 value={contactForm.message}
                 onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
-              ></textarea>
+              />
             </div>
 
-            <button type="submit" className="contact-btn">
-              <span>Send Message</span>
-              <FiSend />
+            <button type="submit" className="contact-submit-btn">
+              <span>Submit Inquiry</span>
+              <FiArrowUpRight />
             </button>
 
             {contactSent && (
-              <div className="success-alert">
+              <div className="contact-confirmation-badge">
                 <FiCheckCircle />
-                <span>Thank you. Your message has been submitted. Our support team will get back to you shortly.</span>
+                <span>Thank you! Your message has been received. Our solutions team will contact you shortly.</span>
               </div>
             )}
           </form>
-        </motion.div>
-      </motion.section>
+        </div>
+      </section>
 
-      {/* Footer */}
-      <footer className="landing-footer">
-        <div className="footer-top">
-          <div className="footer-brand">
-            <div className="brand-row">
-              <div className="logo-circle-wrap">
-                <img src={assets.gemini_icon} alt="Vedix.AI" className="footer-logo-img" />
+      {/* ================= STELLAR FOOTER ================= */}
+      <footer className="stellar-footer">
+        <div className="footer-content-inner">
+          <div className="footer-col-brand">
+            <div className="stellar-brand">
+              <div className="vedix-nav-logo-badge sm">
+                <img
+                  src={assets.gemini_icon}
+                  alt="Vedix.AI Logo"
+                  className="vedix-official-logo"
+                />
               </div>
-              <span className="footer-brand-title">Vedix.AI</span>
+              <span className="stellar-brand-name">Vedix.AI</span>
             </div>
-            <p>Unified neural workspace for research, code, documents, and news intelligence.</p>
+            <p className="footer-tagline">
+              Autonomous multi-agent intelligence engineered for high-velocity research, development, and enterprise operations.
+            </p>
           </div>
 
-          <div className="footer-col">
-            <h4>Workspace Tools</h4>
-            <a href="#features">AI Chat Reasoning</a>
-            <a href="#features">Resume ATS Scanner</a>
-            <a href="#features">Research Paper Review</a>
-            <a href="#features">Live News Feed</a>
+          <div className="footer-links-col">
+            <h4>Solutions</h4>
+            <a href="#solutions">Reasoning Agent</a>
+            <a href="#solutions">Resume ATS Scanner</a>
+            <a href="#solutions">Research Paper Review</a>
+            <a href="#solutions">Live News Telemetry</a>
           </div>
 
-          <div className="footer-col">
+          <div className="footer-links-col">
             <h4>Company</h4>
-            <a href="#about">About Us</a>
-            <a href="#contact">Contact Support</a>
-            <button type="button" className="footer-signin-btn" onClick={() => setShowLogin(true)}>
+            <a href="#personas">Personas</a>
+            <a href="#pricing">Pricing Plans</a>
+            <a href="#contact">Book a Demo</a>
+            <button
+              type="button"
+              className="footer-login-link"
+              onClick={() => navigate("/login")}
+            >
               Sign In / Register
             </button>
           </div>
 
-          <div className="footer-col">
-            <h4>Security & Performance</h4>
-            <span className="footer-sec-item"><FiLock /> 256-Bit SSL Encryption</span>
-            <span className="footer-sec-item"><FiShield /> Privacy-First Protocol</span>
-            <span className="footer-sec-item"><FiZap /> 99.9% Uptime SLA</span>
+          <div className="footer-links-col">
+            <h4>Security & Standards</h4>
+            <span className="sec-badge-item"><FiLock /> 256-Bit TLS Encryption</span>
+            <span className="sec-badge-item"><FiShield /> Privacy-First Protocol</span>
+            <span className="sec-badge-item"><FiZap /> 99.9% Uptime Guarantee</span>
           </div>
         </div>
 
-        <div className="footer-bottom">
-          <p>© {new Date().getFullYear()} Vedix.AI Inc. All rights reserved.</p>
+        <div className="footer-bottom-copyright">
+          <p>© {new Date().getFullYear()} Vedix.AI Inc. All rights reserved. Designed for next-generation intelligence.</p>
         </div>
       </footer>
+
+      {/* Payment Modal */}
+      {selectedPlan && (
+        <PaymentModal
+          plan={selectedPlan}
+          onClose={() => setSelectedPlan(null)}
+          onPaymentSubmitted={() => {
+            setSelectedPlan(null);
+            alert("Payment proof submitted! Admin will verify and activate your plan shortly.");
+          }}
+        />
+      )}
     </div>
   );
 };
