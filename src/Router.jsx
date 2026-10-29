@@ -151,13 +151,10 @@ const Router = ({ showLogin, setShowLogin, profile, setProfile }) => {
         }
       />
 
+      {/* Travel Agent - Accessible directly via URL without disappearing */}
       <Route
         path="/travel-agent"
-        element={
-          <ProtectedRoute profile={profile} setShowLogin={setShowLogin}>
-            <TravelAgent profile={profile} />
-          </ProtectedRoute>
-        }
+        element={<TravelAgent profile={profile} setShowLogin={setShowLogin} />}
       />
 
       <Route

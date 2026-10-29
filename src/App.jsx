@@ -12,14 +12,44 @@ const getStoredUser = () => {
 };
 
 const App = () => {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => {
+    try {
+      // Don't re-run preloader if already seen in current session
+      if (sessionStorage.getItem("lexi_preloader_seen") === "true") {
+        return false;
+      }
+    } catch {}
+    return true;
+  });
+
   const [showLogin, setShowLogin] = useState(false);
   const [profile, setProfile] = useState(getStoredUser);
 
+  // Safety fallback to guarantee content always appears even if preloader is skipped or delayed
+  useEffect(() => {
+    const fallbackTimer = setTimeout(() => {
+      setLoading(false);
+    }, 2200);
+    return () => clearTimeout(fallbackTimer);
+  }, []);
+
+  const handlePreloaderComplete = () => {
+    try {
+      sessionStorage.setItem("lexi_preloader_seen", "true");
+    } catch {}
+    setLoading(false);
+  };
+
   return (
     <>
-      {loading && <Preloader onComplete={() => setLoading(false)} />}
-      <div style={{ visibility: loading ? "hidden" : "visible", height: loading ? "0" : "auto", overflow: loading ? "hidden" : "visible" }}>
+      {loading && <Preloader onComplete={handlePreloaderComplete} />}
+      <div
+        style={{
+          visibility: loading ? "hidden" : "visible",
+          height: loading ? "0" : "auto",
+          overflow: loading ? "hidden" : "visible",
+        }}
+      >
         {showLogin && (
           <LoginPopUp setShowLogin={setShowLogin} setProfile={setProfile} />
         )}
