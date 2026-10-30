@@ -288,6 +288,7 @@ const TransportResultsPage = ({
   const [selectedBusTypes, setSelectedBusTypes] = useState([]);
   const [selectedSeating, setSelectedSeating] = useState([]);
   const [selectedOperators, setSelectedOperators] = useState([]);
+  const [selectedBusPlatforms, setSelectedBusPlatforms] = useState([]);
   const [operatorSearch, setOperatorSearch] = useState("");
 
   const [sortBy, setSortBy] = useState("recommended");
@@ -309,6 +310,7 @@ const TransportResultsPage = ({
     setSelectedBusTypes([]);
     setSelectedSeating([]);
     setSelectedOperators([]);
+    setSelectedBusPlatforms([]);
     setSelectedStops([]);
     setSelectedAirlines([]);
     setSelectedVehicleTypes([]);
@@ -478,6 +480,12 @@ const TransportResultsPage = ({
           );
           if (!matchesOp) return false;
         }
+        if (selectedBusPlatforms.length > 0) {
+          const hasPlatform = bus.platforms.some((p) =>
+            selectedBusPlatforms.some((sp) => p.name.toLowerCase().includes(sp.toLowerCase()))
+          );
+          if (!hasPlatform) return false;
+        }
         if (operatorSearch.trim()) {
           if (!bus.operator.toLowerCase().includes(operatorSearch.toLowerCase().trim())) {
             return false;
@@ -494,7 +502,17 @@ const TransportResultsPage = ({
         if (sortBy === "rating") return b.rating - a.rating;
         return 0;
       });
-  }, [generatedRealBuses, maxPrice, selectedBusTypes, selectedSeating, selectedTimes, selectedOperators, operatorSearch, sortBy]);
+  }, [
+    generatedRealBuses,
+    maxPrice,
+    selectedBusTypes,
+    selectedSeating,
+    selectedTimes,
+    selectedOperators,
+    selectedBusPlatforms,
+    operatorSearch,
+    sortBy,
+  ]);
 
   return (
     <div className="transport-results-page-container">
@@ -552,7 +570,9 @@ const TransportResultsPage = ({
                   Book Train Tickets <span className="highlight-blue-text">Across India</span>
                 </>
               ) : (
-                `Buses from ${origin} to ${destination}`
+                <>
+                  Book Bus Tickets <span className="highlight-blue-text">Across India</span>
+                </>
               )}
             </h1>
 
@@ -563,7 +583,7 @@ const TransportResultsPage = ({
                 ? "Compare prices from all major airlines and book at the best deal — all in one place."
                 : isTrain
                 ? "Compare prices from all major platforms and get the best deals in one place."
-                : "Compare prices from all major platforms and book at the best deal"}
+                : "Compare live fares across redBus, AbhiBus, MakeMyTrip & goibibo — book at guaranteed lowest prices."}
             </p>
           </div>
 
@@ -647,27 +667,27 @@ const TransportResultsPage = ({
               <>
                 <div className="banner-badge-pill">
                   <span className="badge-circle circle-blue">
-                    <FaIndianRupeeSign />
+                    <FaTag />
                   </span>
-                  <span>Same Route Best Prices</span>
+                  <span>redBus &amp; AbhiBus Verified</span>
                 </div>
                 <div className="banner-badge-pill">
                   <span className="badge-circle circle-emerald">
                     <FaShieldHalved />
                   </span>
-                  <span>Verified Operators</span>
+                  <span>Live Seat Selection</span>
                 </div>
                 <div className="banner-badge-pill">
                   <span className="badge-circle circle-purple">
                     <FaClock />
                   </span>
-                  <span>Real-time Availability</span>
+                  <span>Real-time Tracking</span>
                 </div>
                 <div className="banner-badge-pill">
-                  <span className="badge-circle circle-sky">
-                    <FaTableCellsLarge />
+                  <span className="badge-circle circle-amber">
+                    <FaStar />
                   </span>
-                  <span>All Platforms In One Place</span>
+                  <span>Lowest Price Guarantee</span>
                 </div>
               </>
             )}
@@ -1439,6 +1459,36 @@ const TransportResultsPage = ({
                 </div>
               </div>
 
+              {/* BOOKING PLATFORM (redBus, AbhiBus, MakeMyTrip, goibibo) */}
+              <div className="filter-section-card">
+                <div className="filter-section-header">
+                  <span className="filter-header-label">Booking Platform</span>
+                  <FaChevronUp className="filter-header-arrow" />
+                </div>
+                <div className="filter-checkbox-list">
+                  {[
+                    { name: "redBus", tag: "Lowest Fares", count: 16, color: "#d82b40" },
+                    { name: "AbhiBus", tag: "Exclusive Deals", count: 16, color: "#b71a2a" },
+                    { name: "MakeMyTrip", tag: "MMT Assured", count: 16, color: "#ea580c" },
+                    { name: "goibibo", tag: "GoCash", count: 16, color: "#f97316" },
+                  ].map((plat) => (
+                    <label key={plat.name} className="filter-checkbox-item">
+                      <input
+                        type="checkbox"
+                        checked={selectedBusPlatforms.includes(plat.name)}
+                        onChange={() =>
+                          toggleListFilter(selectedBusPlatforms, setSelectedBusPlatforms, plat.name)
+                        }
+                      />
+                      <span className="chk-label" style={{ fontWeight: 600, color: plat.color }}>
+                        {plat.name}
+                      </span>
+                      <span className="chk-count">({plat.count})</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
               {/* BUS OPERATORS */}
               <div className="filter-section-card">
                 <div className="filter-section-header">
@@ -1456,14 +1506,22 @@ const TransportResultsPage = ({
                 </div>
                 <div className="filter-checkbox-list operator-list-scroll">
                   {[
-                    "Zingbus",
-                    "IntrCity",
-                    "RedBus",
-                    "Abhibus",
+                    "Zingbus Plus",
+                    "IntrCity SmartBus",
                     "VRL Travels",
                     "SRS Travels",
-                    "Neeta Travels",
-                    "RS Yadav",
+                    "Orange Tours",
+                    "Neeta Tours",
+                    "RS Yadav SmartBus",
+                    "Hans Travels",
+                    "Kallada Travels",
+                    "Jabbar Travels",
+                    "Citylink",
+                    "Mahasagar Travels",
+                    "Sharma Transports",
+                    "KPN Travels",
+                    "Greenline Travels",
+                    "State Road Transport",
                   ].map((op) => (
                     <label key={op} className="filter-checkbox-item">
                       <input
@@ -1985,6 +2043,11 @@ const TransportResultsPage = ({
 
                     <div className="bus-right-booking-pane">
                       <div className="wishlist-row">
+                        {bus.seatsAvailableText && (
+                          <span className="bus-seats-count-badge" title="Live Seat Availability">
+                            <FaChair className="seat-icon-mini" /> {bus.seatsAvailableText}
+                          </span>
+                        )}
                         <button
                           type="button"
                           className={`btn-wishlist ${isFav ? "active" : ""}`}
@@ -1997,26 +2060,36 @@ const TransportResultsPage = ({
 
                       <div className="platforms-comparison-box">
                         <span className="platforms-compare-label">
-                          Prices from different platforms
+                          Compare Live Fares Across Platforms
                         </span>
 
-                        <div className="platforms-row-boxes">
+                        <div className="platforms-row-boxes bus-platforms-grid">
                           {bus.platforms.map((p, idx) => (
                             <div
                               key={idx}
-                              className={`platform-price-chip ${
+                              className={`platform-price-chip bus-platform-chip brand-${p.name.toLowerCase()} ${
                                 p.isCheapest ? "lowest-price-active" : ""
                               }`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onSelectBooking && onSelectBooking(bus, p);
+                              }}
+                              title={`Auto-fill & book on ${p.name} (₹${p.price.toLocaleString()})`}
                             >
-                              <span
-                                className="platform-brand-text"
-                                style={{ color: p.logoColor }}
-                              >
-                                {p.name}
-                              </span>
-                              <span className="platform-price-val">₹{p.price}</span>
-                              {p.isCheapest && (
-                                <span className="lowest-price-tag">Lowest Price</span>
+                              <div className="plat-name-tag-row">
+                                <span
+                                  className="platform-brand-text"
+                                  style={{ color: p.logoColor }}
+                                >
+                                  {p.displayName || p.name}
+                                </span>
+                                {p.isCheapest && (
+                                  <span className="lowest-price-tag">Lowest Price</span>
+                                )}
+                              </div>
+                              <span className="platform-price-val">₹{p.price.toLocaleString()}</span>
+                              {p.dealText && (
+                                <span className="plat-deal-text">{p.dealText}</span>
                               )}
                             </div>
                           ))}
@@ -2026,10 +2099,14 @@ const TransportResultsPage = ({
                       <div className="booking-cta-row">
                         <button
                           type="button"
-                          className="btn-view-details-book"
-                          onClick={() => onSelectBooking && onSelectBooking(bus)}
+                          className="btn-view-details-book btn-bus-seats-book"
+                          onClick={() => {
+                            const cheapest =
+                              bus.platforms.find((p) => p.isCheapest) || bus.platforms[0];
+                            onSelectBooking && onSelectBooking(bus, cheapest);
+                          }}
                         >
-                          <span>View Details &amp; Book</span>
+                          <span>Select Seats &amp; Book</span>
                           <FaArrowRight className="btn-arrow" />
                         </button>
                       </div>

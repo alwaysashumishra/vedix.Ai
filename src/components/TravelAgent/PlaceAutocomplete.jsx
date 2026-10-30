@@ -8,6 +8,9 @@ import {
   FaXmark,
   FaMagnifyingGlass,
   FaCircleCheck,
+  FaLandmark,
+  FaMapLocationDot,
+  FaCity,
 } from "react-icons/fa6";
 import { searchPlaces } from "./placesData";
 
@@ -15,7 +18,7 @@ const PlaceAutocomplete = ({
   value = "",
   onChange,
   onSelect,
-  placeholder = "Search city, station, or airport...",
+  placeholder = "Search district, tehsil, city or station...",
   label = "Location",
   mode = "train",
   fieldRole = "origin", // "origin" | "destination"
@@ -24,13 +27,19 @@ const PlaceAutocomplete = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [activeCategory, setActiveCategory] = useState("all");
   const wrapperRef = useRef(null);
   const inputRef = useRef(null);
 
   const IconComponent = icon || FaLocationDot;
 
-  // Compute matched places
-  const results = searchPlaces(value, mode);
+  // Reset category filter when mode changes
+  useEffect(() => {
+    setActiveCategory("all");
+  }, [mode]);
+
+  // Compute matched places based on query, mode, and category filter
+  const results = searchPlaces(value, mode, activeCategory);
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -47,9 +56,15 @@ const PlaceAutocomplete = ({
     // Generate clean display value
     let chosenText = place.name;
     if (place.type === "station" && place.code) {
-      chosenText = `${place.city} (${place.code})`;
+      chosenText = `${place.name} (${place.code})`;
     } else if (place.type === "airport" && place.code) {
-      chosenText = `${place.city} (${place.code})`;
+      chosenText = `${place.name} (${place.code})`;
+    } else if (place.type === "bus") {
+      chosenText = `${place.name}, ${place.district || place.city}`;
+    } else if (place.type === "subdistrict") {
+      chosenText = `${place.name}, ${place.district || place.city}`;
+    } else if (place.type === "district") {
+      chosenText = `${place.name}, ${place.state}`;
     } else if (place.type === "city") {
       chosenText = place.name;
     }
@@ -87,6 +102,10 @@ const PlaceAutocomplete = ({
 
   const getItemIcon = (place) => {
     switch (place.type) {
+      case "district":
+        return <FaLandmark className="place-item-icon icon-district" />;
+      case "subdistrict":
+        return <FaMapLocationDot className="place-item-icon icon-subdistrict" />;
       case "station":
         return <FaTrainSubway className="place-item-icon icon-station" />;
       case "airport":
@@ -96,9 +115,68 @@ const PlaceAutocomplete = ({
       case "cab":
         return <FaCar className="place-item-icon icon-cab" />;
       default:
-        return <FaLocationDot className="place-item-icon icon-city" />;
+        return <FaCity className="place-item-icon icon-city" />;
     }
   };
+
+  // Helper to highlight matching text in search results
+  const highlightMatch = (text = "", query = "") => {
+    if (!text) return "";
+    if (!query || !query.trim()) return text;
+    const trimmed = query.trim();
+    try {
+      const escaped = trimmed.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const regex = new RegExp(`(${escaped})`, "gi");
+      const parts = text.split(regex);
+      return parts.map((part, i) =>
+        part.toLowerCase() === trimmed.toLowerCase() ? (
+          <mark key={i} className="place-query-match">
+            {part}
+          </mark>
+        ) : (
+          part
+        )
+      );
+    } catch {
+      return text;
+    }
+  };
+
+  // Dynamic category tabs adapted to selected transport mode
+  const getCategoryTabs = () => {
+    if (mode === "bus") {
+      return [
+        { id: "all", label: "All" },
+        { id: "bus", label: "🚌 Bus Stands & ISBTs" },
+        { id: "district", label: "🏛 Districts" },
+        { id: "subdistrict", label: "📍 Tehsils" },
+      ];
+    }
+    if (mode === "train") {
+      return [
+        { id: "all", label: "All" },
+        { id: "station", label: "🚆 Stations & Junctions" },
+        { id: "district", label: "🏛 Districts" },
+        { id: "subdistrict", label: "📍 Tehsils" },
+      ];
+    }
+    if (mode === "flight") {
+      return [
+        { id: "all", label: "All" },
+        { id: "airport", label: "✈️ Airports" },
+        { id: "district", label: "🏛 Districts & Cities" },
+      ];
+    }
+    // cab or fallback
+    return [
+      { id: "all", label: "All" },
+      { id: "district", label: "🏛 Districts" },
+      { id: "subdistrict", label: "📍 Tehsils" },
+      { id: "transit", label: "🚉 Major Transit Hubs" },
+    ];
+  };
+
+  const categoryTabs = getCategoryTabs();
 
   return (
     <div
@@ -148,20 +226,55 @@ const PlaceAutocomplete = ({
       {/* AUTOCOMPLETE POPUP DROPDOWN */}
       {isOpen && (
         <div className="place-autocomplete-dropdown" role="listbox">
+          {/* Header with Title, Match Count and Mobile Close Button */}
           <div className="dropdown-meta-header">
             <span className="dropdown-meta-title">
               {value.trim() ? (
                 <>
-                  <FaMagnifyingGlass className="meta-icon" /> Locations matching "
+                  <FaMagnifyingGlass className="meta-icon" /> Matching "
                   <strong>{value.trim()}</strong>"
                 </>
+              ) : mode === "bus" ? (
+                <>🚌 Bus Stands, ISBTs &amp; Districts</>
+              ) : mode === "train" ? (
+                <>🚆 Railway Stations, Junctions &amp; Districts</>
+              ) : mode === "flight" ? (
+                <>✈️ Airports &amp; Major Cities</>
               ) : (
-                <>⭐ Popular {mode ? `${mode.toUpperCase()} Hubs` : "Destinations"}</>
+                <>⭐ Popular Districts, Tehsils &amp; Hubs</>
               )}
             </span>
-            <span className="dropdown-meta-hint">Click or press Enter</span>
+            <div className="dropdown-meta-right">
+              <span className="dropdown-meta-hint">{results.length} found</span>
+              <button
+                type="button"
+                className="dropdown-mobile-close-btn"
+                onClick={() => setIsOpen(false)}
+                title="Close"
+              >
+                <FaXmark />
+              </button>
+            </div>
           </div>
 
+          {/* Mode-Aware Category Filter Pills Bar */}
+          <div className="dropdown-category-pills-bar">
+            {categoryTabs.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                className={`cat-pill-btn ${activeCategory === tab.id ? "active" : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveCategory(tab.id);
+                }}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Scrollable Results List */}
           <div className="dropdown-options-scroll">
             {results.length > 0 ? (
               results.map((place, index) => {
@@ -185,13 +298,24 @@ const PlaceAutocomplete = ({
 
                     <div className="place-text-col">
                       <div className="place-name-line">
-                        <span className="place-title-text">{place.name}</span>
+                        <span className="place-title-text">
+                          {highlightMatch(place.name, value)}
+                        </span>
                         {place.code && (
                           <span className="place-code-badge">{place.code}</span>
                         )}
                       </div>
                       <div className="place-subtext-line">
-                        <span>{place.subText || `${place.city}, ${place.state}`}</span>
+                        <span className="place-subtext-body">
+                          {place.subText ? (
+                            highlightMatch(place.subText, value)
+                          ) : (
+                            <>
+                              {place.district ? `District: ${place.district}, ` : ""}
+                              {place.state}
+                            </>
+                          )}
+                        </span>
                       </div>
                     </div>
 
@@ -207,7 +331,15 @@ const PlaceAutocomplete = ({
             ) : (
               <div className="no-places-found">
                 <p>No locations matching "{value}"</p>
-                <span>Use custom text or pick a popular city</span>
+                <span>
+                  {mode === "bus"
+                    ? "Try searching another bus stand, district or tehsil name"
+                    : mode === "train"
+                    ? "Try searching station code (e.g. NDLS, JP) or city name"
+                    : mode === "flight"
+                    ? "Try searching airport code (e.g. DEL, BOM) or city name"
+                    : "Try searching a nearby district, tehsil, or city name"}
+                </span>
               </div>
             )}
           </div>
@@ -218,4 +350,3 @@ const PlaceAutocomplete = ({
 };
 
 export default PlaceAutocomplete;
-

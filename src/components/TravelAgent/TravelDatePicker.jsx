@@ -5,6 +5,7 @@ import {
   FaChevronLeft,
   FaChevronRight,
   FaBolt,
+  FaXmark,
 } from "react-icons/fa6";
 
 const MONTH_NAMES = [
@@ -178,7 +179,20 @@ const TravelDatePicker = ({
 
       {/* INTERACTIVE CALENDAR POPOVER */}
       {isOpen && (
-        <div className="travel-calendar-popover" role="dialog" aria-modal="true">
+        <div className="travel-calendar-popover" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+          {/* Mobile Sheet Header */}
+          <div className="calendar-mobile-top-bar">
+            <span className="calendar-mobile-label">Select Travel Date</span>
+            <button
+              type="button"
+              className="calendar-mobile-close-btn"
+              onClick={() => setIsOpen(false)}
+              title="Close calendar"
+            >
+              <FaXmark />
+            </button>
+          </div>
+
           {/* Quick Preset Buttons */}
           <div className="calendar-quick-presets-row">
             <button

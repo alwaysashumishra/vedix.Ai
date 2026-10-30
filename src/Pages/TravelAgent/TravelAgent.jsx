@@ -3,6 +3,7 @@ import "./TravelAgent.css";
 import TravelHeroHub from "../../components/TravelAgent/TravelHeroHub";
 import TransportResultsPage from "../../components/TravelAgent/TransportResultsPage";
 import BookingSafetyModal from "../../components/TravelAgent/BookingSafetyModal";
+import TravelAutomationModal from "../../components/TravelAgent/TravelAutomationModal";
 import BackHomeButton from "../../components/BackHomeButton/BackHomeButton";
 import { generateResilientTravelPlan } from "../../components/TravelAgent/travelMockService";
 import { getApiBaseUrl } from "../../config/apiConfig";
@@ -35,6 +36,8 @@ const TravelAgent = ({ profile }) => {
   const [selectedTransport, setSelectedTransport] = useState(null);
   const [selectedStay, setSelectedStay] = useState(null);
   const [showBookingModal, setShowBookingModal] = useState(false);
+  const [showAutomationModal, setShowAutomationModal] = useState(false);
+  const [automationPayload, setAutomationPayload] = useState(null);
   const [userPreferences, setUserPreferences] = useState({});
 
   const resultsRef = useRef(null);
@@ -294,55 +297,96 @@ const TravelAgent = ({ profile }) => {
           onBackToSearch={() => setPageView("home")}
           onUpdateParams={handleUpdateSearchParams}
           onReSearch={handleHubSearch}
-          onSelectBooking={(item) => {
-            const lowestPrice =
-              item.price ||
-              (item.platforms && item.platforms.length
-                ? Math.min(...item.platforms.map((p) => p.price))
-                : 4899);
-            const modeLabel =
-              selectedTransportMode === "train"
-                ? "Train"
-                : selectedTransportMode === "flight"
-                ? "Flight"
-                : selectedTransportMode === "cab"
-                ? "Cab"
-                : "Bus";
-            const routeLabel = `${
-              searchParams.origin ||
-              (selectedTransportMode === "flight"
-                ? "DEL"
-                : selectedTransportMode === "cab"
-                ? "New Delhi"
-                : "Delhi")
-            } → ${
-              searchParams.destination ||
-              (selectedTransportMode === "flight"
-                ? "BLR"
-                : selectedTransportMode === "cab"
-                ? "Gurugram, Haryana"
-                : "Lucknow")
-            }`;
-            setSelectedTransport({
-              id: item.id,
-              mode: modeLabel,
-              operator: item.airlineName || item.name || item.operator,
-              route: routeLabel,
-              departureTime: item.departureTime,
-              arrivalTime: item.arrivalTime,
-              duration: item.duration,
-              totalPrice: lowestPrice * (Number(searchParams.passengers) || 1),
-              pricePerPerson: lowestPrice,
-              rating: item.rating || 4.7,
-              safetyScore: 9.8,
-              whyRecommended: `${
-                item.airlineName || item.name || item.operator
-              } provides the lowest verified price across platforms.`,
-            });
-            setShowBookingModal(true);
+          onSelectBooking={(item, platform) => {
+            // For bus bookings, launch the Autonomous Auto-Fill & Search Bot
+            if (selectedTransportMode === "bus") {
+              setAutomationPayload({ item, platform });
+              setShowAutomationModal(true);
+            } else {
+              const lowestPrice =
+                platform?.price ||
+                item.price ||
+                (item.platforms && item.platforms.length
+                  ? Math.min(...item.platforms.map((p) => p.price))
+                  : 4899);
+              const modeLabel =
+                selectedTransportMode === "train"
+                  ? "Train"
+                  : selectedTransportMode === "flight"
+                  ? "Flight"
+                  : selectedTransportMode === "cab"
+                  ? "Cab"
+                  : "Bus";
+              const routeLabel = `${
+                searchParams.origin ||
+                (selectedTransportMode === "flight"
+                  ? "DEL"
+                  : selectedTransportMode === "cab"
+                  ? "New Delhi"
+                  : "Delhi")
+              } → ${
+                searchParams.destination ||
+                (selectedTransportMode === "flight"
+                  ? "BLR"
+                  : selectedTransportMode === "cab"
+                  ? "Gurugram, Haryana"
+                  : "Lucknow")
+              }`;
+              setSelectedTransport({
+                id: item.id,
+                mode: modeLabel,
+                operator: item.airlineName || item.name || item.operator,
+                route: routeLabel,
+                departureTime: item.departureTime,
+                arrivalTime: item.arrivalTime,
+                duration: item.duration,
+                totalPrice: lowestPrice * (Number(searchParams.passengers) || 1),
+                pricePerPerson: lowestPrice,
+                rating: item.rating || 4.7,
+                safetyScore: 9.8,
+                whyRecommended: `${
+                  item.airlineName || item.name || item.operator
+                } provides the lowest verified price across platforms.`,
+              });
+              setShowBookingModal(true);
+            }
           }}
         />
       )}
+
+      {/* Lexi Autonomous Web Booking Modal */}
+      <TravelAutomationModal
+        isOpen={showAutomationModal}
+        onClose={() => setShowAutomationModal(false)}
+        transportItem={automationPayload?.item}
+        initialPlatform={automationPayload?.platform}
+        searchParams={searchParams}
+        selectedMode={selectedTransportMode}
+        onProceedToSafetyBooking={(item, platform) => {
+          const unitPrice =
+            platform?.price ||
+            item?.price ||
+            (item?.platforms?.length ? Math.min(...item.platforms.map((p) => p.price)) : 850);
+          const routeLabel = `${searchParams.origin || "Delhi"} → ${
+            searchParams.destination || "Jaipur"
+          }`;
+          setSelectedTransport({
+            id: item.id,
+            mode: "Bus",
+            operator: item.operator || item.name || "Bus Carrier",
+            route: routeLabel,
+            departureTime: item.departureTime,
+            arrivalTime: item.arrivalTime,
+            duration: item.duration,
+            totalPrice: unitPrice * (Number(searchParams.passengers) || 1),
+            pricePerPerson: unitPrice,
+            rating: item.rating || 4.7,
+            safetyScore: 9.8,
+            whyRecommended: `${item.operator} verified on ${platform?.name || "carrier network"}.`,
+          });
+          setShowBookingModal(true);
+        }}
+      />
 
       {/* Booking Safety Modal */}
       <BookingSafetyModal

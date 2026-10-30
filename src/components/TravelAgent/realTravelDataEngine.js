@@ -4,6 +4,8 @@
  * across Indian cities, airports, railway corridors, and highway networks.
  */
 
+import { PLACES_DATABASE } from "./placesData.js";
+
 // 1. Indian Cities & Geographic Hubs Database
 export const INDIAN_CITIES_DB = {
   delhi: {
@@ -187,6 +189,8 @@ export const INDIAN_CITIES_DB = {
 export function findCity(cityName = "") {
   if (!cityName) return INDIAN_CITIES_DB.delhi;
   const clean = cityName.toLowerCase().trim();
+
+  // First check primary city hubs
   for (const [key, city] of Object.entries(INDIAN_CITIES_DB)) {
     if (
       clean.includes(key) ||
@@ -199,6 +203,52 @@ export function findCity(cityName = "") {
       return city;
     }
   }
+
+  // Second check extensive Indian Districts and Subdistricts database
+  if (PLACES_DATABASE && Array.isArray(PLACES_DATABASE)) {
+    const matchedPlace = PLACES_DATABASE.find((p) => {
+      const pName = p.name.toLowerCase();
+      const pDist = (p.district || "").toLowerCase();
+      const pCity = (p.city || "").toLowerCase();
+      const pCode = (p.code || "").toLowerCase();
+
+      return (
+        clean === pName ||
+        clean.includes(pName) ||
+        pName.includes(clean) ||
+        (pCode && clean.includes(pCode)) ||
+        (pDist && clean.includes(pDist)) ||
+        (pCity && clean.includes(pCity))
+      );
+    });
+
+    if (matchedPlace && matchedPlace.lat && matchedPlace.lon) {
+      return {
+        name: matchedPlace.name,
+        displayName: matchedPlace.name,
+        lat: matchedPlace.lat,
+        lon: matchedPlace.lon,
+        state: matchedPlace.state || "India",
+        airport: {
+          code: matchedPlace.code || matchedPlace.name.slice(0, 3).toUpperCase(),
+          name: `${matchedPlace.name} Airport / Nearby Terminal`,
+          terminals: ["T1"],
+        },
+        stations: [
+          {
+            code: matchedPlace.code || matchedPlace.name.slice(0, 4).toUpperCase(),
+            name: matchedPlace.name,
+            label: `${matchedPlace.name} (${matchedPlace.code || "RLY"})`,
+          },
+        ],
+        busStops: [
+          `${matchedPlace.name} Bus Stand`,
+          `Main Bus Terminal, ${matchedPlace.district || matchedPlace.name}`,
+        ],
+      };
+    }
+  }
+
   // Generic fallback with realistic coords
   return {
     name: cityName,
@@ -521,7 +571,7 @@ export function generateRealTrains(originName, destName, passengerCount = 1, ass
 }
 
 // =========================================================================
-// REAL BUS DATA GENERATOR
+// REAL BUS DATA GENERATOR (redBus & AbhiBus Multi-Platform Aggregation)
 // =========================================================================
 export function generateRealBuses(originName, destName, passengerCount = 1, assets = {}) {
   const cityA = findCity(originName);
@@ -529,120 +579,417 @@ export function generateRealBuses(originName, destName, passengerCount = 1, asse
   const { road } = calculateDistance(cityA, cityB);
 
   // Highway speed for luxury coaches ~52 km/h + 30m break
-  const busMins = Math.round((road / 52) * 60) + 30;
+  const busMins = Math.max(75, Math.round((road / 52) * 60) + 30);
   const durH = Math.floor(busMins / 60);
   const durM = busMins % 60;
   const durationText = `${durH}h ${durM.toString().padStart(2, "0")}m`;
 
-  const baseBusRate = Math.max(450, Math.round(road * 2.3));
+  const baseRate = Math.max(380, Math.round(road * 2.2));
 
-  const busOperators = [
+  // Determine regional State RTC name based on origin or destination state
+  const stateRtcName =
+    cityA.state === "Uttar Pradesh" || cityB.state === "Uttar Pradesh"
+      ? "UPSRTC Janrath AC / Shatabdi Express"
+      : cityA.state === "Rajasthan" || cityB.state === "Rajasthan"
+      ? "RSRTC Goldline Super Luxury Volvo"
+      : cityA.state === "Maharashtra" || cityB.state === "Maharashtra"
+      ? "MSRTC Shivneri Volvo AC"
+      : cityA.state === "Karnataka" || cityB.state === "Karnataka"
+      ? "KSRTC Airavat Club Class Multi-Axle"
+      : cityA.state === "Gujarat" || cityB.state === "Gujarat"
+      ? "GSRTC Gurjanagari Volvo Executive"
+      : cityA.state === "Himachal Pradesh" || cityB.state === "Himachal Pradesh"
+      ? "HRTC Himsuta Volvo Super Deluxe"
+      : cityA.state === "Telangana" ||
+        cityB.state === "Telangana" ||
+        cityA.state === "Andhra Pradesh" ||
+        cityB.state === "Andhra Pradesh"
+      ? "APSRTC Garuda Plus Multi-Axle"
+      : "State Road Transport Corporation Luxury";
+
+  const getStopA = (idx = 0) =>
+    (cityA.busStops && cityA.busStops[idx % cityA.busStops.length]) ||
+    `${cityA.name} Central Interstate Bus Stand`;
+  const getStopB = (idx = 0) =>
+    (cityB.busStops && cityB.busStops[idx % cityB.busStops.length]) ||
+    `${cityB.name} Central Interstate Drop Point`;
+
+  const busTemplates = [
     {
       id: "bus-zing",
-      operator: "Zingbus Plus",
+      operator: "Zingbus Plus Electric & Luxury",
       operatorInitials: "Z",
       operatorTheme: "#7c3aed",
-      subtitle: "A/C Sleeper (2+1) | Volvo 9600",
-      rating: 4.6,
-      reviewsCount: "8.2K",
-      badge: "Top Rated",
-      image: assets.thumbZingbus,
+      subtitle: "A/C Sleeper (2+1) | Volvo 9600 Multi-Axle",
+      rating: 4.8,
+      reviewsCount: "14.2K",
+      badge: "Electric Luxury",
+      image: assets.thumbZingbus || assets.cardBusThumb,
       busType: "AC",
       seatingType: "Sleeper",
       depM: 1230, // 08:30 PM
       depTime: "08:30 PM",
-      depLoc: `${cityA.name} (${cityA.busStops[0] || "ISBT"})`,
-      arrLoc: `${cityB.name} (${cityB.busStops[0] || "Central Drop"})`,
-      price: Math.round(baseBusRate * 1.15),
-      amenities: ["AC", "WiFi", "Charging", "Blanket", "Water Bottle", "Reading Light"],
+      depLoc: `${cityA.name} (${getStopA(0)})`,
+      arrLoc: `${cityB.name} (${getStopB(0)})`,
+      baseMultiplier: 1.15,
+      amenities: ["AC", "WiFi", "Charging", "Blanket", "Water Bottle", "Reading Light", "Live Tracking"],
+      cheapestPlatform: "redBus",
     },
     {
       id: "bus-intrcity",
-      operator: "IntrCity SmartBus",
+      operator: "IntrCity SmartBus Club Class",
       operatorInitials: "i",
       operatorTheme: "#0284c7",
-      subtitle: "A/C Seater (2+2) | Scania",
-      rating: 4.4,
-      reviewsCount: "6.1K",
-      badge: null,
-      image: assets.thumbIntrcity,
+      subtitle: "A/C Sleeper (2+1) | Scania Executive Lounge",
+      rating: 4.6,
+      reviewsCount: "11.8K",
+      badge: "Smart Lounge",
+      image: assets.thumbIntrcity || assets.cardBusThumb,
       busType: "AC",
-      seatingType: "Seater",
+      seatingType: "Sleeper",
       depM: 1320, // 10:00 PM
       depTime: "10:00 PM",
-      depLoc: `${cityA.name} (${cityA.busStops[1] || cityA.busStops[0]})`,
-      arrLoc: `${cityB.name} (${cityB.busStops[0] || "Central Drop"})`,
-      price: Math.round(baseBusRate * 0.95),
-      amenities: ["AC", "WiFi", "Charging", "Water Bottle", "Snacks", "GPS Tracking"],
+      depLoc: `${cityA.name} (${getStopA(1)})`,
+      arrLoc: `${cityB.name} (${getStopB(0)})`,
+      baseMultiplier: 1.05,
+      amenities: ["AC", "WiFi", "Charging", "Water Bottle", "Snacks", "GPS Tracking", "Reading Light"],
+      cheapestPlatform: "abhibus",
     },
     {
-      id: "bus-srs",
-      operator: "SRS Travels",
-      operatorInitials: "SRS",
-      operatorTheme: "#dc2626",
-      subtitle: "A/C Sleeper (2+1) | Volvo",
-      rating: 4.3,
-      reviewsCount: "4.8K",
-      badge: null,
-      image: assets.thumbSrs,
+      id: "bus-vrl",
+      operator: "VRL Travels AC Sleeper",
+      operatorInitials: "VRL",
+      operatorTheme: "#15803d",
+      subtitle: "A/C Sleeper (2+1) | I-Shift Volvo B11R Multi-Axle",
+      rating: 4.8,
+      reviewsCount: "22.5K",
+      badge: "Top Rated",
+      image: assets.thumbSrs || assets.cardBusThumb,
       busType: "AC",
       seatingType: "Sleeper",
       depM: 1275, // 09:15 PM
       depTime: "09:15 PM",
-      depLoc: `${cityA.name} (${cityA.busStops[0]})`,
-      arrLoc: `${cityB.name} (${cityB.busStops[0]})`,
-      price: Math.round(baseBusRate * 1.05),
+      depLoc: `${cityA.name} (${getStopA(0)})`,
+      arrLoc: `${cityB.name} (${getStopB(1)})`,
+      baseMultiplier: 1.12,
       amenities: ["AC", "Charging", "Blanket", "Water Bottle", "Reading Light", "CCTV"],
+      cheapestPlatform: "redBus",
     },
     {
-      id: "bus-rsyadav",
-      operator: "RS Yadav Travels",
-      operatorInitials: "RS",
-      operatorTheme: "#1e3a8a",
-      subtitle: "Non-AC Seater (2+2) | Bharat Benz",
-      rating: 4.1,
-      reviewsCount: "3.2K",
+      id: "bus-srs",
+      operator: "SRS Travels Multi-Axle",
+      operatorInitials: "SRS",
+      operatorTheme: "#dc2626",
+      subtitle: "A/C Sleeper (2+1) | Volvo Multi-Axle Luxury",
+      rating: 4.4,
+      reviewsCount: "9.3K",
       badge: null,
-      image: assets.thumbRsyadav,
-      busType: "Non-AC",
-      seatingType: "Seater",
-      depM: 360, // 06:00 AM
-      depTime: "06:00 AM",
-      depLoc: `${cityA.name} (${cityA.busStops[1] || cityA.busStops[0]})`,
-      arrLoc: `${cityB.name} (${cityB.busStops[0]})`,
-      price: Math.round(baseBusRate * 0.68),
-      amenities: ["Non-AC", "Charging", "Water Bottle", "Snacks", "GPS Tracking"],
+      image: assets.thumbSrs || assets.cardBusThumb,
+      busType: "AC",
+      seatingType: "Sleeper",
+      depM: 1185, // 07:45 PM
+      depTime: "07:45 PM",
+      depLoc: `${cityA.name} (${getStopA(2)})`,
+      arrLoc: `${cityB.name} (${getStopB(0)})`,
+      baseMultiplier: 0.98,
+      amenities: ["AC", "Charging", "Blanket", "Water Bottle", "Reading Light"],
+      cheapestPlatform: "abhibus",
+    },
+    {
+      id: "bus-orange",
+      operator: "Orange Tours and Travels",
+      operatorInitials: "OT",
+      operatorTheme: "#ea580c",
+      subtitle: "Bharat Benz A/C Sleeper (2+1) | GPS & CCTV",
+      rating: 4.6,
+      reviewsCount: "13.1K",
+      badge: "Fastest",
+      image: assets.thumbNeeta || assets.cardBusThumb,
+      busType: "AC",
+      seatingType: "Sleeper",
+      depM: 1395, // 11:15 PM
+      depTime: "11:15 PM",
+      depLoc: `${cityA.name} (${getStopA(0)})`,
+      arrLoc: `${cityB.name} (${getStopB(0)})`,
+      baseMultiplier: 1.08,
+      amenities: ["AC", "WiFi", "Charging", "Water Bottle", "Emergency SOS"],
+      cheapestPlatform: "redBus",
     },
     {
       id: "bus-neeta",
-      operator: "Neeta Travels",
+      operator: "Neeta Tours & Travels",
       operatorInitials: "SM",
       operatorTheme: "#0284c7",
-      subtitle: "A/C Sleeper (2+1) | Volvo Multi-Axle",
+      subtitle: "Volvo B9R Multi-Axle A/C Sleeper",
       rating: 4.5,
-      reviewsCount: "5.7K",
+      reviewsCount: "8.7K",
       badge: null,
-      image: assets.thumbNeeta,
+      image: assets.thumbNeeta || assets.cardBusThumb,
+      busType: "AC",
+      seatingType: "Sleeper",
+      depM: 1425, // 11:45 PM
+      depTime: "11:45 PM",
+      depLoc: `${cityA.name} (${getStopA(1)})`,
+      arrLoc: `${cityB.name} (${getStopB(1)})`,
+      baseMultiplier: 1.14,
+      amenities: ["AC", "WiFi", "Charging", "Blanket", "Water Bottle", "Reading Light"],
+      cheapestPlatform: "abhibus",
+    },
+    {
+      id: "bus-rtc",
+      operator: stateRtcName,
+      operatorInitials: "RTC",
+      operatorTheme: "#0f766e",
+      subtitle: "Official State Transport Corporation • Punctual & Safe",
+      rating: 4.5,
+      reviewsCount: "35.2K",
+      badge: "Official RTC",
+      image: assets.cardBusThumb || assets.thumbRsyadav,
+      busType: "AC",
+      seatingType: "Seater",
+      depM: 570, // 09:30 AM
+      depTime: "09:30 AM",
+      depLoc: `${cityA.name} (${getStopA(0)})`,
+      arrLoc: `${cityB.name} (${getStopB(0)})`,
+      baseMultiplier: 0.86,
+      amenities: ["AC", "Charging", "Water Bottle", "Emergency SOS", "Safe Driver"],
+      cheapestPlatform: "abhibus",
+    },
+    {
+      id: "bus-rsyadav",
+      operator: "RS Yadav SmartBus",
+      operatorInitials: "RS",
+      operatorTheme: "#1e3a8a",
+      subtitle: "A/C Seater / Sleeper (2+2) | Bharat Benz",
+      rating: 4.3,
+      reviewsCount: "6.8K",
+      badge: "Value Deal",
+      image: assets.thumbRsyadav || assets.cardBusThumb,
+      busType: "AC",
+      seatingType: "Seater",
+      depM: 375, // 06:15 AM
+      depTime: "06:15 AM",
+      depLoc: `${cityA.name} (${getStopA(1)})`,
+      arrLoc: `${cityB.name} (${getStopB(0)})`,
+      baseMultiplier: 0.78,
+      amenities: ["AC", "Charging", "Water Bottle", "Snacks", "GPS Tracking"],
+      cheapestPlatform: "redBus",
+    },
+    {
+      id: "bus-hans",
+      operator: "Hans Travels Luxury Sleeper",
+      operatorInitials: "HT",
+      operatorTheme: "#b45309",
+      subtitle: "A/C Sleeper (2+1) | Air Suspension Luxury",
+      rating: 4.4,
+      reviewsCount: "7.9K",
+      badge: null,
+      image: assets.thumbSrs || assets.cardBusThumb,
+      busType: "AC",
+      seatingType: "Sleeper",
+      depM: 480, // 08:00 AM
+      depTime: "08:00 AM",
+      depLoc: `${cityA.name} (${getStopA(0)})`,
+      arrLoc: `${cityB.name} (${getStopB(1)})`,
+      baseMultiplier: 0.92,
+      amenities: ["AC", "WiFi", "Charging", "Water Bottle", "Reading Light"],
+      cheapestPlatform: "abhibus",
+    },
+    {
+      id: "bus-kallada",
+      operator: "Kallada Travels G4 Sleeper",
+      operatorInitials: "KT",
+      operatorTheme: "#be185d",
+      subtitle: "A/C Sleeper (2+1) | Volvo Multi-Axle",
+      rating: 4.7,
+      reviewsCount: "16.4K",
+      badge: "Top Rated",
+      image: assets.thumbZingbus || assets.cardBusThumb,
+      busType: "AC",
+      seatingType: "Sleeper",
+      depM: 810, // 01:30 PM
+      depTime: "01:30 PM",
+      depLoc: `${cityA.name} (${getStopA(2)})`,
+      arrLoc: `${cityB.name} (${getStopB(0)})`,
+      baseMultiplier: 1.18,
+      amenities: ["AC", "WiFi", "Charging", "Blanket", "Water Bottle", "CCTV"],
+      cheapestPlatform: "redBus",
+    },
+    {
+      id: "bus-jabbar",
+      operator: "Jabbar Travels A/C Sleeper",
+      operatorInitials: "JT",
+      operatorTheme: "#4338ca",
+      subtitle: "Scania Metrolink High-Deck A/C Sleeper",
+      rating: 4.5,
+      reviewsCount: "8.9K",
+      badge: null,
+      image: assets.thumbIntrcity || assets.cardBusThumb,
+      busType: "AC",
+      seatingType: "Sleeper",
+      depM: 900, // 03:00 PM
+      depTime: "03:00 PM",
+      depLoc: `${cityA.name} (${getStopA(0)})`,
+      arrLoc: `${cityB.name} (${getStopB(0)})`,
+      baseMultiplier: 1.06,
+      amenities: ["AC", "Charging", "Blanket", "Water Bottle", "Reading Light"],
+      cheapestPlatform: "abhibus",
+    },
+    {
+      id: "bus-citylink",
+      operator: "Citylink Luxury Intercity Electric",
+      operatorInitials: "CL",
+      operatorTheme: "#059669",
+      subtitle: "Zero Emission Ultra-Silent A/C Sleeper (2+1)",
+      rating: 4.8,
+      reviewsCount: "7.1K",
+      badge: "Eco Electric",
+      image: assets.thumbZingbus || assets.cardBusThumb,
+      busType: "AC",
+      seatingType: "Sleeper",
+      depM: 990, // 04:30 PM
+      depTime: "04:30 PM",
+      depLoc: `${cityA.name} (${getStopA(1)})`,
+      arrLoc: `${cityB.name} (${getStopB(1)})`,
+      baseMultiplier: 1.04,
+      amenities: ["AC", "WiFi", "Charging", "Blanket", "Water Bottle", "Live Tracking"],
+      cheapestPlatform: "redBus",
+    },
+    {
+      id: "bus-mahasagar",
+      operator: "Mahasagar Travels Sleeper",
+      operatorInitials: "MT",
+      operatorTheme: "#0369a1",
+      subtitle: "A/C Sleeper (2+1) | Live GPS Tracking",
+      rating: 4.3,
+      reviewsCount: "5.4K",
+      badge: null,
+      image: assets.thumbRsyadav || assets.cardBusThumb,
+      busType: "AC",
+      seatingType: "Sleeper",
+      depM: 1125, // 06:45 PM
+      depTime: "06:45 PM",
+      depLoc: `${cityA.name} (${getStopA(0)})`,
+      arrLoc: `${cityB.name} (${getStopB(0)})`,
+      baseMultiplier: 0.95,
+      amenities: ["AC", "Charging", "Water Bottle", "Reading Light", "Emergency Exit"],
+      cheapestPlatform: "abhibus",
+    },
+    {
+      id: "bus-sharma",
+      operator: "Sharma Transports Multi-Axle",
+      operatorInitials: "ST",
+      operatorTheme: "#831843",
+      subtitle: "Multi-Axle Volvo B11R Luxury Sleeper",
+      rating: 4.6,
+      reviewsCount: "10.8K",
+      badge: "Fastest",
+      image: assets.thumbSrs || assets.cardBusThumb,
+      busType: "AC",
+      seatingType: "Sleeper",
+      depM: 1365, // 10:45 PM
+      depTime: "10:45 PM",
+      depLoc: `${cityA.name} (${getStopA(1)})`,
+      arrLoc: `${cityB.name} (${getStopB(0)})`,
+      baseMultiplier: 1.16,
+      amenities: ["AC", "WiFi", "Charging", "Blanket", "Water Bottle", "CCTV"],
+      cheapestPlatform: "redBus",
+    },
+    {
+      id: "bus-kpn",
+      operator: "KPN Travels Multi-Axle",
+      operatorInitials: "KPN",
+      operatorTheme: "#b91c1c",
+      subtitle: "Volvo Multi-Axle A/C Sleeper (2+1)",
+      rating: 4.5,
+      reviewsCount: "12.3K",
+      badge: null,
+      image: assets.thumbNeeta || assets.cardBusThumb,
       busType: "AC",
       seatingType: "Sleeper",
       depM: 1410, // 11:30 PM
       depTime: "11:30 PM",
-      depLoc: `${cityA.name} (${cityA.busStops[0]})`,
-      arrLoc: `${cityB.name} (${cityB.busStops[0]})`,
-      price: Math.round(baseBusRate * 1.25),
-      amenities: ["AC", "WiFi", "Charging", "Blanket", "Water Bottle", "Reading Light"],
+      depLoc: `${cityA.name} (${getStopA(0)})`,
+      arrLoc: `${cityB.name} (${getStopB(1)})`,
+      baseMultiplier: 1.10,
+      amenities: ["AC", "Charging", "Blanket", "Water Bottle", "Reading Light"],
+      cheapestPlatform: "abhibus",
+    },
+    {
+      id: "bus-greenline",
+      operator: "Greenline Travels Volvo Sleeper",
+      operatorInitials: "GL",
+      operatorTheme: "#047857",
+      subtitle: "Volvo Multi-Axle Premium Sleeper (2+1)",
+      rating: 4.7,
+      reviewsCount: "14.8K",
+      badge: "Top Rated",
+      image: assets.thumbZingbus || assets.cardBusThumb,
+      busType: "AC",
+      seatingType: "Sleeper",
+      depM: 15, // 12:15 AM
+      depTime: "12:15 AM",
+      depLoc: `${cityA.name} (${getStopA(1)})`,
+      arrLoc: `${cityB.name} (${getStopB(0)})`,
+      baseMultiplier: 1.20,
+      amenities: ["AC", "WiFi", "Charging", "Blanket", "Water Bottle", "Live Tracking"],
+      cheapestPlatform: "redBus",
     },
   ];
 
-  return busOperators.map((item) => {
+  return busTemplates.map((item) => {
     const arrTotalMins = (item.depM + busMins) % 1440;
     const arrH = Math.floor(arrTotalMins / 60);
     const arrM = arrTotalMins % 60;
     const arrPeriod = arrH >= 12 ? "PM" : "AM";
     const arrDisplayH = arrH % 12 === 0 ? 12 : arrH % 12;
-    const arrivalTime = `${arrDisplayH.toString().padStart(2, "0")}:${arrM.toString().padStart(2, "0")} ${arrPeriod}`;
+    const arrivalTime = `${arrDisplayH.toString().padStart(2, "0")}:${arrM
+      .toString()
+      .padStart(2, "0")} ${arrPeriod}`;
 
-    const lowest = item.price;
+    const baseP = Math.round(baseRate * item.baseMultiplier);
+    const redBusPrice = item.cheapestPlatform === "redBus" ? baseP : baseP + 35;
+    const abhibusPrice = item.cheapestPlatform === "abhibus" ? baseP : baseP + 30;
+    const mmtPrice = baseP + 55;
+    const goibiboPrice = baseP + 50;
+
+    const platforms = [
+      {
+        name: "redBus",
+        displayName: "redBus",
+        logoColor: "#d82b40",
+        price: redBusPrice,
+        isCheapest: item.cheapestPlatform === "redBus",
+        dealText: item.cheapestPlatform === "redBus" ? "Lowest on redBus" : "Flat ₹150 OFF",
+      },
+      {
+        name: "AbhiBus",
+        displayName: "AbhiBus",
+        logoColor: "#b71a2a",
+        price: abhibusPrice,
+        isCheapest: item.cheapestPlatform === "abhibus",
+        dealText: item.cheapestPlatform === "abhibus" ? "Lowest on AbhiBus" : "Instant 12% OFF",
+      },
+      {
+        name: "MakeMyTrip",
+        displayName: "MakeMyTrip",
+        logoColor: "#ea580c",
+        price: mmtPrice,
+        isCheapest: false,
+        dealText: "MMT Assured",
+      },
+      {
+        name: "goibibo",
+        displayName: "goibibo",
+        logoColor: "#f97316",
+        price: goibiboPrice,
+        isCheapest: false,
+        dealText: "GoCash Bonus",
+      },
+    ];
+
+    const seatsAvailable = Math.floor(8 + (item.depM % 18));
+    const windowSeats = Math.floor(seatsAvailable / 2);
 
     return {
       id: `${item.id}-${cityA.name.slice(0, 3)}-${cityB.name.slice(0, 3)}`,
@@ -657,7 +1004,13 @@ export function generateRealBuses(originName, destName, passengerCount = 1, asse
       busType: item.busType,
       seatingType: item.seatingType,
       departureTimeOfDay:
-        item.depM < 720 ? "Morning" : item.depM < 1080 ? "Afternoon" : item.depM < 1320 ? "Evening" : "Night",
+        item.depM < 720
+          ? "Morning"
+          : item.depM < 1080
+          ? "Afternoon"
+          : item.depM < 1320
+          ? "Evening"
+          : "Night",
       departureTime: item.depTime,
       departureLocation: item.depLoc,
       duration: durationText,
@@ -665,13 +1018,9 @@ export function generateRealBuses(originName, destName, passengerCount = 1, asse
       arrivalTime,
       arrivalLocation: item.arrLoc,
       amenities: item.amenities,
-      platforms: [
-        { name: "redBus", logoColor: "#e11d48", price: lowest + 40 },
-        { name: "abhibus", logoColor: "#f43f5e", price: lowest + 20 },
-        { name: "paytm", logoColor: "#0284c7", price: lowest + 35 },
-        { name: "intrcity", logoColor: "#059669", price: lowest, isCheapest: true },
-        { name: "makeMyTrip", logoColor: "#ea580c", price: lowest + 50 },
-      ],
+      platforms,
+      seatsAvailableText: `${seatsAvailable} Seats Available (${windowSeats} Window)`,
+      price: Math.min(...platforms.map((p) => p.price)),
     };
   });
 }
