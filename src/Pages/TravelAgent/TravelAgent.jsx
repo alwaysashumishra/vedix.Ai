@@ -1,10 +1,14 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
+import { FiSun, FiMoon, FiArrowUpRight } from "react-icons/fi";
+import { ThemeContext } from "../../context/ThemeContext";
+import { assets } from "../../assets/assets";
 import "./TravelAgent.css";
 import TravelHeroHub from "../../components/TravelAgent/TravelHeroHub";
 import TransportResultsPage from "../../components/TravelAgent/TransportResultsPage";
 import BookingSafetyModal from "../../components/TravelAgent/BookingSafetyModal";
 import TravelAutomationModal from "../../components/TravelAgent/TravelAutomationModal";
-import BackHomeButton from "../../components/BackHomeButton/BackHomeButton";
 import { generateResilientTravelPlan } from "../../components/TravelAgent/travelMockService";
 import { getApiBaseUrl } from "../../config/apiConfig";
 
@@ -17,6 +21,9 @@ const getDefaultTravelDate = () => {
 };
 
 const TravelAgent = ({ profile }) => {
+  const { theme, toggleTheme } = useContext(ThemeContext);
+  const isLight = theme === "light";
+
   const [pageView, setPageView] = useState("home"); // "home" | "results"
   const [selectedTransportMode, setSelectedTransportMode] = useState("bus");
 
@@ -262,21 +269,168 @@ const TravelAgent = ({ profile }) => {
   };
 
   return (
-    <div className="travel-agent-page">
-      {/* Top Bar Navigation */}
-      <div className="travel-top-bar">
-        <BackHomeButton label="Back to Home" className="travel-back-home-btn" />
-        {pageView === "results" && (
-          <button
-            type="button"
-            className="travel-back-home-btn"
-            style={{ marginLeft: "12px", cursor: "pointer" }}
-            onClick={() => setPageView("home")}
+    <div
+      className={`travel-agent-page ${theme || "light"}`}
+      data-theme={theme || "light"}
+    >
+      {/* ================= FLOATING FROSTED STELLAR / VEDIX NAVBAR ================= */}
+      <header className="stellar-navbar-container travel-stellar-navbar-container">
+        <motion.nav
+          className="stellar-navbar travel-stellar-navbar"
+          initial={{ y: -30, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
+          {/* Brand Logo with Official Vedix.AI Logo */}
+          <div
+            className="stellar-brand"
+            onClick={() => {
+              setPageView("home");
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            role="button"
+            tabIndex={0}
           >
-            ← Back to Search
-          </button>
-        )}
-      </div>
+            <div className="vedix-nav-logo-badge">
+              <img
+                src={assets.gemini_icon}
+                alt="Vedix.Ai Logo"
+                className="vedix-official-logo"
+              />
+            </div>
+            <span className="stellar-brand-name">Vedix.Ai</span>
+            <span className="travel-nav-badge-pill">Travel Agent</span>
+          </div>
+
+          {/* Centered Pill Navigation */}
+          <div className="stellar-nav-pill travel-nav-pill">
+            <button
+              type="button"
+              className={pageView === "home" ? "active" : ""}
+              onClick={() => {
+                setPageView("home");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+            >
+              Search Trips
+            </button>
+            <button
+              type="button"
+              className={selectedTransportMode === "bus" ? "active" : ""}
+              onClick={() => {
+                setSelectedTransportMode("bus");
+                if (pageView === "results") {
+                  handleHubSearch();
+                }
+              }}
+            >
+              Buses
+            </button>
+            <button
+              type="button"
+              className={selectedTransportMode === "train" ? "active" : ""}
+              onClick={() => {
+                setSelectedTransportMode("train");
+                if (pageView === "results") {
+                  handleHubSearch();
+                }
+              }}
+            >
+              Trains
+            </button>
+            <button
+              type="button"
+              className={selectedTransportMode === "flight" ? "active" : ""}
+              onClick={() => {
+                setSelectedTransportMode("flight");
+                if (pageView === "results") {
+                  handleHubSearch();
+                }
+              }}
+            >
+              Flights
+            </button>
+            <button
+              type="button"
+              className={selectedTransportMode === "cab" ? "active" : ""}
+              onClick={() => {
+                setSelectedTransportMode("cab");
+                if (pageView === "results") {
+                  handleHubSearch();
+                }
+              }}
+            >
+              Cabs
+            </button>
+            <button
+              type="button"
+              className={pageView === "results" ? "active" : ""}
+              onClick={() => {
+                if (pageView !== "results") {
+                  handleHubSearch();
+                }
+              }}
+            >
+              Live Fares
+            </button>
+          </div>
+
+          {/* Right Action Buttons */}
+          <div className="stellar-nav-actions travel-nav-actions">
+            {pageView === "results" && (
+              <button
+                type="button"
+                className="travel-nav-back-search-btn"
+                onClick={() => {
+                  setPageView("home");
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+              >
+                ← Back to Search
+              </button>
+            )}
+
+            {/* Theme Toggle Button */}
+            <button
+              type="button"
+              className={`stellar-theme-toggle ${isLight ? "light-mode" : "dark-mode"}`}
+              onClick={toggleTheme}
+              aria-label={`Switch to ${isLight ? "Dark" : "Light"} mode`}
+              title={`Switch to ${isLight ? "Dark" : "Light"} mode`}
+            >
+              <AnimatePresence mode="wait" initial={false}>
+                {isLight ? (
+                  <motion.div
+                    key="sun"
+                    initial={{ rotate: -90, scale: 0.6, opacity: 0 }}
+                    animate={{ rotate: 0, scale: 1, opacity: 1 }}
+                    exit={{ rotate: 90, scale: 0.6, opacity: 0 }}
+                    transition={{ duration: 0.18 }}
+                  >
+                    <FiSun className="theme-toggle-icon sun" />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="moon"
+                    initial={{ rotate: 90, scale: 0.6, opacity: 0 }}
+                    animate={{ rotate: 0, scale: 1, opacity: 1 }}
+                    exit={{ rotate: -90, scale: 0.6, opacity: 0 }}
+                    transition={{ duration: 0.18 }}
+                  >
+                    <FiMoon className="theme-toggle-icon moon" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </button>
+
+            {/* Back to Home CTA matching Landing Page */}
+            <Link to="/" className="stellar-cta-btn travel-home-cta-btn">
+              <span>Back to Home</span>
+              <FiArrowUpRight className="stellar-cta-arrow" />
+            </Link>
+          </div>
+        </motion.nav>
+      </header>
 
       {pageView === "home" ? (
         /* PRIMARY SHOWCASE HERO VIEW (Matches user's image) */

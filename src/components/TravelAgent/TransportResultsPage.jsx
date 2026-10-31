@@ -903,7 +903,7 @@ const TransportResultsPage = ({
                       {Number(passengers) === num && (
                         <FaCircleCheck
                           className="check-icon"
-                          style={{ color: "#2563eb", fontSize: "12px" }}
+                          style={{ color: "var(--s-accent-green, #10b981)", fontSize: "12px" }}
                         />
                       )}
                     </button>

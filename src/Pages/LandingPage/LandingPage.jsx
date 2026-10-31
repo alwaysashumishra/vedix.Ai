@@ -49,22 +49,22 @@ const QUICK_PROMPTS = [
 ];
 
 const TRUSTED_INNOVATORS = [
-  { name: "talkdesk", tag: "talkdäsk" },
-  { name: "gusto", tag: "gusto" },
-  { name: "fivetran", tag: "Fivetran" },
-  { name: "yotpo", tag: "yotpo." },
-  { name: "vts", tag: "VTS" },
-  { name: "exabeam", tag: "exabeam" },
-  { name: "weave", tag: "weave" },
+  { name: "redbus", tag: "redBus" },
+  { name: "abhibus", tag: "AbhiBus" },
+  { name: "irctc", tag: "IRCTC Trains" },
+  { name: "gemini", tag: "Google Gemini 3.5" },
+  { name: "makemytrip", tag: "MakeMyTrip" },
+  { name: "uber", tag: "Uber Cabs" },
+  { name: "ola", tag: "Ola" },
 ];
 
 const TESTIMONIALS = [
   {
-    name: "Amira Khalid",
-    role: "CEO at weave",
-    company: "weave",
-    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=120&auto=format&fit=crop&q=80",
-    quote: "Vedix's AI agents cut our manual workflows by 40% in the first month. Our team finally focuses on strategy instead of repetitive tasks. The data insights agent turned our raw numbers into actionable reports. Decision-making has never been this fast and precise. We were skeptical at first, but Vedix AI feels like having an extra team of experts. The productivity boost is undeniable.",
+    name: "Aakash Verma",
+    role: "Travel Consultant & Explorer",
+    company: "Travel Community",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80",
+    quote: "Vedix's Autonomous Travel Agent compared bus fares across redBus and AbhiBus in real time, auto-filled my boarding point, and located my exact coach with zero effort. Saved 30% on my Delhi to Jaipur journey!",
   },
   {
     name: "Dr. Marcus Vance",
@@ -656,8 +656,9 @@ const LandingPage = ({ setShowLogin, setProfile, profile }) => {
             transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
           >
             <h1 className="hero-main-title">
-              Next Level Teams<br />
-              of AI Agents
+              Autonomous<br />
+              Teams of<br />
+              AI Agents
             </h1>
 
             <div className="hero-btn-wrap">
@@ -668,7 +669,7 @@ const LandingPage = ({ setShowLogin, setProfile, profile }) => {
                 whileTap={{ scale: 0.98 }}
                 onClick={() => scrollToSection("solutions")}
               >
-                <span>Explore AI Solutions</span>
+                <span>Explore AI Agents</span>
                 <span className="hero-circle-arrow">
                   <FiArrowUpRight />
                 </span>
@@ -687,13 +688,13 @@ const LandingPage = ({ setShowLogin, setProfile, profile }) => {
               <div className="character-ambient-ring" aria-hidden="true" />
               <img
                 src={aiAgentHero}
-                alt="Next Level AI Agent"
+                alt="Vedix Autonomous AI Agent"
                 className="stellar-character-img"
               />
             </div>
           </motion.div>
 
-          {/* Right Column: User Avatars + 20M+ & Value Proposition */}
+          {/* Right Column: User Avatars + 50K+ & Project-Matched Value Proposition */}
           <motion.div
             className="hero-col-right"
             initial={{ opacity: 0, x: 30 }}
@@ -718,11 +719,11 @@ const LandingPage = ({ setShowLogin, setProfile, profile }) => {
                   className="overlap-avatar"
                 />
               </div>
-              <span className="metric-large-text">20M+</span>
+              <span className="metric-large-text">50K+</span>
             </div>
 
             <p className="hero-paragraph-desc">
-              Empower your business with intelligent AI agents designed to automate workflows, boost productivity, and scale innovation.
+              Empower your journey and daily workflows with Vedix AI: book travel across redBus, AbhiBus &amp; IRCTC, scan resumes with instant ATS diagnostics, and decompose research papers — all in one unified platform.
             </p>
           </motion.div>
         </div>
@@ -734,9 +735,9 @@ const LandingPage = ({ setShowLogin, setProfile, profile }) => {
             <span className="emerald-watermark-text">Artificial Intelligence</span>
           </div>
 
-          {/* Trusted by Leading Innovators */}
+          {/* Integrated with Leading Travel & AI Platforms */}
           <div className="trusted-innovators-block">
-            <h3 className="trusted-title">Trusted by Leading Innovators</h3>
+            <h3 className="trusted-title">Integrated with Leading Travel, AI &amp; Research Platforms</h3>
 
             <div className="innovators-logo-row">
               {TRUSTED_INNOVATORS.map((item, index) => (
@@ -850,7 +851,7 @@ const LandingPage = ({ setShowLogin, setProfile, profile }) => {
               className="hero-explore-btn"
               onClick={() => scrollToSection("solutions")}
             >
-              <span>Explore AI Solutions</span>
+              <span>Explore AI Agents</span>
               <span className="hero-circle-arrow">
                 <FiArrowUpRight />
               </span>
@@ -862,14 +863,14 @@ const LandingPage = ({ setShowLogin, setProfile, profile }) => {
             <div className="agent-portrait-card">
               <img
                 src={aiAgentPersona}
-                alt="AI Agent Specialist"
+                alt="Vedix Autonomous AI Agent"
                 className="agent-portrait-img"
               />
               <div className="portrait-glass-tag">
                 <span className="green-live-dot" />
                 <div>
-                  <strong>Agent Specialist</strong>
-                  <span>Custom Research & Intelligence</span>
+                  <strong>Autonomous Travel &amp; Research Agent</strong>
+                  <span>redBus, IRCTC, ATS Resume &amp; Academic AI</span>
                 </div>
               </div>
             </div>

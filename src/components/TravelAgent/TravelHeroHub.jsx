@@ -137,14 +137,14 @@ const TravelHeroHub = ({
           {/* Top Platform Tag */}
           <div className="hub-tag-badge">
             <FaEarthAsia className="hub-tag-icon" />
-            <span>All Your Travel Needs, One Platform</span>
+            <span>Autonomous Multi-Platform Travel Engine</span>
           </div>
 
           {/* Hero Headlines */}
           <h1 className="hub-hero-main-title">
             <span className="hub-title-line-1">Plan. Compare. Book.</span>
             <span className="hub-title-line-2">
-              Travel Smarter with <span className="vedix-brand-name">Vedix</span>
+              Travel Smarter with <span className="vedix-brand-name">Vedix.Ai</span>
             </span>
           </h1>
 
